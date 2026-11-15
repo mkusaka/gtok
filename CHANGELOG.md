@@ -5,6 +5,8 @@ All notable changes to gtok. Add entries under **Unreleased**;
 
 ## [Unreleased]
 
+## [v0.0.2] - 2026-11-15
+
 ### Changed
 
 - Renamed the project from gthok to gtok: binary, Go module path, `.gtok.yaml`
@@ -32,5 +34,6 @@ All notable changes to gtok. Add entries under **Unreleased**;
 - Recognized fetch-pack hand options, safe reflog display options and bisect
   start/terms options while preserving arbitrary bisect-run child arguments.
 
-[Unreleased]: https://github.com/mkusaka/gtok/compare/v0.0.1...HEAD
+[Unreleased]: https://github.com/mkusaka/gtok/compare/v0.0.2...HEAD
+[v0.0.2]: https://github.com/mkusaka/gtok/compare/v0.0.1...v0.0.2
 [v0.0.1]: https://github.com/mkusaka/gtok/releases/tag/v0.0.1
