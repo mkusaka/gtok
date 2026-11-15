@@ -8,7 +8,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func exitCode(err error, code int) bool {

@@ -13,7 +13,7 @@ func TestInitTemplates(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(repo, ".git"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": home, "GTHOK_CONFIG_DIR": filepath.Join(home, "cfg")}
+	env := map[string]string{"HOME": home, "GTOK_CONFIG_DIR": filepath.Join(home, "cfg")}
 
 	user, err := Init(ScopeUser, repo, env)
 	if err != nil || user != filepath.Join(home, "cfg", "config.yaml") {
@@ -28,7 +28,7 @@ func TestInitTemplates(t *testing.T) {
 	}
 
 	project, err := Init(ScopeProject, filepath.Join(repo), env)
-	if err != nil || filepath.Base(project) != ".gthok.yaml" {
+	if err != nil || filepath.Base(project) != ".gtok.yaml" {
 		t.Fatalf("project init = %q, %v", project, err)
 	}
 	if strings.Contains(mustRead(t, project), home) {

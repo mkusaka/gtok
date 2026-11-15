@@ -12,10 +12,10 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 var ErrUnsupportedEdit = errors.New("unsupported edit")
@@ -91,7 +91,7 @@ func Apply(inv model.Invocation, before model.Result, response protocol.Transfor
 		}
 	}
 	makeFile := func(data []byte) (string, error) {
-		f, err := os.CreateTemp("", "gthok-transform-*")
+		f, err := os.CreateTemp("", "gtok-transform-*")
 		if err != nil {
 			return "", err
 		}

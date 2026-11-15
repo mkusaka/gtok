@@ -14,9 +14,9 @@ func manifestCacheFixture(t *testing.T) (string, map[string]string, string) {
 	t.Helper()
 	root := t.TempDir()
 	repo := filepath.Join(root, "repo")
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\npolicy: {mode: observe}\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\npolicy: {mode: observe}\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
 	writeFixture(t, filepath.Join(repo, "hook"), "reviewed hook\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
@@ -28,7 +28,7 @@ func manifestCacheFixture(t *testing.T) (string, map[string]string, string) {
 	if _, ok := manifestCacheMetadata(info); !ok {
 		t.Skip("safe persistent stat cache unavailable on this platform")
 	}
-	return repo, env, filepath.Join(env["GTHOK_CONFIG_DIR"], "state", "manifest-cache.json")
+	return repo, env, filepath.Join(env["GTOK_CONFIG_DIR"], "state", "manifest-cache.json")
 }
 
 func TestManifestCacheWarmPrivateAndUnchanged(t *testing.T) {
@@ -74,7 +74,7 @@ func TestManifestCacheRetainsOtherProjects(t *testing.T) {
 	repo, env, _ := manifestCacheFixture(t)
 	other := filepath.Join(filepath.Dir(repo), "other")
 	writeFixture(t, filepath.Join(other, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(other, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: other, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(other, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: other, command: [./hook]}]}\n")
 	writeFixture(t, filepath.Join(other, "hook"), "other hook\n")
 	if _, _, err := LoadEffective("", other, env); err != nil {
 		t.Fatal(err)
@@ -170,7 +170,7 @@ func TestManifestCacheInvalidatesChangedFiles(t *testing.T) {
 					t.Fatal(err)
 				}
 			case "yaml":
-				project := filepath.Join(repo, ".gthok.yaml")
+				project := filepath.Join(repo, ".gtok.yaml")
 				data, err := os.ReadFile(project)
 				if err != nil {
 					t.Fatal(err)
@@ -201,7 +201,7 @@ func TestManifestCacheRetainsManifestValidation(t *testing.T) {
 			switch change {
 			case "byte-limit":
 				want = "runtime.fileMaxBytes"
-				info, err := os.Stat(filepath.Join(repo, ".gthok.yaml"))
+				info, err := os.Stat(filepath.Join(repo, ".gtok.yaml"))
 				if err != nil {
 					t.Fatal(err)
 				}

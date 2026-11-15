@@ -4,9 +4,9 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 // Spans index the expanded analysis argv, half-open, including root options.

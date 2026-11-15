@@ -10,7 +10,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 func isolatedEnv(home string) []string {
@@ -29,7 +29,7 @@ func isolatedEnv(home string) []string {
 }
 
 func verifyCompletion(commands map[string]registry.Command, grammars map[string]registry.Grammar) (*registry.Verification, error) {
-	tmp, err := os.MkdirTemp("", "gthok-registry-verify-")
+	tmp, err := os.MkdirTemp("", "gtok-registry-verify-")
 	if err != nil {
 		return nil, err
 	}

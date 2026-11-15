@@ -16,7 +16,7 @@ import (
 	"time"
 
 	"github.com/creack/pty"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // pollablePTY makes Close interrupt blocked test reads instead of waiting for

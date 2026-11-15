@@ -11,7 +11,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 	"go.yaml.in/yaml/v3"
 )
 
@@ -36,7 +36,7 @@ func writeTrustProject(t *testing.T, s *sandbox, command ...string) (string, []b
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(s.cwd, ".gthok.yaml")
+	path := filepath.Join(s.cwd, ".gtok.yaml")
 	if err := os.WriteFile(path, body, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -65,7 +65,7 @@ func assertIgnoredProjectHook(t *testing.T, s *sandbox, reason string) {
 	for _, args := range [][]string{{"hooks", "list"}, {"explain", "--", "version"}, {"config", "validate"}} {
 		result = s.management(nil, args...)
 		result.code(t, 0)
-		if !bytes.Contains(result.stdout, []byte("ignored ("+reason+")")) || !bytes.Contains(result.stdout, []byte("gthok config trust")) {
+		if !bytes.Contains(result.stdout, []byte("ignored ("+reason+")")) || !bytes.Contains(result.stdout, []byte("gtok config trust")) {
 			t.Fatalf("missing ignored-hook explanation: %s", result.stdout)
 		}
 	}
@@ -145,7 +145,7 @@ func TestProjectTrustRelativeExecutableAcrossWorktrees(t *testing.T) {
 		if err := os.WriteFile(filepath.Join(worktree, "hooks", "project"), executable, 0700); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.WriteFile(filepath.Join(worktree, ".gthok.yaml"), body, 0600); err != nil {
+		if err := os.WriteFile(filepath.Join(worktree, ".gtok.yaml"), body, 0600); err != nil {
 			t.Fatal(err)
 		}
 	}
@@ -230,7 +230,7 @@ func TestProjectTrustPathsAndUsage(t *testing.T) {
 			flag = "--all"
 		}
 		s.management(nil, "config", command, flag, "one").code(t, 2)
-		outside := filepath.Join(s.root, ".gthok.yaml")
+		outside := filepath.Join(s.root, ".gtok.yaml")
 		if err := os.WriteFile(outside, []byte("version: 1\n"), 0600); err != nil {
 			t.Fatal(err)
 		}
@@ -241,7 +241,7 @@ func TestProjectTrustPathsAndUsage(t *testing.T) {
 	if err := os.Symlink(s.cwd, alias); err != nil {
 		t.Fatal(err)
 	}
-	s.management(nil, "config", "trust", filepath.Join(alias, ".gthok.yaml")).code(t, 0)
+	s.management(nil, "config", "trust", filepath.Join(alias, ".gtok.yaml")).code(t, 0)
 	s.git(nil, "version").code(t, 0)
 	s.hookInput("project")
 	s.management(nil, "config", "untrust", project).code(t, 0)
@@ -373,14 +373,14 @@ func TestProjectTrustIncludeEditRetainsRules(t *testing.T) {
 	assertNoProjectHook(t, s)
 }
 
-// A personal .gthok.local.yaml hook runs on the first invocation, without trust.
+// A personal .gtok.local.yaml hook runs on the first invocation, without trust.
 func TestLocalConfigHookRunsWithoutTrust(t *testing.T) {
 	s := newSandbox(t)
 	h := fmt.Sprintf("{id: local, command: [%q], env: {FAKEGIT_MODE: hook, FAKEGIT_HOOK_RECORD: %q}}", fakeBinary, filepath.Join(s.root, "local.json"))
 	if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.local.yaml"), []byte("version: 1\nhooks: {pre: ["+h+"]}\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.local.yaml"), []byte("version: 1\nhooks: {pre: ["+h+"]}\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	s.git(nil, "version").code(t, 0)

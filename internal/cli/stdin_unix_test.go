@@ -6,8 +6,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestProtocolInputOnlyCapturedFromRegularFiles(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestHookInputsMatchPublishedSchema(t *testing.T) {

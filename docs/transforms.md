@@ -15,7 +15,7 @@ transforms:
 ```
 
 The [commit-trailer example](../examples/transforms/commit-trailer/main.go)
-appends `Origin: gthok-example` to an explicit `-m`/`-F` commit message and is
+appends `Origin: gtok-example` to an explicit `-m`/`-F` commit message and is
 idempotent. It intentionally fails for editor/unavailable messages; it does not
 claim to edit the message an editor will later produce. See
 [examples/config.yaml](../examples/config.yaml) and README build instructions.
@@ -25,7 +25,7 @@ claim to edit the message an editor will later produce. See
 Input has schemaVersion 1, event transform, phase pre. A successful response:
 
 ```json
-{"schemaVersion":1,"set":{"/operations/0/texts/body/value":"message\n\nOrigin: gthok-example\n"}}
+{"schemaVersion":1,"set":{"/operations/0/texts/body/value":"message\n\nOrigin: gtok-example\n"}}
 ```
 
 The response supports `set`, `unset`, flat `env`, and `warning`. Empty stdout is
@@ -83,5 +83,5 @@ be rolled back: review trusted code carefully.
 
 `explain` runs transforms for real; `explain --no-transforms` does not.
 `hooks test` runs transforms before hooks; normalize does not run transforms.
-Schema: `gthok schema transform-response`. See [hook protocol](hook-protocol.md)
+Schema: `gtok schema transform-response`. See [hook protocol](hook-protocol.md)
 and [security](security.md).

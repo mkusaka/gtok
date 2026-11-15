@@ -16,10 +16,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func script(t testing.TB, body string) string {
@@ -255,10 +255,10 @@ func TestInputEnvironmentAndResolution(t *testing.T) {
 	capture := filepath.Join(dir, "input.json")
 	vars := filepath.Join(dir, "env")
 	path := script(t, `cat > "$CAPTURE"
-printf '%s\n' "$GTHOK_EVENT" "$GTHOK_EVENT_ID" "$GTHOK_HOOK_ID" "$GTHOK_NESTED" "$GTHOK_REAL_GIT" "$CUSTOM" > "$VARS"
+printf '%s\n' "$GTOK_EVENT" "$GTOK_EVENT_ID" "$GTOK_HOOK_ID" "$GTOK_NESTED" "$GTOK_REAL_GIT" "$CUSTOM" > "$VARS"
 printf '{"decision":"allow"}'`)
 	h := hook("environment", "./hook")
-	h.Env = map[string]string{"CAPTURE": capture, "VARS": vars, "CUSTOM": "custom", "GTHOK_NESTED": "wrong"}
+	h.Env = map[string]string{"CAPTURE": capture, "VARS": vars, "CUSTOM": "custom", "GTOK_NESTED": "wrong"}
 	r := &Runner{BaseDir: filepath.Dir(path), Env: hermetic(t), RealGit: "/fake/git"}
 	got := one(t, h, r)
 	if got.Decision != protocol.DecisionAllow {

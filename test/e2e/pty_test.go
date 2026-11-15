@@ -14,7 +14,7 @@ import (
 	"time"
 
 	"github.com/creack/pty"
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 type terminalEvent struct {

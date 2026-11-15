@@ -9,13 +9,13 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/delegates"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/delegates"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 func managementExplain(a *managementAnalysis, showSecrets bool) int {
@@ -77,8 +77,8 @@ func managementExplain(a *managementAnalysis, showSecrets bool) int {
 		fmt.Fprintln(&output, display(fmt.Sprintf("  Delegate that WOULD run: %s command=%s timeout=%s onError=%s (fallback: real git; not-handled exit=125)", selected.ID, managementCompact(selected.Command), selected.Timeout.D(), selected.OnError)))
 	} else {
 		reason := "no matching trusted read-only delegate"
-		if a.env["GTHOK_NO_DELEGATE"] == "1" {
-			reason = "disabled by GTHOK_NO_DELEGATE=1"
+		if a.env["GTOK_NO_DELEGATE"] == "1" {
+			reason = "disabled by GTOK_NO_DELEGATE=1"
 		}
 		fmt.Fprintf(&output, "  Delegate that WOULD run: none (%s)\n", reason)
 	}
@@ -159,7 +159,7 @@ func managementExplain(a *managementAnalysis, showSecrets bool) int {
 	} else if evaluation.WouldDeny {
 		fmt.Fprintln(&output, "Enforce denial prevents git and post hooks; hooks above show match selection only.")
 	}
-	fmt.Fprintln(&output, "Explain exits 0. gthok is not a security boundary; direct git/API calls bypass it.")
+	fmt.Fprintln(&output, "Explain exits 0. gtok is not a security boundary; direct git/API calls bypass it.")
 	text := output.String()
 	if a.envEdited {
 		text = r.String(text)

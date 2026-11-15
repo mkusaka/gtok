@@ -13,7 +13,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 const gitCommit = "a018953688f1b10bddf91bff8747068f5f4746a4"

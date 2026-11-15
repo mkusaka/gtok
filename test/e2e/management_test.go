@@ -13,10 +13,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func decodeJSON(t *testing.T, data []byte, value any) {
@@ -30,7 +30,7 @@ func TestManagementVersionAndHelp(t *testing.T) {
 	s := newSandbox(t)
 	result := s.management(nil, "version")
 	result.code(t, 0)
-	for _, field := range []string{"gthok", "e2e-version", "e2e-commit", runtime.Version(), runtime.GOOS + "/" + runtime.GOARCH} {
+	for _, field := range []string{"gtok", "e2e-version", "e2e-commit", runtime.Version(), runtime.GOOS + "/" + runtime.GOARCH} {
 		if !bytes.Contains(result.stdout, []byte(field)) {
 			t.Fatalf("version missing %q", field)
 		}
@@ -59,7 +59,7 @@ func TestManagementUsageErrors(t *testing.T) {
 			s := newSandbox(t)
 			result := s.management(nil, args...)
 			result.code(t, 2)
-			if !bytes.HasPrefix(result.stderr, []byte("gthok:")) {
+			if !bytes.HasPrefix(result.stderr, []byte("gtok:")) {
 				t.Fatal("missing usage diagnostic")
 			}
 			s.absentRecord()
@@ -174,7 +174,7 @@ func TestManagementHookSources(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	project := filepath.Join(s.cwd, ".gthok.yaml")
+	project := filepath.Join(s.cwd, ".gtok.yaml")
 	command, err := json.Marshal([]string{fakeBinary})
 	if err != nil {
 		t.Fatal(err)
@@ -231,7 +231,7 @@ func TestManagementConfigAndDoctor(t *testing.T) {
 	for _, check := range checks {
 		byName[check.Name] = check
 	}
-	for _, name := range []string{"gthok", "real-git", "path-precedence", "shim-ownership", "recursion-risk", "git-version", "platform-process", "config", "log-writable"} {
+	for _, name := range []string{"gtok", "real-git", "path-precedence", "shim-ownership", "recursion-risk", "git-version", "platform-process", "config", "log-writable"} {
 		if _, ok := byName[name]; !ok {
 			t.Fatalf("doctor missing %s", name)
 		}
@@ -415,13 +415,13 @@ func TestManagementConfigValidateSelectedFileAndNotes(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	project := filepath.Join(s.cwd, ".gthok.yaml")
+	project := filepath.Join(s.cwd, ".gtok.yaml")
 	if err := os.WriteFile(project, []byte("version: 1\nhooks: {pre: [{id: project, command: [./missing-hook]}]}\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	result = s.management(nil, "config", "validate")
 	result.code(t, 0)
-	if !bytes.Contains(result.stdout, []byte(".gthok.yaml")) {
+	if !bytes.Contains(result.stdout, []byte(".gtok.yaml")) {
 		t.Fatal("validation omitted untrusted project note")
 	}
 	s.absentRecord()
@@ -454,7 +454,7 @@ func TestManagementCobraUsageBoundaries(t *testing.T) {
 				if !bytes.Contains(result.stdout, []byte("Usage:")) || len(result.stderr) != 0 {
 					t.Fatalf("bare group must show usage on stdout: %+v", result)
 				}
-			} else if len(result.stdout) != 0 || !bytes.HasPrefix(result.stderr, []byte("gthok:")) {
+			} else if len(result.stdout) != 0 || !bytes.HasPrefix(result.stderr, []byte("gtok:")) {
 				t.Fatalf("usage error must report only on stderr: %+v", result)
 			}
 			s.absentRecord()
@@ -507,7 +507,7 @@ func TestManagementConfigInit(t *testing.T) {
 	}
 	result := s.management(nil, "config", "init")
 	result.code(t, 0)
-	project := filepath.Join(s.cwd, ".gthok.yaml")
+	project := filepath.Join(s.cwd, ".gtok.yaml")
 	data, err := os.ReadFile(project)
 	if err != nil || !bytes.HasPrefix(data, []byte("# yaml-language-server: $schema=")) || !bytes.Contains(data, []byte("project.schema.json")) {
 		t.Fatalf("project config: err=%v\n%s", err, data)

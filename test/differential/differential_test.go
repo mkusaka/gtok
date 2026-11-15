@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 const defaultSeed int64 = 17
@@ -62,22 +62,22 @@ type sandbox struct {
 }
 
 func TestDifferential(t *testing.T) {
-	casesValue := os.Getenv("GTHOK_DIFF_CASES")
+	casesValue := os.Getenv("GTOK_DIFF_CASES")
 	if casesValue == "" {
-		t.Skip("set GTHOK_DIFF_CASES to run the sandboxed Git 2.56.0 survey")
+		t.Skip("set GTOK_DIFF_CASES to run the sandboxed Git 2.56.0 survey")
 	}
 	cases, err := strconv.Atoi(casesValue)
 	if err != nil || cases < 1 {
-		t.Fatal("GTHOK_DIFF_CASES must be a positive integer")
+		t.Fatal("GTOK_DIFF_CASES must be a positive integer")
 	}
 	seed := defaultSeed
-	if value := os.Getenv("GTHOK_DIFF_SEED"); value != "" {
+	if value := os.Getenv("GTOK_DIFF_SEED"); value != "" {
 		seed, err = strconv.ParseInt(value, 10, 64)
 		if err != nil {
-			t.Fatalf("GTHOK_DIFF_SEED: %v", err)
+			t.Fatalf("GTOK_DIFF_SEED: %v", err)
 		}
 	}
-	t.Logf("GTHOK_DIFF_SEED=%d GTHOK_DIFF_CASES=%d", seed, cases)
+	t.Logf("GTOK_DIFF_SEED=%d GTOK_DIFF_CASES=%d", seed, cases)
 	git, err := exec.LookPath("git")
 	if err != nil {
 		t.Skip("git is not installed")
@@ -118,9 +118,9 @@ func TestDifferential(t *testing.T) {
 		// nor does a fatal from a child Git whose exit status the parent maps
 		// (pull exits 1 when fetch rejects `--all <repo>`).
 		if !actual.timedOut && actual.code != 128 && actual.code != 129 && !strings.Contains(actual.stderr, "fatal: ") && parseReason(result) {
-			t.Errorf("seed=%d case=%d git-accepts-gthok-rejects argv=%q git=%d\nresult=%+v\nstderr=%s", seed, i, argv, actual.code, result, actual.stderr)
+			t.Errorf("seed=%d case=%d git-accepts-gtok-rejects argv=%q git=%d\nresult=%+v\nstderr=%s", seed, i, argv, actual.code, result, actual.stderr)
 		} else if usage && !parseReason(result) && result.Classification.Coverage == model.CoverageSemantic {
-			t.Logf("seed=%d case=%d git-rejects-gthok-accepts argv=%q git=%d stderr=%s", seed, i, argv, actual.code, actual.stderr)
+			t.Logf("seed=%d case=%d git-rejects-gtok-accepts argv=%q git=%d stderr=%s", seed, i, argv, actual.code, actual.stderr)
 		}
 		if actual.timedOut {
 			t.Logf("seed=%d case=%d timeout argv=%q", seed, i, argv)

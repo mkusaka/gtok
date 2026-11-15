@@ -7,8 +7,8 @@ import (
 	"strings"
 	"unicode"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 func contentSummary(s string) string { return fmt.Sprintf("[content: %d bytes]", len(s)) }

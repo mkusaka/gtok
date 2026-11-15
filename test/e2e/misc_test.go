@@ -14,9 +14,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestMiscEnvironmentRule(t *testing.T) {
@@ -191,10 +191,10 @@ func TestMiscSyntheticPostExitCode(t *testing.T) {
 func TestMiscDevelopmentVersionAndDoctor(t *testing.T) {
 	_, source, _, _ := runtime.Caller(0)
 	root := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	binary := filepath.Join(t.TempDir(), "gthok-dev")
+	binary := filepath.Join(t.TempDir(), "gtok-dev")
 	ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 	defer cancel()
-	build := exec.CommandContext(ctx, "go", "build", "-p=1", "-buildvcs=false", "-o", binary, "./cmd/gthok")
+	build := exec.CommandContext(ctx, "go", "build", "-p=1", "-buildvcs=false", "-o", binary, "./cmd/gtok")
 	build.Dir = root
 	build.Env = append(os.Environ(), "CGO_ENABLED=0", "GOPROXY=off", "GOSUMDB=off", "GOTOOLCHAIN=local", "GOWORK=off")
 	if output, err := build.CombinedOutput(); err != nil {
@@ -205,13 +205,13 @@ func TestMiscDevelopmentVersionAndDoctor(t *testing.T) {
 		status              install.Status
 	}{
 		{"development", binary, "dev", install.StatusWarn},
-		{"injected release", gthokBinary, "e2e-version", install.StatusOK},
+		{"injected release", gtokBinary, "e2e-version", install.StatusOK},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s := newSandbox(t)
 			result := s.run(tc.path, nil, "version")
 			result.code(t, 0)
-			if !bytes.HasPrefix(result.stdout, []byte("gthok "+tc.version+"\n")) {
+			if !bytes.HasPrefix(result.stdout, []byte("gtok "+tc.version+"\n")) {
 				t.Fatalf("version=%s", result.stdout)
 			}
 			setBytes(s.env, "FAKEGIT_STDOUT_B64", []byte("git version 2.102.0 (fake)\n"))
@@ -220,16 +220,16 @@ func TestMiscDevelopmentVersionAndDoctor(t *testing.T) {
 			var checks []install.Check
 			decodeJSON(t, result.stdout, &checks)
 			for _, check := range checks {
-				if check.Name != "gthok" {
+				if check.Name != "gtok" {
 					continue
 				}
 				warning := strings.Contains(check.Detail, "development build: version unknown; features may differ from the docs")
 				if check.Status != tc.status || !strings.Contains(check.Detail, "(version "+tc.version+")") || warning != (tc.version == "dev") {
-					t.Fatalf("gthok check=%+v", check)
+					t.Fatalf("gtok check=%+v", check)
 				}
 				return
 			}
-			t.Fatal("doctor omitted gthok check")
+			t.Fatal("doctor omitted gtok check")
 		})
 	}
 }

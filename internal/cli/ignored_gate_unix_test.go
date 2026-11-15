@@ -7,12 +7,12 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestIgnoredGateDecisions(t *testing.T) {
@@ -29,7 +29,7 @@ func TestIgnoredGateDecisions(t *testing.T) {
 			if !blocked {
 				continue
 			}
-			if len(evaluation.Denials) != 1 || evaluation.Denials[0].ID != "gate" || string(evaluation.Denials[0].Kind) != "config" || !strings.Contains(evaluation.DenyReasons[0], "run 'gthok config trust'") {
+			if len(evaluation.Denials) != 1 || evaluation.Denials[0].ID != "gate" || string(evaluation.Denials[0].Kind) != "config" || !strings.Contains(evaluation.DenyReasons[0], "run 'gtok config trust'") {
 				t.Fatalf("gate provenance=%+v", evaluation)
 			}
 			if mode == config.ModeObserve {
@@ -54,7 +54,7 @@ func TestIgnoredGateDecisions(t *testing.T) {
 }
 
 func TestIgnoredHookWarningReasonsAndDigestThrottle(t *testing.T) {
-	c := &config.Config{IgnoredProject: &config.IgnoredProject{Path: "/project/.gthok.yaml", Digest: "one"}, IgnoredHooks: []config.IgnoredHook{
+	c := &config.Config{IgnoredProject: &config.IgnoredProject{Path: "/project/.gtok.yaml", Digest: "one"}, IgnoredHooks: []config.IgnoredHook{
 		{Hook: config.Hook{ID: "gate"}, Reason: "changed since trust", GateBlocked: true},
 		{Hook: config.Hook{ID: "sibling"}, Reason: "untrusted"},
 	}}

@@ -7,7 +7,7 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // globMatch extends Unix filepath.Match with ** as a whole path component.

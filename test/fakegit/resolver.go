@@ -6,8 +6,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/gitmeta"
 )
 
 // Only tagged, fixed local queries can be separated from request executions.
@@ -18,7 +18,7 @@ func resolverQuery(args []string, env []string) bool {
 		key, value, _ := strings.Cut(entry, "=")
 		values[key] = value
 	}
-	if values["GTHOK_RESOLVER_QUERY"] != "1" || values["GTHOK_DELEGATE_ID"] != "" {
+	if values["GTOK_RESOLVER_QUERY"] != "1" || values["GTOK_DELEGATE_ID"] != "" {
 		return false
 	}
 	g, err := gitargs.Parse(args)

@@ -6,9 +6,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestEnvironmentApplyAndAtomicFailure(t *testing.T) {

@@ -8,7 +8,7 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 	"go.yaml.in/yaml/v3"
 )
 
@@ -93,7 +93,7 @@ func TestChangedGateEnforceAndObserve(t *testing.T) {
 				result := s.git(nil, args...)
 				if mode == config.ModeEnforce {
 					result.code(t, 78)
-					for _, want := range []string{"denied by config first", "hook first is not trusted (changed since trust); run 'gthok config trust'"} {
+					for _, want := range []string{"denied by config first", "hook first is not trusted (changed since trust); run 'gtok config trust'"} {
 						if !bytes.Contains(result.stderr, []byte(want)) {
 							t.Fatalf("missing gate denial %q: %s", want, result.stderr)
 						}

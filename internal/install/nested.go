@@ -48,8 +48,8 @@ func NewNestedToken(dir string) (token string, cleanup func(), err error) {
 // ValidNestedToken recognizes a live invocation's helper bypass, not a security
 // boundary: the invoking user can create or read these files.
 func ValidNestedToken(dir string, env map[string]string) bool {
-	token := env["GTHOK_NESTED_TOKEN"]
-	if dir == "" || env["GTHOK_NESTED"] != "1" || len(token) != 64 {
+	token := env["GTOK_NESTED_TOKEN"]
+	if dir == "" || env["GTOK_NESTED"] != "1" || len(token) != 64 {
 		return false
 	}
 	for _, c := range token {

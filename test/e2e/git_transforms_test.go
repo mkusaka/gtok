@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func realGitSandbox(t *testing.T) (*sandbox, string) {
@@ -23,7 +23,7 @@ func realGitSandbox(t *testing.T) (*sandbox, string) {
 		t.Fatal(err)
 	}
 	s := newSandbox(t)
-	s.env["GTHOK_REAL_GIT"] = real
+	s.env["GTOK_REAL_GIT"] = real
 	s.env["PATH"] = s.bin + ":" + filepath.Dir(real) + ":/usr/bin:/bin"
 	for _, role := range []string{"AUTHOR", "COMMITTER"} {
 		s.env["GIT_"+role+"_NAME"], s.env["GIT_"+role+"_EMAIL"] = "Fixture", "fixture@example.test"
@@ -61,7 +61,7 @@ func TestRealGitMessageTransformRoundTrip(t *testing.T) {
 			if strings.TrimSpace(string(got.stdout)) != message {
 				t.Fatalf("message: %q", got.stdout)
 			}
-			files, err := filepath.Glob(filepath.Join(s.env["TMPDIR"], "gthok-transform-*"))
+			files, err := filepath.Glob(filepath.Join(s.env["TMPDIR"], "gtok-transform-*"))
 			if err != nil || len(files) != 0 {
 				t.Fatal("temporary files remain", files, err)
 			}
@@ -121,7 +121,7 @@ func TestRealGitTransformRollbackRemovesTemporaryFiles(t *testing.T) {
 	if strings.TrimSpace(string(got.stdout)) != "original" {
 		t.Fatalf("partial chain ran: %s", got.stdout)
 	}
-	files, err := filepath.Glob(filepath.Join(s.env["TMPDIR"], "gthok-transform-*"))
+	files, err := filepath.Glob(filepath.Join(s.env["TMPDIR"], "gtok-transform-*"))
 	if err != nil || len(files) != 0 {
 		t.Fatal("rollback leaked temporary files", files, err)
 	}

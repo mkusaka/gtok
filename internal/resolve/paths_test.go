@@ -7,8 +7,8 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 func pathFixture(t *testing.T) *fixture {

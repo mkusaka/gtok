@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func gitPolicyRule(id, action, reason string) config.Rule {
@@ -19,7 +19,7 @@ func gitPolicyRule(id, action, reason string) config.Rule {
 func checkGitPolicyDeny(t *testing.T, out outcome, reason string) {
 	t.Helper()
 	out.code(t, 77)
-	if len(out.stdout) != 0 || !bytes.HasPrefix(out.stderr, []byte("gthok:")) || !bytes.Contains(out.stderr, []byte(reason)) {
+	if len(out.stdout) != 0 || !bytes.HasPrefix(out.stderr, []byte("gtok:")) || !bytes.Contains(out.stderr, []byte(reason)) {
 		t.Fatalf("deny contract: stdout=%q stderr=%q", out.stdout, out.stderr)
 	}
 }

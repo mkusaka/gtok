@@ -12,15 +12,15 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/logging"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/resolve"
-	"github.com/mkusaka/gthok/internal/transforms"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/logging"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/resolve"
+	"github.com/mkusaka/gtok/internal/transforms"
 )
 
 type transformedRequest struct {

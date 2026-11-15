@@ -1,7 +1,7 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gthok/main/schema/project.schema.json
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gtok/main/schema/project.schema.json
 # Shared repository policy. It can tighten, but never weaken, user policy.
 # runtime/logging and trust.repositories/directories are user-only.
-# Project executables need `gthok config trust` unless covered by user path trust.
+# Project executables need `gtok config trust` unless covered by user path trust.
 # Trust hashes each executable's definition, command file, files and trust.include.
 # Changed pre gates deny matching requests in enforce mode until re-trusted.
 version: 1
@@ -24,8 +24,8 @@ hooks: {}
 # pre:
 #   - id: project-check-push
 #     match: {operation: "remote.push.*"}
-#     command: [./scripts/gthok/check-push]
-#     files: [scripts/gthok/lib.sh]
+#     command: [./scripts/gtok/check-push]
+#     files: [scripts/gtok/lib.sh]
 #     timeout: 10s
 #     onError: deny
 

@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/docs.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/docs.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "anyOf": [
     {

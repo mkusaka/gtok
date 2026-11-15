@@ -5,7 +5,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestSplitCmdline(t *testing.T) {

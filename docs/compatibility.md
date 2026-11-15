@@ -64,7 +64,7 @@ and arbitrary run child argv are recognized; custom terms remain conservative.
 
 ## Descriptors, capture and stdin
 
-Normal execution inherits descriptors; gthok does not emulate a PTY.
+Normal execution inherits descriptors; gtok does not emulate a PTY.
 Opt-in post-hook capture and delegated execution use pipes, changing color/TTY
 behavior. Captures are bounded and binary-safe base64. Git's original status
 and signals pass through after execution; post-hook errors cannot replace them.
@@ -87,13 +87,13 @@ for compatibility, but resolution is **local Git metadata only**, never network.
 Schemas cover config/project/local, hook input/response, transform response,
 normalize result, explain, hooks-test, doctor, actions, docs, version metadata
 and JSONL logs. Doctor currently serializes Go field names (`Name`, `Status`,
-`Detail`, `Fix`); the schema preserves that casing. `gthok version` prints text
-by default; `gthok version --json` emits the `version` schema's metadata object.
+`Detail`, `Fix`); the schema preserves that casing. `gtok version` prints text
+by default; `gtok version --json` emits the `version` schema's metadata object.
 The docs schema accepts either a section-tree array or search-result array.
 
 ## Documentation versions
 
 The binary embeds README, public Markdown and the agent skill; search is offline.
-Release source URLs point to `https://github.com/mkusaka/gthok/blob/vX.Y.Z/...`.
+Release source URLs point to `https://github.com/mkusaka/gtok/blob/vX.Y.Z/...`.
 Unreleased/development version strings use main rather than inventing a tag.
-Do not assume current online main docs match an older binary; use `gthok docs`.
+Do not assume current online main docs match an older binary; use `gtok docs`.

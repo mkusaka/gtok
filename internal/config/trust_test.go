@@ -17,9 +17,9 @@ func TestTrustStorePersistence(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
-	project := filepath.Join(repo, ".gthok.yaml")
+	project := filepath.Join(repo, ".gtok.yaml")
 	body := "version: 1\nhooks: {pre: [{id: active, command: [./check]}, {id: disabled, command: [./check], enabled: false}]}\n"
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 	writeFixture(t, project, body)
@@ -28,11 +28,11 @@ func TestTrustStorePersistence(t *testing.T) {
 		t.Fatal(err)
 	}
 	before := time.Now().UTC()
-	canonical, hooks, _, _, err := TrustProject(".gthok.yaml", alias, env, false, false)
+	canonical, hooks, _, _, err := TrustProject(".gtok.yaml", alias, env, false, false)
 	if err != nil || canonical != project || len(hooks) != 1 || hooks[0].ID != "active" || hooks[0].Command[0] != filepath.Join(repo, "check") {
 		t.Fatalf("trust via repository symlink: %s, %+v, %v", canonical, hooks, err)
 	}
-	storePath := filepath.Join(env["GTHOK_CONFIG_DIR"], "trust.json")
+	storePath := filepath.Join(env["GTOK_CONFIG_DIR"], "trust.json")
 	data, err := os.ReadFile(storePath)
 	if err != nil {
 		t.Fatal(err)
@@ -51,7 +51,7 @@ func TestTrustStorePersistence(t *testing.T) {
 		}
 		entry = grant
 	}
-	if entry.ManifestVersion != 2 || entry.FirstPath != project || entry.ConfigPath != ".gthok.yaml" || len(entry.Files) != 1 || !entry.Files[0].Missing || entry.Files[0].Path != "check" || !reflect.DeepEqual(entry.Files[0].HookIDs, []string{"active", "disabled"}) || entry.TrustedAt.Before(before) || entry.TrustedAt.After(time.Now().UTC()) {
+	if entry.ManifestVersion != 2 || entry.FirstPath != project || entry.ConfigPath != ".gtok.yaml" || len(entry.Files) != 1 || !entry.Files[0].Missing || entry.Files[0].Path != "check" || !reflect.DeepEqual(entry.Files[0].HookIDs, []string{"active", "disabled"}) || entry.TrustedAt.Before(before) || entry.TrustedAt.After(time.Now().UTC()) {
 		t.Fatalf("persisted checkout trust: %+v", store)
 	}
 	for _, id := range []string{"active", "disabled"} {
@@ -59,7 +59,7 @@ func TestTrustStorePersistence(t *testing.T) {
 			t.Fatalf("missing per-hook digest or definition for %s: %+v", id, entry)
 		}
 	}
-	for path, want := range map[string]os.FileMode{env["GTHOK_CONFIG_DIR"]: 0o700, storePath: 0o600} {
+	for path, want := range map[string]os.FileMode{env["GTOK_CONFIG_DIR"]: 0o700, storePath: 0o600} {
 		info, err := os.Stat(path)
 		if err != nil || info.Mode().Perm() != want {
 			t.Fatalf("permissions %s: %v, %v", path, info, err)
@@ -68,7 +68,7 @@ func TestTrustStorePersistence(t *testing.T) {
 	// Trusting and untrusting another repository must preserve this grant.
 	other := filepath.Join(root, "other")
 	writeFixture(t, filepath.Join(other, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(other, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: other, command: [./other]}]}\n")
+	writeFixture(t, filepath.Join(other, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: other, command: [./other]}]}\n")
 	if _, _, _, _, err := TrustProject("", other, env, false, false); err != nil {
 		t.Fatal(err)
 	}
@@ -92,12 +92,12 @@ func TestTrustStorePersistence(t *testing.T) {
 
 func TestContentTrustAcrossWorktrees(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	body := "version: 1\npolicy: {mode: enforce, rules: [{id: deny, decision: deny}]}\nhooks: {pre: [{id: local, command: [./scripts/check]}]}\n"
 	first, second := filepath.Join(root, "first"), filepath.Join(root, "second")
 	for _, repo := range []string{first, second} {
 		writeFixture(t, filepath.Join(repo, ".git"), "gitdir: ../shared/worktrees/example\n")
-		writeFixture(t, filepath.Join(repo, ".gthok.yaml"), body)
+		writeFixture(t, filepath.Join(repo, ".gtok.yaml"), body)
 		writeFixture(t, filepath.Join(repo, "scripts", "check"), "#!/bin/sh\nexit 0\n")
 	}
 	if _, _, _, _, err := TrustProject("", first, env, false, false); err != nil {
@@ -121,15 +121,15 @@ func TestContentTrustAcrossWorktrees(t *testing.T) {
 
 func TestCorruptTrustStore(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\npolicy: {mode: enforce, rules: [{id: deny, decision: deny}]}\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
-	storePath := filepath.Join(env["GTHOK_CONFIG_DIR"], "trust.json")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\npolicy: {mode: enforce, rules: [{id: deny, decision: deny}]}\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
+	storePath := filepath.Join(env["GTOK_CONFIG_DIR"], "trust.json")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
 	}
-	for _, data := range []string{"{", "null", "[]", `{"/repo/.gthok.yaml":{}}`, `{"/repo/.gthok.yaml":{"sha256":"` + strings.Repeat("a", 64) + `","trustedAt":"2026-10-15T00:00:00Z"}}`} {
+	for _, data := range []string{"{", "null", "[]", `{"/repo/.gtok.yaml":{}}`, `{"/repo/.gtok.yaml":{"sha256":"` + strings.Repeat("a", 64) + `","trustedAt":"2026-10-15T00:00:00Z"}}`} {
 		writeFixture(t, storePath, data)
 		c, notes, err := LoadEffective("", repo, env)
 		if err != nil || len(c.Hooks) != 0 || len(c.IgnoredHooks) != 1 || c.Policy.Mode != ModeEnforce || len(c.Policy.Rules) != 1 || !strings.Contains(strings.Join(notes, "\n"), "Trust store:") {
@@ -147,10 +147,10 @@ func TestCorruptTrustStore(t *testing.T) {
 
 func TestTrustStoreIsolatesMalformedEntries(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: project, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
 	}
@@ -192,7 +192,7 @@ func TestTrustStoreIsolatesMalformedEntries(t *testing.T) {
 func FuzzTrustStore(f *testing.F) {
 	f.Add([]byte(`{}`))
 	f.Add([]byte(`null`))
-	f.Add([]byte(`{"/repo/.gthok.yaml":{"sha256":"bad","trustedAt":"2026-10-15T00:00:00Z"}}`))
+	f.Add([]byte(`{"/repo/.gtok.yaml":{"sha256":"bad","trustedAt":"2026-10-15T00:00:00Z"}}`))
 	f.Fuzz(func(t *testing.T, data []byte) {
 		store, _, err := parseTrustStore(data)
 		if err != nil {
@@ -214,10 +214,10 @@ func TestTrustExecutableSelection(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	project := filepath.Join(repo, ".gthok.yaml")
+	project := filepath.Join(repo, ".gtok.yaml")
 	external := filepath.Join(root, "external")
 	writeFixture(t, external, "external code")
 	body := "version: 1\nhooks:\n  pre:\n  - {id: absolute, command: [" + external + "]}\n  - {id: missing, command: [./scripts/missing]}\n"
@@ -244,7 +244,7 @@ func TestTrustRejectsEscapingExecutables(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			root := t.TempDir()
 			repo := filepath.Join(root, "repo")
-			env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+			env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 			writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 			command := "./../outside"
 			if kind != "parent" {
@@ -260,7 +260,7 @@ func TestTrustRejectsEscapingExecutables(t *testing.T) {
 					command += "/missing"
 				}
 			}
-			writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: escape, command: ["+command+"]}]}\n")
+			writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: escape, command: ["+command+"]}]}\n")
 			if _, _, _, _, err := TrustProject("", repo, env, false, false); err == nil || !strings.Contains(err.Error(), "escapes repository root") {
 				t.Fatalf("escaped executable accepted: %v", err)
 			}
@@ -277,13 +277,13 @@ func TestProjectCommandAndIncludeRestrictions(t *testing.T) {
 		if _, err := Parse(body, ""); err != nil {
 			t.Fatalf("user hook %q rejected: %v", command, err)
 		}
-		if _, _, err := parseProject(body, "/repo/.gthok.yaml"); err == nil {
+		if _, _, err := parseProject(body, "/repo/.gtok.yaml"); err == nil {
 			t.Fatalf("project hook %q accepted", command)
 		}
 	}
 	for _, path := range []string{"/outside", "../outside", ""} {
 		body := []byte(fmt.Sprintf("version: 1\ntrust: {include: [%q]}\n", path))
-		if _, _, err := parseProject(body, "/repo/.gthok.yaml"); err == nil {
+		if _, _, err := parseProject(body, "/repo/.gtok.yaml"); err == nil {
 			t.Fatalf("nonlocal include %q accepted", path)
 		}
 	}
@@ -297,10 +297,10 @@ func TestTrustManifestIncludesAndExecutableBits(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	project := filepath.Join(repo, ".gthok.yaml")
+	project := filepath.Join(repo, ".gtok.yaml")
 	body := "version: 1\nhooks: {pre: [{id: h, command: [./hook]}]}\ntrust: {include: [data, optional, ./hook]}\n"
 	writeFixture(t, project, body)
 	writeFixture(t, filepath.Join(repo, "hook"), "#!/bin/sh\nexit 0\n")
@@ -317,7 +317,7 @@ func TestTrustManifestIncludesAndExecutableBits(t *testing.T) {
 		t.Fatalf("manifest must contain only deduplicated dependency files: %+v", entry)
 	}
 	for _, file := range entry.Files {
-		if file.Path == ".gthok.yaml" || !reflect.DeepEqual(file.HookIDs, []string{"h"}) {
+		if file.Path == ".gtok.yaml" || !reflect.DeepEqual(file.HookIDs, []string{"h"}) {
 			t.Fatalf("unexpected manifest file: %+v", file)
 		}
 	}
@@ -347,9 +347,9 @@ func TestTrustManifestLimits(t *testing.T) {
 		t.Run(kind, func(t *testing.T) {
 			root := t.TempDir()
 			repo := filepath.Join(root, "repo")
-			env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+			env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 			writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-			project := filepath.Join(repo, ".gthok.yaml")
+			project := filepath.Join(repo, ".gtok.yaml")
 			body := "version: 1\nhooks: {pre: [{id: h, command: [./hook]}]}\n"
 			want := "regular file"
 			switch kind {
@@ -414,10 +414,10 @@ func TestTrustManifestLimits(t *testing.T) {
 
 func TestPolicyOnlyProjectSkipsManifest(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\npolicy: {rules: [{id: deny, decision: deny}]}\ntrust: {include: [.git]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\npolicy: {rules: [{id: deny, decision: deny}]}\ntrust: {include: [.git]}\n")
 	writeFixture(t, trustStorePath(env), "invalid store")
 	c, notes, err := LoadEffective("", repo, env)
 	if err != nil || len(c.Policy.Rules) != 1 || strings.Contains(strings.Join(notes, "\n"), "Trust store:") {

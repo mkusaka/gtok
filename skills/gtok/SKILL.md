@@ -1,41 +1,41 @@
 ---
-name: gthok
-description: Inspect and use gthok, the semantic Git policy wrapper. Use when a Git command is blocked, when checking force-push/reset/ref-delete effects, or when configuring or testing gthok policy, hooks, transforms, delegates, and executable trust. Prefer its installed offline docs and actual normalization over guessing from command names.
+name: gtok
+description: Inspect and use gtok, the semantic Git policy wrapper. Use when a Git command is blocked, when checking force-push/reset/ref-delete effects, or when configuring or testing gtok policy, hooks, transforms, delegates, and executable trust. Prefer its installed offline docs and actual normalization over guessing from command names.
 ---
 
-# Use gthok safely
+# Use gtok safely
 
 Keep policy enforcement intact. Do not bypass a denial by using the real Git
 path, changing PATH/config/trust, or switching clients without the user's
-explicit authorization. gthok is a convenience guardrail, not an OS boundary;
+explicit authorization. gtok is a convenience guardrail, not an OS boundary;
 server-side branch protection remains authoritative across clients.
 
 ## Inspect before executing
 
 1. Read the installed version's docs rather than assuming main matches it:
    ```sh
-   gthok version
-   gthok docs search "force push lease"
-   gthok docs normalization
+   gtok version
+   gtok docs search "force push lease"
+   gtok docs normalization
    ```
    Search accepts one English query and returns at most five JSON hits with
-   section IDs and matching-release source URLs. Fetch a hit with `gthok docs <id>`.
+   section IDs and matching-release source URLs. Fetch a hit with `gtok docs <id>`.
 2. Find the action, default effect, example scopes and command routes:
    ```sh
-   gthok actions 'remote.push.*' --json
-   gthok actions 'ref.*' --json
+   gtok actions 'remote.push.*' --json
+   gtok actions 'ref.*' --json
    ```
    Catalogue scopes describe examples, not every possible option combination.
 3. Normalize the **actual** Git argv, without a leading git executable:
    ```sh
-   gthok normalize --no-resolve -- push --force-with-lease origin HEAD:refs/heads/main
-   gthok normalize -- reset --hard HEAD~1
+   gtok normalize --no-resolve -- push --force-with-lease origin HEAD:refs/heads/main
+   gtok normalize -- reset --hard HEAD~1
    ```
    --no-resolve launches no subprocess. Ordinary normalization resolves only
    local metadata, never advertised remote refs or network state.
 4. Explain policy/selection without running the requested Git command:
    ```sh
-   gthok explain --no-transforms --json -- push --force origin HEAD:refs/heads/main
+   gtok explain --no-transforms --json -- push --force origin HEAD:refs/heads/main
    ```
    Without --no-transforms, explain runs trusted transform programs for real.
    It never runs hooks, delegates or the requested command; exit 0 can still
@@ -57,11 +57,11 @@ and maybe-hook selection are conservative; transforms/delegates require a
 ## Test policy and trusted hooks
 
 ```sh
-gthok config validate
-gthok hooks list --json
-gthok hooks test --expect deny -- push --force origin HEAD:refs/heads/main
-gthok hooks test --expect-hooks abstain --expect-policy deny -- push --delete origin refs/heads/main
-gthok hooks test --print-input -- commit -m message
+gtok config validate
+gtok hooks list --json
+gtok hooks test --expect deny -- push --force origin HEAD:refs/heads/main
+gtok hooks test --expect-hooks abstain --expect-policy deny -- push --delete origin refs/heads/main
+gtok hooks test --print-input -- commit -m message
 ```
 
 Hooks test executes trusted transforms/hooks, but never the request/delegate.
@@ -78,14 +78,14 @@ transform docs rather than inventing a writable JSON pointer.
 ## Execute and diagnose
 
 ```sh
-gthok exec -- status --short
+gtok exec -- status --short
 # With the installed PATH shim, ordinary git uses the same pipeline.
-gthok doctor --json
-gthok schema normalize-result
-gthok docs security/project-configuration-trust
+gtok doctor --json
+gtok schema normalize-result
+gtok docs security/project-configuration-trust
 ```
 
-Git's --no-verify does not bypass gthok. Exit 77 is content denial; 78 is a
+Git's --no-verify does not bypass gtok. Exit 77 is content denial; 78 is a
 fail-closed config/gate/hook/transform/delegate error; 127 means Git missing,
 126 another start failure. Executed Git statuses/signals pass through unchanged;
 management usage errors are 2 and failures are 1.

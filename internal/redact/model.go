@@ -3,8 +3,8 @@ package redact
 import (
 	"encoding/base64"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 // Result deep-copies every mutable field and redacts all strings, not only the

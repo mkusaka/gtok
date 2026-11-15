@@ -10,8 +10,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestOfflineNormalizeDoesNotStartGitOrTransforms(t *testing.T) {
@@ -94,7 +94,7 @@ func TestEffectiveProjectPolicyAndFastPath(t *testing.T) {
 				t.Fatalf("init: %v\n%s", err, out)
 			}
 			deny := []byte("version: 1\npolicy: {mode: enforce, rules: [{id: effective, decision: deny}]}\n")
-			if err := os.WriteFile(filepath.Join(repo, ".gthok.yaml"), deny, 0600); err != nil {
+			if err := os.WriteFile(filepath.Join(repo, ".gtok.yaml"), deny, 0600); err != nil {
 				t.Fatal(err)
 			}
 			var args []string
@@ -113,19 +113,19 @@ func TestEffectiveProjectPolicyAndFastPath(t *testing.T) {
 			}
 			s.git(nil, args...).code(t, 77)
 			s.absentRecord()
-			logPath := filepath.Join(filepath.Dir(s.cfg), "logs", "gthok.jsonl")
+			logPath := filepath.Join(filepath.Dir(s.cfg), "logs", "gtok.jsonl")
 			beforeLog, err := os.ReadFile(logPath)
 			if err != nil {
 				t.Fatal(err)
 			}
-			if err := os.Remove(filepath.Join(repo, ".gthok.yaml")); err != nil {
+			if err := os.Remove(filepath.Join(repo, ".gtok.yaml")); err != nil {
 				t.Fatal(err)
 			}
 			// A config in the caller's repository must not apply to another repository.
 			if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 				t.Fatal(err)
 			}
-			if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.yaml"), deny, 0600); err != nil {
+			if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.yaml"), deny, 0600); err != nil {
 				t.Fatal(err)
 			}
 			beforeRecords := len(s.allRecords())

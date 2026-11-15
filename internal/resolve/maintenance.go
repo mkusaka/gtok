@@ -4,8 +4,8 @@ import (
 	"context"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 // Selection only: --auto eligibility still depends on repository state.

@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 type fixture struct {

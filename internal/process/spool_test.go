@@ -11,7 +11,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func spoolTestPipe(t *testing.T) (*os.File, *os.File) {

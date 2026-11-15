@@ -8,8 +8,8 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 func managementConfigTrustStore(all bool) int {
@@ -173,6 +173,6 @@ func managementTrustTip(project, cwd string, env map[string]string, r *redact.Re
 		parent = "'" + strings.ReplaceAll(parent, "'", "'\\''") + "'"
 	}
 	parent = prefix + parent
-	_, _ = fmt.Fprintln(os.Stdout, "Tip: trust this repository permanently: gthok config trust repo .")
-	_, _ = fmt.Fprintln(os.Stdout, terminalText(r.String("     or every repository under its parent: gthok config trust dir "+parent)))
+	_, _ = fmt.Fprintln(os.Stdout, "Tip: trust this repository permanently: gtok config trust repo .")
+	_, _ = fmt.Fprintln(os.Stdout, terminalText(r.String("     or every repository under its parent: gtok config trust dir "+parent)))
 }

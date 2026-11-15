@@ -11,11 +11,11 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// FuzzLayeredConfig checks the invariants of user → .gthok.yaml → .gthok.local.yaml
+// FuzzLayeredConfig checks the invariants of user → .gtok.yaml → .gtok.local.yaml
 // layering for arbitrary YAML: overlays only tighten policy, never set trust,
 // runtime or logging, project hooks stay inactive without user trust, invalid
-// config fails closed when declared enforce or GTHOK_FAIL_CLOSED=1, and every
-// file gthok writes under the config dir is private.
+// config fails closed when declared enforce or GTOK_FAIL_CLOSED=1, and every
+// file gtok writes under the config dir is private.
 func FuzzLayeredConfig(f *testing.F) {
 	hook := "hooks:\n  pre:\n  - {id: p, command: [./check]}\n"
 	for _, s := range [][3]string{
@@ -63,8 +63,8 @@ func checkLayeredConfig(t *testing.T, user, project, local string) (base, eff *C
 		t.Fatal(err)
 	}
 	repo := filepath.Join(root, "repo")
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
-	userPath, projectPath, localPath := DefaultPath(env), filepath.Join(repo, ".gthok.yaml"), filepath.Join(repo, LocalName)
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
+	userPath, projectPath, localPath := DefaultPath(env), filepath.Join(repo, ".gtok.yaml"), filepath.Join(repo, LocalName)
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 	if user == "" {
 		if _, err := Init(ScopeUser, repo, env); err != nil {
@@ -89,8 +89,8 @@ func checkLayeredConfig(t *testing.T, user, project, local string) (base, eff *C
 		if m := lenient(user); m != nil && dig(m, "policy", "mode") == ModeEnforce && !FailClosed(err, env) {
 			t.Fatalf("invalid enforce user config fails open: %v", err)
 		}
-		if !FailClosed(err, map[string]string{"GTHOK_FAIL_CLOSED": "1"}) {
-			t.Fatalf("GTHOK_FAIL_CLOSED=1 fails open: %v", err)
+		if !FailClosed(err, map[string]string{"GTOK_FAIL_CLOSED": "1"}) {
+			t.Fatalf("GTOK_FAIL_CLOSED=1 fails open: %v", err)
 		}
 		return nil, nil
 	}
@@ -148,10 +148,10 @@ func checkLayeredConfig(t *testing.T, user, project, local string) (base, eff *C
 		!strings.Contains(diagnostics, "local config ignored") {
 		t.Fatalf("local setting user-only keys was not ignored: %v", eff.Diagnostics)
 	}
-	strict := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": env["GTHOK_CONFIG_DIR"], "GTHOK_FAIL_CLOSED": "1"}
+	strict := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": env["GTOK_CONFIG_DIR"], "GTOK_FAIL_CLOSED": "1"}
 	if strings.Contains(diagnostics, "ignored:") {
 		if _, _, err := LoadEffective("", repo, strict); err == nil {
-			t.Fatalf("GTHOK_FAIL_CLOSED=1 accepted an ignored overlay: %v", eff.Diagnostics)
+			t.Fatalf("GTOK_FAIL_CLOSED=1 accepted an ignored overlay: %v", eff.Diagnostics)
 		}
 	}
 
@@ -161,7 +161,7 @@ func checkLayeredConfig(t *testing.T, user, project, local string) (base, eff *C
 			t.Fatal(err)
 		}
 	}
-	err = filepath.WalkDir(env["GTHOK_CONFIG_DIR"], func(path string, d fs.DirEntry, err error) error {
+	err = filepath.WalkDir(env["GTOK_CONFIG_DIR"], func(path string, d fs.DirEntry, err error) error {
 		if err != nil {
 			return err
 		}

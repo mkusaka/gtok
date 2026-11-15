@@ -11,8 +11,8 @@ import (
 
 func fixture(readme string) fstest.MapFS {
 	return fstest.MapFS{
-		"README.md":             {Data: []byte(readme)},
-		"skills/gthok/SKILL.md": {Data: []byte("---\nname: gthok\n---\n# Agent skill\nUse gthok.\n")},
+		"README.md":            {Data: []byte(readme)},
+		"skills/gtok/SKILL.md": {Data: []byte("---\nname: gtok\n---\n# Agent skill\nUse gtok.\n")},
 	}
 }
 
@@ -37,7 +37,7 @@ func TestSectionsAndExactMarkdown(t *testing.T) {
 		{"readme/child", "Child!", child, 1},
 		{"readme/nested-item", "Nested `item`", "### Nested `item`\r\nNested body.\r\n", 2},
 		{"readme/last", "Last", "## Last\r\nNo final newline", 1},
-		{"skill", "Agent skill", "# Agent skill\nUse gthok.\n", 0},
+		{"skill", "Agent skill", "# Agent skill\nUse gtok.\n", 0},
 	}
 	if len(index.Sections) != len(want) {
 		t.Fatalf("sections: %+v", index.Sections)
@@ -101,7 +101,7 @@ func TestFileOrderAndAllBytes(t *testing.T) {
 	files["docs/notes/private.md"] = &fstest.MapFile{Data: []byte("# Private\nNever public\n")}
 	files["other.md"] = &fstest.MapFile{Data: []byte("# Other\n")}
 	index := loadFixture(t, files)
-	wantFiles := []string{"README.md", "docs/a.md", "docs/z.md", "skills/gthok/SKILL.md"}
+	wantFiles := []string{"README.md", "docs/a.md", "docs/z.md", "skills/gtok/SKILL.md"}
 	var want strings.Builder
 	for n, file := range wantFiles {
 		if index.Sections[n].File != file {
@@ -124,7 +124,7 @@ func TestInvalidDocumentsFailLoad(t *testing.T) {
 		files fstest.MapFS
 		want  string
 	}{
-		{"missing required file", fstest.MapFS{"README.md": {Data: []byte("# Readme\n")}}, "skills/gthok/SKILL.md"},
+		{"missing required file", fstest.MapFS{"README.md": {Data: []byte("# Readme\n")}}, "skills/gtok/SKILL.md"},
 		{"empty heading", fixture("# Root\n## \n"), "empty docs title"},
 		{"empty closing heading", fixture("# Root\n## ###\n"), "empty docs title"},
 		{"missing title", fixture("Only prose.\n"), "missing docs title"},

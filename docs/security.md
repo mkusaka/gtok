@@ -1,10 +1,10 @@
 # Security
 
-**gthok is not an OS security boundary.** It catches mistakes and enforces
+**gtok is not an OS security boundary.** It catches mistakes and enforces
 policy on requests that pass through its shim/exec entrypoint. A caller can use
 the real Git path, another client, a transport helper or a custom program.
 Use server-side protected refs and authorization for enforcement across clients.
-Git's `--no-verify` only affects Git-native hooks, not gthok.
+Git's `--no-verify` only affects Git-native hooks, not gtok.
 
 ## Trusted code and local-only resolution
 
@@ -24,7 +24,7 @@ starts no subprocess at all.
 
 Declarative project policy applies automatically but cannot weaken user policy.
 Cloning a repository does **not** activate its executable hooks/transforms/
-delegates. Review `gthok config trust --dry-run`, then explicitly trust.
+delegates. Review `gtok config trust --dry-run`, then explicitly trust.
 
 Trust is per executable definition and content digest. Repository-local
 executables, hook-specific `files`, and project `trust.include` dependencies
@@ -44,7 +44,7 @@ User-only `trust.repositories` trusts an exact repository and linked worktrees;
 `trust.directories` trusts a directory and descendants on path boundaries.
 **Any future code checked out there can run without a new content review.**
 Projects cannot trust themselves. User hooks do not require content trust.
-Personal `.gthok.local.yaml` is auto-trusted only while Git does not track it;
+Personal `.gtok.local.yaml` is auto-trusted only while Git does not track it;
 a tracked copy is ignored to prevent a clone activating arbitrary local code.
 
 Changed/inactive pre gates can fail closed (78) in enforce mode when prior or
@@ -82,14 +82,14 @@ to an audit service unless explicitly intended.
 
 Invalid user config with raw enforce mode fails closed; observe/undetermined
 mode normally runs without policy/hooks with a throttled warning.
-`GTHOK_FAIL_CLOSED=1` rejects invalid configuration, including project failures.
+`GTOK_FAIL_CLOSED=1` rejects invalid configuration, including project failures.
 Valid project/local overlays cannot disable user policy. Transforms with
 onError deny fail closed in either mode.
 
-Real Git discovery rejects gthok/owned shims, checks overrides, and uses depth
+Real Git discovery rejects gtok/owned shims, checks overrides, and uses depth
 and verified nested-call metadata to prevent accidental recursion. Nested
 trusted-helper behavior is not an authentication boundary against a user who
-controls the machine. Inspect `gthok doctor` after PATH/install changes.
+controls the machine. Inspect `gtok doctor` after PATH/install changes.
 
 Supported platforms and version limitations are in [compatibility](compatibility.md).
 Stable wrapper-origin statuses/prefixes are in [exit status](exit-status.md).

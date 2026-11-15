@@ -1,6 +1,6 @@
 package actions
 
-import "github.com/mkusaka/gthok/internal/model"
+import "github.com/mkusaka/gtok/internal/model"
 
 func init() {
 	for family, modes := range map[string][]string{

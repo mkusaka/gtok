@@ -9,10 +9,10 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize/actions"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
-	"github.com/mkusaka/gthok/internal/schema"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize/actions"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/schema"
 	"github.com/spf13/cobra"
 )
 

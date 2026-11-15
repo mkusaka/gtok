@@ -1,4 +1,4 @@
-// Package docsearch indexes the documentation shipped with gthok.
+// Package docsearch indexes the documentation shipped with gtok.
 package docsearch
 
 import (
@@ -41,7 +41,7 @@ func Load(fsys fs.FS) (*Index, error) {
 		return nil, err
 	}
 	files := append([]string{"README.md"}, docs...)
-	files = append(files, "skills/gthok/SKILL.md")
+	files = append(files, "skills/gtok/SKILL.md")
 	index := &Index{byID: make(map[string]int), frequency: make(map[string]int)}
 	var all strings.Builder
 	previousNewline := true

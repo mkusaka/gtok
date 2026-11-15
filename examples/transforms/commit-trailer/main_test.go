@@ -6,10 +6,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/transforms"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/transforms"
 )
 
 func TestCommitTrailerRoundTrip(t *testing.T) {

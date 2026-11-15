@@ -16,8 +16,8 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 // boundedOutput drains excess bytes so a noisy child cannot deadlock on a pipe.
@@ -55,7 +55,7 @@ func (r *Runner) environment(h config.Hook, in protocol.Input) []string {
 	for _, entry := range base {
 		if k, v, ok := strings.Cut(entry, "="); ok {
 			set(k, v)
-			if k == "GTHOK_NESTED_TOKEN" {
+			if k == "GTOK_NESTED_TOKEN" {
 				nestedToken = v
 			}
 		}
@@ -63,16 +63,16 @@ func (r *Runner) environment(h config.Hook, in protocol.Input) []string {
 	for k, v := range h.Env {
 		set(k, v)
 	}
-	set("GTHOK_EVENT", in.Event)
-	set("GTHOK_EVENT_ID", in.EventID)
+	set("GTOK_EVENT", in.Event)
+	set("GTOK_EVENT_ID", in.EventID)
 	if r.Source != "" {
-		set("GTHOK_EVENT_SOURCE", r.Source)
+		set("GTOK_EVENT_SOURCE", r.Source)
 	}
-	set("GTHOK_HOOK_ID", h.ID)
-	set("GTHOK_NESTED", "1")
-	set("GTHOK_NESTED_TOKEN", nestedToken)
+	set("GTOK_HOOK_ID", h.ID)
+	set("GTOK_NESTED", "1")
+	set("GTOK_NESTED_TOKEN", nestedToken)
 	if r.RealGit != "" {
-		set("GTHOK_REAL_GIT", r.RealGit)
+		set("GTOK_REAL_GIT", r.RealGit)
 	}
 	env := make([]string, 0, len(keys))
 	for _, k := range keys {

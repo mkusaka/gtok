@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/schema"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/schema"
 )
 
 func TestGitActionsGlob(t *testing.T) {

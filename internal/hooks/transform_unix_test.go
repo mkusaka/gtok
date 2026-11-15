@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestTransformRuntimeOutcomes(t *testing.T) {
@@ -45,14 +45,14 @@ func TestTransformEnvelopeEnvironmentAndRedaction(t *testing.T) {
 		t.Run(map[bool]string{false: "raw", true: "redacted"}[masked], func(t *testing.T) {
 			dir := t.TempDir()
 			payload, environment := filepath.Join(dir, "input"), filepath.Join(dir, "env")
-			path := script(t, `cat > "$PAYLOAD"; printf '%s\n' "$GTHOK_EVENT" "$GTHOK_HOOK_ID" "$GTHOK_NESTED" "$GTHOK_NESTED_TOKEN" "$CUSTOM" "$GTHOK_EVENT_SOURCE" > "$ENVIRONMENT"`)
+			path := script(t, `cat > "$PAYLOAD"; printf '%s\n' "$GTOK_EVENT" "$GTOK_HOOK_ID" "$GTOK_NESTED" "$GTOK_NESTED_TOKEN" "$CUSTOM" "$GTOK_EVENT_SOURCE" > "$ENVIRONMENT"`)
 			secret := "ghp_" + strings.Repeat("a", 36)
-			r := Runner{Env: append(hermetic(t), "GH_TOKEN="+secret, "GTHOK_NESTED_TOKEN=original"), Source: "test"}
+			r := Runner{Env: append(hermetic(t), "GH_TOKEN="+secret, "GTOK_NESTED_TOKEN=original"), Source: "test"}
 			in := input()
 			in.Invocation.Argv = []string{secret}
 			in.Previous = []protocol.HookResult{{HookID: "old"}}
 			in.Result = &protocol.ExecResult{}
-			_, result := r.Transform(context.Background(), config.Transform{ID: "edit", Command: []string{path}, RedactInput: masked, Env: map[string]string{"PAYLOAD": payload, "ENVIRONMENT": environment, "CUSTOM": "override", "GTHOK_NESTED_TOKEN": "forged"}}, in)
+			_, result := r.Transform(context.Background(), config.Transform{ID: "edit", Command: []string{path}, RedactInput: masked, Env: map[string]string{"PAYLOAD": payload, "ENVIRONMENT": environment, "CUSTOM": "override", "GTOK_NESTED_TOKEN": "forged"}}, in)
 			if result.Outcome != protocol.OutcomeOK {
 				t.Fatal(result)
 			}

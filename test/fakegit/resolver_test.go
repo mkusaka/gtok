@@ -8,7 +8,7 @@ import (
 )
 
 func TestResolverQueriesAreClosedAndTagged(t *testing.T) {
-	tag := []string{"GTHOK_RESOLVER_QUERY=1"}
+	tag := []string{"GTOK_RESOLVER_QUERY=1"}
 	for _, args := range [][]string{
 		{"rev-parse", "--git-dir", "--git-common-dir", "--is-bare-repository", "--is-inside-work-tree", "--show-prefix"},
 		{"rev-parse", "--show-toplevel"},
@@ -35,7 +35,7 @@ func TestResolverQueriesAreClosedAndTagged(t *testing.T) {
 		if resolverQuery(args, nil) {
 			t.Fatalf("identical original request hidden: %q", args)
 		}
-		if resolverQuery(args, append(append([]string(nil), tag...), "GTHOK_DELEGATE_ID=delegate")) {
+		if resolverQuery(args, append(append([]string(nil), tag...), "GTOK_DELEGATE_ID=delegate")) {
 			t.Fatalf("delegate execution hidden: %q", args)
 		}
 		globals := []string{"-C", "repo", "-c", "core.bare=false", "--config-env=remote.origin.url=URL", "--namespace=fixture"}

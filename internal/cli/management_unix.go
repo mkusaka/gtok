@@ -13,19 +13,19 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/normalize"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
-	"github.com/mkusaka/gthok/internal/schema"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/normalize"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
+	"github.com/mkusaka/gtok/internal/schema"
 	"github.com/spf13/cobra"
 )
 
-const managementLong = `Agents: start with gthok docs / gthok docs search "<query>" (English queries), and gthok actions for action names.
+const managementLong = `Agents: start with gtok docs / gtok docs search "<query>" (English queries), and gtok actions for action names.
 
-Manage gthok, a transparent Git wrapper that runs pre/post hooks and enforces
-operation policies. The shim ("git") and "gthok exec -- <git args>" use the
+Manage gtok, a transparent Git wrapper that runs pre/post hooks and enforces
+operation policies. The shim ("git") and "gtok exec -- <git args>" use the
 same pipeline; only trusted transforms may rewrite the executed request.
 
 Resolution uses local Git metadata only; --no-resolve disables it.
@@ -56,10 +56,10 @@ func Management(args []string, version, commit string) int {
 }
 
 func managementRoot(code *int, version, commit string) *cobra.Command {
-	root := managementGroup("gthok", "Manage the gthok git wrapper: shim, config, hooks, diagnostics", code)
-	root.Run = func(cmd *cobra.Command, _ []string) { _ = cmd.Help() } // bare "gthok": help, exit 0
+	root := managementGroup("gtok", "Manage the gtok git wrapper: shim, config, hooks, diagnostics", code)
+	root.Run = func(cmd *cobra.Command, _ []string) { _ = cmd.Help() } // bare "gtok": help, exit 0
 	// Parents are runnable only to validate arguments; don't advertise them
-	// as "gthok config [flags]" usage lines.
+	// as "gtok config [flags]" usage lines.
 	root.SetUsageTemplate(strings.Replace(root.UsageTemplate(), "{{if .Runnable}}", "{{if and .Runnable (not .HasAvailableSubCommands)}}", 1))
 	root.Long = managementLong
 	root.SilenceErrors = true
@@ -87,13 +87,13 @@ Exit status and signals match the shim: content denial 77, hook/config error den
 78, internal error 1, missing real git 127; otherwise git's original status/signal.`
 	root.AddCommand(execCmd)
 
-	shim := managementGroup("shim", "Install or remove the git shim (git -> gthok)", code)
+	shim := managementGroup("shim", "Install or remove the git shim (git -> gtok)", code)
 	defaultBin := filepath.Join(environment()["HOME"], ".local", "bin")
 	for _, name := range []string{"install", "uninstall"} {
 		bin := defaultBin
-		short := "Create the git shim that routes git through gthok (shell rc files are not modified)"
+		short := "Create the git shim that routes git through gtok (shell rc files are not modified)"
 		if name == "uninstall" {
-			short = "Remove the git shim created by gthok (other files are never touched)"
+			short = "Remove the git shim created by gtok (other files are never touched)"
 		}
 		cmd := managementCommand(name, short, code, func(cmd *cobra.Command, _ []string) int {
 			return managementShim(cmd.Name(), bin)
@@ -175,7 +175,7 @@ otherwise exit 1 with the failed expectation named.
 Without expectations, exit 1 on FINAL deny or hook execution error (nonzero exit,
 spawn failure, timeout, invalid response, cancellation), otherwise 0.
 Configuration/analysis failures exit 1; usage errors exit 2.`
-	test.Example = "  gthok hooks test -- push origin main --force\n  gthok hooks test --no-resolve -- push origin main\n  gthok hooks test --phase post --exit-code 1 -- push origin main"
+	test.Example = "  gtok hooks test -- push origin main --force\n  gtok hooks test --no-resolve -- push origin main\n  gtok hooks test --phase post --exit-code 1 -- push origin main"
 	test.Args = managementInvocationArgs
 	test.Flags().BoolVar(&testJSON, "json", false, "print JSON")
 	test.Flags().BoolVar(&testOptions.printInput, "print-input", false, "print one hook input JSON envelope without executing hooks or git")
@@ -191,7 +191,7 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 
 	for _, name := range []string{"normalize", "explain"} {
 		var options managementInspectOptions
-		short := "Print how gthok classifies a git command (redacted JSON)"
+		short := "Print how gtok classifies a git command (redacted JSON)"
 		if name == "explain" {
 			short = "Explain classification, policy decision and matching hooks for a git command"
 		}
@@ -199,7 +199,7 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 			return managementInspect(cmd.Name(), args, options)
 		})
 		cmd.Long = short + ".\nLocal context is resolved by default without network access. Use --no-resolve\nto skip local resolution and Git version probing."
-		cmd.Example = "  gthok " + name + " -- push origin main --force-with-lease\n  gthok " + name + " --no-resolve -- reset --hard HEAD~1\n  gthok " + name + " -- tag -d v1\n  gthok " + name + " -- config --get remote.origin.url"
+		cmd.Example = "  gtok " + name + " -- push origin main --force-with-lease\n  gtok " + name + " --no-resolve -- reset --hard HEAD~1\n  gtok " + name + " -- tag -d v1\n  gtok " + name + " -- config --get remote.origin.url"
 		cmd.Args = managementInvocationArgs
 		managementResolutionFlags(cmd, &options)
 		if name == "normalize" {
@@ -213,19 +213,19 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 		root.AddCommand(cmd)
 	}
 
-	shellInit := managementGroup("shell-init", "Print a git shell function that runs git through gthok exec (for eval in a shell rc file)", code)
+	shellInit := managementGroup("shell-init", "Print a git shell function that runs git through gtok exec (for eval in a shell rc file)", code)
 	for _, name := range []string{"zsh", "bash", "fish"} {
 		shellInit.AddCommand(managementCommand(name, "Print the "+name+" git function", code, func(cmd *cobra.Command, _ []string) int {
-			fn := `function git { gthok exec -- "$@"; }`
+			fn := `function git { gtok exec -- "$@"; }`
 			if cmd.Name() == "fish" {
-				fn = "function git; gthok exec -- $argv; end"
+				fn = "function git; gtok exec -- $argv; end"
 			}
 			_, _ = fmt.Fprintln(os.Stdout, shellInitCaveat+fn)
 			return 0
 		}))
 	}
 
-	configCommands := managementGroup("config", "Create, validate and locate gthok configuration", code)
+	configCommands := managementGroup("config", "Create, validate and locate gtok configuration", code)
 	var file string
 	validate := managementCommand("validate", "Validate the effective configuration (all errors at once)", code, func(_ *cobra.Command, _ []string) int {
 		return managementConfig("validate", file)
@@ -252,10 +252,10 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 	initCmd := managementCommand("init", "Create a commented config file with a JSON Schema reference", code, func(_ *cobra.Command, _ []string) int {
 		return managementConfigInit(scope)
 	})
-	initCmd.Example = "  gthok config init                # <repo root>/.gthok.yaml\n  gthok config init --scope local  # <repo root>/.gthok.local.yaml (personal, git-excluded)\n  gthok config init --scope user   # the global config.yaml"
-	initCmd.Flags().StringVar(&scope, "scope", config.ScopeProject, "project: <repo root>/.gthok.yaml; local: <repo root>/.gthok.local.yaml; user: the global config.yaml")
+	initCmd.Example = "  gtok config init                # <repo root>/.gtok.yaml\n  gtok config init --scope local  # <repo root>/.gtok.local.yaml (personal, git-excluded)\n  gtok config init --scope user   # the global config.yaml"
+	initCmd.Flags().StringVar(&scope, "scope", config.ScopeProject, "project: <repo root>/.gtok.yaml; local: <repo root>/.gtok.local.yaml; user: the global config.yaml")
 	for _, name := range []string{"trust", "untrust"} {
-		cmd := managementCommand(name+" [PATH]", "Manage trust for project hooks in the current .gthok.yaml or PATH", code, func(cmd *cobra.Command, args []string) int {
+		cmd := managementCommand(name+" [PATH]", "Manage trust for project hooks in the current .gtok.yaml or PATH", code, func(cmd *cobra.Command, args []string) int {
 			path := ""
 			if len(args) != 0 {
 				path = args[0]
@@ -271,7 +271,7 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 			hookIDs, _ := cmd.Flags().GetStringArray("hook")
 			return managementConfigTrust(cmd.Name(), path, dryRun, noDiff, showSecrets, hookIDs)
 		})
-		cmd.Long = "Manage per-hook trust for the repository-root .gthok.yaml (PATH defaults to that file).\nUse repo or dir to manage permanent trust in an existing, valid user config."
+		cmd.Long = "Manage per-hook trust for the repository-root .gtok.yaml (PATH defaults to that file).\nUse repo or dir to manage permanent trust in an existing, valid user config."
 		flag := "list"
 		flagHelp := "list per-hook records and user trust.repositories/directories; mark the entry matching here"
 		if name == "untrust" {
@@ -321,7 +321,7 @@ Configuration/analysis failures exit 1; usage errors exit 2.`
 				return managementConfigPathTrust(sub.Name(), path, sub.Parent().Name() == "untrust", dryRun)
 			})
 			sub.Args = args
-			sub.Long = short + ".\nRequires an existing, valid user config; run `gthok config init --scope user` first.\nRepository paths resolve to the main worktree root; directory paths must exist.\nEdits preserve comments, file mode and config symlinks; --dry-run prints the diff without writing."
+			sub.Long = short + ".\nRequires an existing, valid user config; run `gtok config init --scope user` first.\nRepository paths resolve to the main worktree root; directory paths must exist.\nEdits preserve comments, file mode and config symlinks; --dry-run prints the diff without writing."
 			sub.Flags().Bool("dry-run", false, "print the user config diff without writing")
 			cmd.AddCommand(sub)
 		}
@@ -396,8 +396,8 @@ func managementGroup(use, short string, code *int) *cobra.Command {
 }
 
 // shellInitCaveat is printed so it stays next to the function in rc files.
-const shellInitCaveat = `# gthok: git typed in this shell runs through 'gthok exec'. git started by scripts,
-# programs or agents that skip shell rc files is not covered; 'gthok shim install' is.
+const shellInitCaveat = `# gtok: git typed in this shell runs through 'gtok exec'. git started by scripts,
+# programs or agents that skip shell rc files is not covered; 'gtok shim install' is.
 `
 
 func managementVersion(version, commit string, asJSON bool) int {
@@ -407,7 +407,7 @@ func managementVersion(version, commit string, asJSON bool) int {
 	if asJSON {
 		return managementJSON(schema.Version{Version: version, Commit: commit, Go: runtime.Version(), OS: runtime.GOOS, Arch: runtime.GOARCH}, nil)
 	}
-	_, _ = fmt.Fprintf(os.Stdout, "gthok %s\n", version)
+	_, _ = fmt.Fprintf(os.Stdout, "gtok %s\n", version)
 	if commit != "" {
 		_, _ = fmt.Fprintf(os.Stdout, "commit %s\n", commit)
 	}
@@ -416,13 +416,13 @@ func managementVersion(version, commit string, asJSON bool) int {
 }
 
 func managementUsageError(message string) int {
-	fmt.Fprintln(os.Stderr, "gthok:", terminalText(redact.New(environment()).String(message)))
-	fmt.Fprintln(os.Stderr, "Run 'gthok help' for usage.")
+	fmt.Fprintln(os.Stderr, "gtok:", terminalText(redact.New(environment()).String(message)))
+	fmt.Fprintln(os.Stderr, "Run 'gtok help' for usage.")
 	return 2
 }
 
 func managementFailure(err error) int {
-	fmt.Fprintln(os.Stderr, "gthok:", terminalText(redact.New(environment()).String(err.Error())))
+	fmt.Fprintln(os.Stderr, "gtok:", terminalText(redact.New(environment()).String(err.Error())))
 	return 1
 }
 
@@ -482,7 +482,7 @@ func managementShim(command, bin string) int {
 			return managementFailure(err)
 		}
 		if len(removed) == 0 {
-			_, _ = fmt.Fprintln(os.Stdout, "No gthok shim to remove; other files are unchanged.")
+			_, _ = fmt.Fprintln(os.Stdout, "No gtok shim to remove; other files are unchanged.")
 		}
 		for _, path := range removed {
 			_, _ = fmt.Fprintln(os.Stdout, r.String("Removed "+path))
@@ -496,14 +496,14 @@ func managementShim(command, bin string) int {
 	if err := install.ProbeShim(result.ShimPath, os.Environ()); err != nil {
 		return managementFailure(err)
 	}
-	_, _ = fmt.Fprintln(os.Stdout, r.String("Installed gthok shim: "+result.ShimPath))
+	_, _ = fmt.Fprintln(os.Stdout, r.String("Installed gtok shim: "+result.ShimPath))
 	_, _ = fmt.Fprintln(os.Stdout, r.String("Real git: "+result.RealGit))
 	_, _ = fmt.Fprintln(os.Stdout, r.String("PATH: "+result.Precedence))
 	if result.FixHint != "" {
 		_, _ = fmt.Fprintln(os.Stdout, r.String("Fix: "+result.FixHint))
 	}
 	_, _ = fmt.Fprintln(os.Stdout, "Shim probe passed. Shell rc files were not modified.")
-	_, _ = fmt.Fprintln(os.Stdout, "repos without a gthok config are unaffected: git is exec'd directly")
+	_, _ = fmt.Fprintln(os.Stdout, "repos without a gtok config are unaffected: git is exec'd directly")
 	return 0
 }
 
@@ -574,8 +574,8 @@ func operationPatternWarnings(c *config.Config) []string {
 
 func configFailureBehavior(err error, env map[string]string) string {
 	if config.FailClosed(err, env) {
-		if env["GTHOK_FAIL_CLOSED"] == "1" {
-			return "Invalid config behavior: fail-closed (GTHOK_FAIL_CLOSED=1); git will not run."
+		if env["GTOK_FAIL_CLOSED"] == "1" {
+			return "Invalid config behavior: fail-closed (GTOK_FAIL_CLOSED=1); git will not run."
 		}
 		return "Invalid config behavior: fail-closed (user policy.mode: enforce); git will not run."
 	}
@@ -591,7 +591,7 @@ func managementDoctor(asJSON bool, version string) int {
 	c, notes, cwd, loadErr := managementLoad(env)
 	noConfig := loadErr == nil && !config.HasConfig(cwd, env)
 	notes = append(notes, operationPatternWarnings(c)...)
-	override := env["GTHOK_REAL_GIT"]
+	override := env["GTOK_REAL_GIT"]
 	if override == "" && c != nil {
 		override = c.Runtime.RealGit
 	}
@@ -608,10 +608,10 @@ func managementDoctor(asJSON bool, version string) int {
 	if loadErr != nil {
 		cfgCheck.Status = install.StatusFail
 		cfgCheck.Detail += "; " + loadErr.Error() + "; " + configFailureBehavior(loadErr, env)
-		cfgCheck.Fix = "Run gthok config validate and fix the reported configuration errors."
+		cfgCheck.Fix = "Run gtok config validate and fix the reported configuration errors."
 	} else if noConfig {
 		cfgCheck.Status = install.StatusInfo
-		cfgCheck.Detail = "no config: the wrapper is a pure passthrough and logs nothing; run 'gthok config init --scope user' to enable logging/auditing"
+		cfgCheck.Detail = "no config: the wrapper is a pure passthrough and logs nothing; run 'gtok config init --scope user' to enable logging/auditing"
 	}
 	checks = append(checks, cfgCheck)
 	for _, note := range notes {
@@ -790,15 +790,15 @@ func managementConfigInit(scope string) int {
 	_, _ = fmt.Fprintln(os.Stdout, "Created "+path)
 	switch scope {
 	case config.ScopeProject:
-		_, _ = fmt.Fprintln(os.Stdout, "Project rules apply automatically. If you add hooks, inspect them and run gthok config trust to enable them.")
+		_, _ = fmt.Fprintln(os.Stdout, "Project rules apply automatically. If you add hooks, inspect them and run gtok config trust to enable them.")
 	case config.ScopeLocal:
 		exclude, err := config.ExcludeLocal(filepath.Dir(path))
 		if err != nil {
-			fmt.Fprintln(os.Stderr, "gthok: could not add it to .git/info/exclude ("+err.Error()+"); keep it uncommitted yourself")
+			fmt.Fprintln(os.Stderr, "gtok: could not add it to .git/info/exclude ("+err.Error()+"); keep it uncommitted yourself")
 		} else {
 			_, _ = fmt.Fprintln(os.Stdout, "Excluded from git in "+exclude)
 		}
-		_, _ = fmt.Fprintln(os.Stdout, "Local hooks and transforms run without trust; gthok ignores the file while git tracks it.")
+		_, _ = fmt.Fprintln(os.Stdout, "Local hooks and transforms run without trust; gtok ignores the file while git tracks it.")
 	}
 	return 0
 }

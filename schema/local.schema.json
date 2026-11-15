@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/local.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/local.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -4752,6 +4752,6 @@
       "type": "integer"
     }
   },
-  "title": "gthok personal .gthok.local.yaml",
+  "title": "gtok personal .gtok.local.yaml",
   "type": "object"
 }

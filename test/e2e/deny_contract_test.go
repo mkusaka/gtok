@@ -10,8 +10,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestDenyContractContent(t *testing.T) {
@@ -37,9 +37,9 @@ func TestDenyContractContent(t *testing.T) {
 			got := s.git(nil, "push", "origin", "1", "-R", "acme/project")
 			got.code(t, 77)
 			s.absentRecord()
-			want := "gthok: denied by rule no-merge\n  - rule no-merge: review required (unknown)\n"
+			want := "gtok: denied by rule no-merge\n  - rule no-merge: review required (unknown)\n"
 			if hook {
-				want = "gthok: denied by hook review\n  - hook review: review required\n    [REDACTED]\n    contact owners\n"
+				want = "gtok: denied by hook review\n  - hook review: review required\n    [REDACTED]\n    contact owners\n"
 			}
 			if string(got.stderr) != want {
 				t.Fatalf("stderr=%q, want=%q", got.stderr, want)
@@ -74,7 +74,7 @@ func TestDenyContractHookErrors(t *testing.T) {
 			got := s.git(nil, "version")
 			got.code(t, 78)
 			s.absentRecord()
-			want := "gthok: denied by hook gate (error: " + kind + ")\n  - hook gate: "
+			want := "gtok: denied by hook gate (error: " + kind + ")\n  - hook gate: "
 			if !strings.HasPrefix(string(got.stderr), want) {
 				t.Fatalf("stderr=%q, want prefix=%q", got.stderr, want)
 			}
@@ -102,7 +102,7 @@ func TestDenyContractMixedOrdering(t *testing.T) {
 	got := s.git(nil, "push", "--future-option")
 	got.code(t, 77)
 	s.absentRecord()
-	want := "gthok: denied by rule z-first (+3 more)\n  - rule z-first: first configured (unknown)\n  - rule a-second: second configured (unknown)\n  - policy unknownMutation: unclassified-write: unknownMutation policy (unknown)\n  - hook failed: exit status 23\n"
+	want := "gtok: denied by rule z-first (+3 more)\n  - rule z-first: first configured (unknown)\n  - rule a-second: second configured (unknown)\n  - policy unknownMutation: unclassified-write: unknownMutation policy (unknown)\n  - hook failed: exit status 23\n"
 	if string(got.stderr) != want {
 		t.Fatalf("stderr=%q, want=%q", got.stderr, want)
 	}
@@ -115,14 +115,14 @@ func TestDenyContractMixedOrdering(t *testing.T) {
 
 func TestDenyContractInvalidConfig(t *testing.T) {
 	s := newSandbox(t)
-	s.env["GTHOK_FAIL_CLOSED"] = "1"
+	s.env["GTOK_FAIL_CLOSED"] = "1"
 	if err := os.WriteFile(s.cfg, []byte("version: 1\npolicy: {mode: broken}\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	got := s.git(nil, "version")
 	got.code(t, 78)
 	s.absentRecord()
-	if !bytes.HasPrefix(got.stderr, []byte("gthok: denied by config\n  - config: ")) || !bytes.Contains(got.stderr, []byte("\n    fail-closed: not running git")) || !bytes.Contains(got.stderr, []byte("gthok config validate")) {
+	if !bytes.HasPrefix(got.stderr, []byte("gtok: denied by config\n  - config: ")) || !bytes.Contains(got.stderr, []byte("\n    fail-closed: not running git")) || !bytes.Contains(got.stderr, []byte("gtok config validate")) {
 		t.Fatalf("stderr=%q", got.stderr)
 	}
 }
@@ -152,7 +152,7 @@ func TestDenyHeaderPrecedesIgnoredProjectHooks(t *testing.T) {
 	got := s.git(nil, "version")
 	got.code(t, 77)
 	s.absentRecord()
-	if !bytes.HasPrefix(got.stderr, []byte("gthok: denied by rule user-deny\n")) {
+	if !bytes.HasPrefix(got.stderr, []byte("gtok: denied by rule user-deny\n")) {
 		t.Fatalf("denial header was not stderr line 1: %q", got.stderr)
 	}
 	warnings, err := filepath.Glob(filepath.Join(filepath.Dir(s.cfg), "state", "ignored-hooks-*.warning"))
@@ -174,7 +174,7 @@ func TestDenyHookMessageFallback(t *testing.T) {
 			got := s.git(nil, "version")
 			got.code(t, 77)
 			s.absentRecord()
-			if want := "gthok: denied by hook review\n  - hook review: review required\n"; string(got.stderr) != want {
+			if want := "gtok: denied by hook review\n  - hook review: review required\n"; string(got.stderr) != want {
 				t.Fatalf("denial=%q, want=%q", got.stderr, want)
 			}
 		})

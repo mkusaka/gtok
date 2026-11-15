@@ -38,5 +38,5 @@ jobs:
       - name: Differential survey against pinned Git
         run: make differential
         env:
-          GTHOK_DIFF_CASES: '3000'
-          GTHOK_DIFF_SEED: ${{ github.run_number }}
+          GTOK_DIFF_CASES: '3000'
+          GTOK_DIFF_SEED: ${{ github.run_number }}

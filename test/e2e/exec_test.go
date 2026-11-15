@@ -12,8 +12,8 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
 )
 
 func TestExecWithoutShimPreservesInvocation(t *testing.T) {
@@ -53,7 +53,7 @@ func TestExecWithoutShimPreservesInvocation(t *testing.T) {
 				for k, v := range s.env {
 					wantEnv[k] = v
 				}
-				wantEnv["GTHOK_DEPTH"] = "1"
+				wantEnv["GTOK_DEPTH"] = "1"
 				gotEnv := envMap(record.Env)
 				if record.Argv0 != "git" || len(gotEnv) != len(wantEnv) {
 					t.Fatalf("argv0=%q env=%v, want git / %v", record.Argv0, gotEnv, wantEnv)
@@ -115,20 +115,20 @@ func TestExecRecursionAndNestedChecks(t *testing.T) {
 	for _, depth := range []string{"3", "4", "invalid"} {
 		t.Run("depth="+depth, func(t *testing.T) {
 			s := newSandbox(t)
-			s.env["PATH"], s.env["GTHOK_DEPTH"] = filepath.Dir(s.real), depth
+			s.env["PATH"], s.env["GTOK_DEPTH"] = filepath.Dir(s.real), depth
 			if err := os.Remove(s.cfg); err != nil {
 				t.Fatal(err)
 			}
 			result := s.management(nil, "exec", "--", "version")
 			if depth == "3" {
 				result.code(t, 0)
-				if child := envMap(s.onlyRecord([]string{"version"}, nil).Env); child["GTHOK_DEPTH"] != "4" {
-					t.Fatalf("depth=%q", child["GTHOK_DEPTH"])
+				if child := envMap(s.onlyRecord([]string{"version"}, nil).Env); child["GTOK_DEPTH"] != "4" {
+					t.Fatalf("depth=%q", child["GTOK_DEPTH"])
 				}
 			} else {
 				result.code(t, 1)
 				s.absentRecord()
-				if !bytes.Contains(result.stderr, []byte("GTHOK_DEPTH")) {
+				if !bytes.Contains(result.stderr, []byte("GTOK_DEPTH")) {
 					t.Fatalf("depth diagnostic=%q", result.stderr)
 				}
 			}
@@ -137,7 +137,7 @@ func TestExecRecursionAndNestedChecks(t *testing.T) {
 	for _, token := range []string{"none", "forged", "valid"} {
 		t.Run("token="+token, func(t *testing.T) {
 			s := newSandbox(t)
-			s.env["PATH"], s.env["GTHOK_NESTED"] = filepath.Dir(s.real), "1"
+			s.env["PATH"], s.env["GTOK_NESTED"] = filepath.Dir(s.real), "1"
 			s.configure(func(c *config.Config) {
 				yes := true
 				c.Logging.Enabled = &yes
@@ -146,14 +146,14 @@ func TestExecRecursionAndNestedChecks(t *testing.T) {
 			})
 			switch token {
 			case "forged":
-				s.env["GTHOK_NESTED_TOKEN"] = strings.Repeat("a", 64)
+				s.env["GTOK_NESTED_TOKEN"] = strings.Repeat("a", 64)
 			case "valid":
 				value, cleanup, err := install.NewNestedToken(filepath.Dir(s.cfg))
 				if err != nil {
 					t.Fatal(err)
 				}
 				defer cleanup()
-				s.env["GTHOK_NESTED_TOKEN"] = value
+				s.env["GTOK_NESTED_TOKEN"] = value
 			}
 			result := s.management(nil, "exec", "--", "version")
 			if token == "valid" {
@@ -165,7 +165,7 @@ func TestExecRecursionAndNestedChecks(t *testing.T) {
 			} else {
 				result.code(t, 77)
 				s.absentRecord()
-				if !bytes.HasPrefix(result.stderr, []byte("gthok: denied by rule blocked\n")) {
+				if !bytes.HasPrefix(result.stderr, []byte("gtok: denied by rule blocked\n")) {
 					t.Fatalf("nested marker bypassed policy: %q", result.stderr)
 				}
 			}
@@ -179,7 +179,7 @@ func TestExecRejectsShimOverridesAndMissingGh(t *testing.T) {
 			s := newSandbox(t)
 			s.env["PATH"] = s.bin
 			if kind == "environment" {
-				s.env["GTHOK_REAL_GIT"] = filepath.Join(s.bin, "git")
+				s.env["GTOK_REAL_GIT"] = filepath.Join(s.bin, "git")
 			}
 			if kind == "config" {
 				s.configure(func(c *config.Config) { c.Runtime.RealGit = filepath.Join(s.bin, "git") })
@@ -190,7 +190,7 @@ func TestExecRejectsShimOverridesAndMissingGh(t *testing.T) {
 			result := s.management(nil, "exec", "--", "version")
 			result.code(t, 127)
 			s.absentRecord()
-			if kind != "missing" && !bytes.Contains(result.stderr, []byte("gthok shim")) && !bytes.Contains(result.stderr, []byte("skipped:")) {
+			if kind != "missing" && !bytes.Contains(result.stderr, []byte("gtok shim")) && !bytes.Contains(result.stderr, []byte("skipped:")) {
 				t.Fatalf("discovery diagnostic=%q", result.stderr)
 			}
 		})
@@ -214,7 +214,7 @@ func TestShimInvocationProvenance(t *testing.T) {
 }
 
 // Bare `git` (no arguments) is passed through like any other invocation, via
-// both the shim and the shell-function entry `gthok exec --`.
+// both the shim and the shell-function entry `gtok exec --`.
 func TestBareGhPassesThrough(t *testing.T) {
 	s := newSandbox(t)
 	s.git(nil).code(t, 0)
@@ -226,8 +226,8 @@ func TestBareGhPassesThrough(t *testing.T) {
 	s.management(nil, "exec").code(t, 0)
 }
 
-// `git --version` adds a gthok line only on a terminal (see terminal tests);
-// piped output stays byte-identical. `gthok exec` passes arguments through with
+// `git --version` adds a gtok line only on a terminal (see terminal tests);
+// piped output stays byte-identical. `gtok exec` passes arguments through with
 // or without `--`.
 func TestVersionPipedUnchangedAndExecPassThrough(t *testing.T) {
 	s := newSandbox(t)

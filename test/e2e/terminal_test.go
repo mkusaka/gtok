@@ -9,8 +9,8 @@ import (
 	"testing"
 	"unicode/utf8"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestHookTerminalOutput(t *testing.T) {
@@ -39,7 +39,7 @@ func TestHookTerminalOutput(t *testing.T) {
 			got := s.git(nil, "version")
 			got.code(t, 77)
 			s.absentRecord()
-			entry := bytes.TrimPrefix(got.stderr, []byte("gthok: denied by hook review\n"))
+			entry := bytes.TrimPrefix(got.stderr, []byte("gtok: denied by hook review\n"))
 			assertTerminalBounds(t, entry)
 			visible := strings.ReplaceAll(tc.visible, "\n", "\n    ")
 			if !bytes.Contains(entry, []byte(visible)) || bytes.ContainsAny(entry, "\x1b\r\a\u0085\x7f") {

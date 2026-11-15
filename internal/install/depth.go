@@ -6,7 +6,7 @@ import (
 	"strings"
 )
 
-const DepthEnv = "GTHOK_DEPTH"
+const DepthEnv = "GTOK_DEPTH"
 const MaxDepth = 4
 
 // NextDepth returns a fresh environment with exactly one incremented depth.

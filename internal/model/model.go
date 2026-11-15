@@ -1,5 +1,5 @@
 // Package model holds the canonical, versioned data model shared by every
-// gthok layer: normalizer output (Result/Operation) and the invocation handed to
+// gtok layer: normalizer output (Result/Operation) and the invocation handed to
 // normalizers.
 //
 // This package is the hook JSON contract. Optional additive fields preserve

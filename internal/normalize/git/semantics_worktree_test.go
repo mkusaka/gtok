@@ -11,8 +11,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize/actions"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize/actions"
 )
 
 type whCase struct {

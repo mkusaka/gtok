@@ -15,7 +15,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 const maxLogBytes int64 = 10 * 1024 * 1024

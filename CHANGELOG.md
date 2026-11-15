@@ -1,9 +1,14 @@
 # Changelog
 
-All notable changes to gthok. Add entries under **Unreleased**;
+All notable changes to gtok. Add entries under **Unreleased**;
 `scripts/release.sh` turns that section into the next version's release notes.
 
 ## [Unreleased]
+
+### Changed
+
+- Renamed the project from gthok to gtok: binary, Go module path, `.gtok.yaml`
+  config files, `GTOK_*` environment variables and release asset names.
 
 ## [v0.0.1] - 2026-11-09
 
@@ -27,5 +32,5 @@ All notable changes to gthok. Add entries under **Unreleased**;
 - Recognized fetch-pack hand options, safe reflog display options and bisect
   start/terms options while preserving arbitrary bisect-run child arguments.
 
-[Unreleased]: https://github.com/mkusaka/gthok/compare/v0.0.1...HEAD
-[v0.0.1]: https://github.com/mkusaka/gthok/releases/tag/v0.0.1
+[Unreleased]: https://github.com/mkusaka/gtok/compare/v0.0.1...HEAD
+[v0.0.1]: https://github.com/mkusaka/gtok/releases/tag/v0.0.1

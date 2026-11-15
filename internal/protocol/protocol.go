@@ -2,7 +2,7 @@
 // hook → stdout) and the outcome model for hook executions.
 package protocol
 
-import "github.com/mkusaka/gthok/internal/model"
+import "github.com/mkusaka/gtok/internal/model"
 
 // Event names.
 const (
@@ -32,7 +32,7 @@ type Input struct {
 }
 
 type InvocationInfo struct {
-	Via        string   `json:"via" enum:"shim,exec" doc:"Wrapper entry point: shim or explicit gthok exec; both enforce the same policy."`
+	Via        string   `json:"via" enum:"shim,exec" doc:"Wrapper entry point: shim or explicit gtok exec; both enforce the same policy."`
 	Argv       []string `json:"argv,omitempty" doc:"Original arguments after argv[0]; absent means empty."`
 	Alias      string   `json:"alias,omitempty"`
 	Expanded   []string `json:"expanded,omitempty"` // alias-expanded analysis argv

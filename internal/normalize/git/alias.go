@@ -4,8 +4,8 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // splitCmdline is alias.c split_cmdline, including its leading/trailing empty

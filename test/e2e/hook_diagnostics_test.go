@@ -9,7 +9,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 // A malfunctioning hook (onError: deny) shows the tail of its stderr in the
@@ -28,18 +28,18 @@ func TestHookMalfunctionShowsStderrTail(t *testing.T) {
 	result.code(t, 78)
 	s.absentRecord()
 	out := string(result.stderr)
-	if !strings.HasPrefix(out, "gthok: denied by hook gate (error: exit 127)") || !strings.Contains(out, "stderr: env: bun: No such file or directory") {
+	if !strings.HasPrefix(out, "gtok: denied by hook gate (error: exit 127)") || !strings.Contains(out, "stderr: env: bun: No such file or directory") {
 		t.Fatalf("deny output:\n%s", out)
 	}
 }
 
-// Hooks learn the entry point only out of band (GTHOK_EVENT_SOURCE); the input
+// Hooks learn the entry point only out of band (GTOK_EVENT_SOURCE); the input
 // JSON is identical to the shim's, and --print-input keeps stdout pure JSON.
 func TestEventSourceAndPrintInputStreams(t *testing.T) {
 	s := newSandbox(t)
 	record := filepath.Join(s.root, "source.txt")
 	script := filepath.Join(s.root, "source-hook")
-	if err := os.WriteFile(script, []byte("#!/bin/sh\ncat >/dev/null\nprintf '%s' \"$GTHOK_EVENT_SOURCE\" >> \""+record+"\"\nprintf ' ' >> \""+record+"\"\n"), 0o700); err != nil {
+	if err := os.WriteFile(script, []byte("#!/bin/sh\ncat >/dev/null\nprintf '%s' \"$GTOK_EVENT_SOURCE\" >> \""+record+"\"\nprintf ' ' >> \""+record+"\"\n"), 0o700); err != nil {
 		t.Fatal(err)
 	}
 	s.configure(func(c *config.Config) {
@@ -49,7 +49,7 @@ func TestEventSourceAndPrintInputStreams(t *testing.T) {
 	s.management(nil, "hooks", "test", "--", "show", "HEAD", "1", "-R", "o/r").code(t, 0)
 	data, err := os.ReadFile(record)
 	if err != nil || strings.TrimSpace(string(data)) != "shim test" {
-		t.Fatalf("GTHOK_EVENT_SOURCE values = %q, %v", data, err)
+		t.Fatalf("GTOK_EVENT_SOURCE values = %q, %v", data, err)
 	}
 	result := s.management(nil, "hooks", "test", "--print-input", "--", "show", "HEAD", "1", "-R", "o/r")
 	result.code(t, 0)

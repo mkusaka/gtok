@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestPathTrustCLITransitions(t *testing.T) {
@@ -30,10 +30,10 @@ func TestPathTrustCLITransitions(t *testing.T) {
 		t.Fatal(err)
 	}
 	// Adding subcommands must not consume the existing positional PATH/flags.
-	for _, args := range [][]string{{"config", "trust", "./.gthok.yaml"}, {"config", "trust", "--hook", "project"}} {
+	for _, args := range [][]string{{"config", "trust", "./.gtok.yaml"}, {"config", "trust", "--hook", "project"}} {
 		result := s.management(nil, args...)
 		result.code(t, 0)
-		if !bytes.Contains(result.stdout, []byte("Tip: trust this repository permanently: gthok config trust repo .")) || !bytes.Contains(result.stdout, []byte("gthok config trust dir "+filepath.Dir(s.cwd))) {
+		if !bytes.Contains(result.stdout, []byte("Tip: trust this repository permanently: gtok config trust repo .")) || !bytes.Contains(result.stdout, []byte("gtok config trust dir "+filepath.Dir(s.cwd))) {
 			t.Fatalf("missing permanent-trust hints: %s", result.stdout)
 		}
 	}
@@ -141,7 +141,7 @@ func TestPathTrustCLISymlinkAndDirectoryTip(t *testing.T) {
 	if err != nil || !bytes.Contains(body, []byte("# dotfiles comment")) || !bytes.Contains(body, []byte("# keep mode")) {
 		t.Fatalf("comments lost: %s %v", body, err)
 	}
-	covered := s.management(nil, "config", "trust", "./.gthok.yaml")
+	covered := s.management(nil, "config", "trust", "./.gtok.yaml")
 	covered.code(t, 0)
 	if bytes.Contains(covered.stdout, []byte("Tip:")) {
 		t.Fatalf("directory-covered repository got tip: %s", covered.stdout)
@@ -178,12 +178,12 @@ func TestPathTrustCLIRepositoryResolution(t *testing.T) {
 		}
 		s.management(nil, "config", "untrust", "repo").code(t, 0)
 	}
-	if err := os.WriteFile(filepath.Join(linked, ".gthok.yaml"), []byte("version: 1\nhooks: {pre: [{id: gate, command: [./gate], onError: allow}]}\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(linked, ".gtok.yaml"), []byte("version: 1\nhooks: {pre: [{id: gate, command: [./gate], onError: allow}]}\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	result := s.management(nil, "config", "trust")
 	result.code(t, 0)
-	if !bytes.Contains(result.stdout, []byte("gthok config trust dir ~/src")) {
+	if !bytes.Contains(result.stdout, []byte("gtok config trust dir ~/src")) {
 		t.Fatalf("linked-worktree tip must name main parent: %s", result.stdout)
 	}
 }
@@ -207,7 +207,7 @@ func TestPathTrustCLIErrors(t *testing.T) {
 	for _, command := range []string{"trust", "untrust"} {
 		result := s.management(nil, "config", command, "repo")
 		result.code(t, 1)
-		if !bytes.Contains(result.stderr, []byte("run `gthok config init --scope user` first")) {
+		if !bytes.Contains(result.stderr, []byte("run `gtok config init --scope user` first")) {
 			t.Fatalf("missing config instruction: %s", result.stderr)
 		}
 		if _, err := os.Stat(s.cfg); !os.IsNotExist(err) {

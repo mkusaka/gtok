@@ -11,18 +11,18 @@ import (
 	"strings"
 	"syscall"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/delegates"
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/logging"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/process"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
-	"github.com/mkusaka/gthok/internal/resolve"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/delegates"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/logging"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/process"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
+	"github.com/mkusaka/gtok/internal/resolve"
 )
 
 type managementAnalysis struct {
@@ -94,7 +94,7 @@ func managementAnalyze(args []string, resolveTargets, allowAPI, transform, offli
 		if err != nil {
 			return nil, err
 		}
-		runner := &hooks.Runner{BaseDir: c.Dir, Env: append(os.Environ(), "GTHOK_NESTED_TOKEN="+helperEnv["GTHOK_NESTED_TOKEN"]), RealGit: a.real, Redact: a.redactor.String, Redactor: a.redactor, Source: "test"}
+		runner := &hooks.Runner{BaseDir: c.Dir, Env: append(os.Environ(), "GTOK_NESTED_TOKEN="+helperEnv["GTOK_NESTED_TOKEN"]), RealGit: a.real, Redact: a.redactor.String, Redactor: a.redactor, Source: "test"}
 		ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM, syscall.SIGHUP)
 		applied := runTransforms(ctx, c, runner, inv, a.result, a.real, logging.NewInvocationID(), "shim", resolveTargets, compatibility)
 		cancel()
@@ -182,7 +182,7 @@ func managementInspect(command string, args []string, options managementInspectO
 	r := a.redactor
 	if command == "normalize" {
 		for _, diagnostic := range a.diagnostics {
-			fmt.Fprintln(os.Stderr, "gthok:", r.String(diagnostic))
+			fmt.Fprintln(os.Stderr, "gtok:", r.String(diagnostic))
 		}
 		return managementJSON(struct {
 			model.Result
@@ -312,7 +312,7 @@ func managementHooksTest(args []string, phase string, exitCode int, asJSON bool,
 		if options.hookID != "" {
 			target = "hook " + options.hookID
 		}
-		fmt.Fprintf(os.Stderr, "gthok: %s input for %s (source: test; hooks and git not executed; invocation.via shows the real entry point)\n", phase, target)
+		fmt.Fprintf(os.Stderr, "gtok: %s input for %s (source: test; hooks and git not executed; invocation.via shows the real entry point)\n", phase, target)
 		if !options.showSecrets || a.envEdited {
 			masked := r.WithCount(func(display *redact.Redactor) {
 				input = display.HookInput(input)
@@ -329,7 +329,7 @@ func managementHooksTest(args []string, phase string, exitCode int, asJSON bool,
 			return managementFailure(err)
 		}
 		defer cleanup()
-		runner.Env = append(append([]string(nil), hookEnv...), "GTHOK_NESTED_TOKEN="+helperEnv["GTHOK_NESTED_TOKEN"])
+		runner.Env = append(append([]string(nil), hookEnv...), "GTOK_NESTED_TOKEN="+helperEnv["GTOK_NESTED_TOKEN"])
 	}
 	ctx, cancel := signal.NotifyContext(context.Background(), syscall.SIGINT, syscall.SIGTERM)
 	aggregate := runner.Run(ctx, phase, selected, input)
@@ -412,7 +412,7 @@ func managementHooksTest(args []string, phase string, exitCode int, asJSON bool,
 			{"policy", expectPolicy, a.evaluation.Decision},
 		} {
 			if check.expected != "" && check.actual != protocol.Decision(check.expected) {
-				_, _ = fmt.Fprintf(os.Stderr, "gthok: expected %s decision %s, actual %s\n", check.name, check.expected, check.actual)
+				_, _ = fmt.Fprintf(os.Stderr, "gtok: expected %s decision %s, actual %s\n", check.name, check.expected, check.actual)
 				code = 1
 			}
 		}

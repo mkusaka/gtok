@@ -130,7 +130,7 @@ func (s *captureSink) prepare() error {
 	// Go's poller, allowing Close/deadlines to cancel a blocked tee write.
 	// dup shares status flags with the original descriptor. During capture the
 	// original is therefore nonblocking too; closeSinks restores its flags.
-	s.file = os.NewFile(uintptr(s.fd), "gthok-capture-tee")
+	s.file = os.NewFile(uintptr(s.fd), "gtok-capture-tee")
 	return nil
 }
 

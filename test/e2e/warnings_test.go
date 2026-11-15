@@ -10,8 +10,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func warningHook(s *sandbox, id, phase string, decision protocol.Decision, text string) config.Hook {
@@ -80,12 +80,12 @@ func TestWarningsRunGhInOrderAndKeepDecisionLogs(t *testing.T) {
 			got := s.git(nil, args...)
 			got.code(t, tc.exit)
 			s.onlyRecord(args, nil)
-			want := "gthok: warning from rule first\n  review [REDACTED]\n  carefully\\x1b[31m\n" +
-				"gthok: warning from rule second\n  whole operation\n" +
-				"gthok: warning from transform rewrite\n  added session id\n" +
-				"gthok: warning from transform unchanged\n  checked request\n" +
-				"gthok: warning from hook allow\n  allowed advice\n" +
-				"gthok: warning from hook abstain\n  abstaining advice\n" +
+			want := "gtok: warning from rule first\n  review [REDACTED]\n  carefully\\x1b[31m\n" +
+				"gtok: warning from rule second\n  whole operation\n" +
+				"gtok: warning from transform rewrite\n  added session id\n" +
+				"gtok: warning from transform unchanged\n  checked request\n" +
+				"gtok: warning from hook allow\n  allowed advice\n" +
+				"gtok: warning from hook abstain\n  abstaining advice\n" +
 				"git diagnostic\n"
 			warnings := []protocol.Warning{
 				{Source: "rule", ID: "first", Text: "review [REDACTED]\ncarefully\x1b[31m"},
@@ -96,7 +96,7 @@ func TestWarningsRunGhInOrderAndKeepDecisionLogs(t *testing.T) {
 				{Source: "hook", ID: "abstain", Text: "abstaining advice"},
 			}
 			if tc.supervised {
-				want += "gthok: warning from hook post-allow\n  after git\n"
+				want += "gtok: warning from hook post-allow\n  after git\n"
 				warnings = append(warnings, protocol.Warning{Source: "hook", ID: "post-allow", Text: "after git"})
 			}
 			if string(got.stderr) != want || string(got.stdout) != "git output\n" {
@@ -150,7 +150,7 @@ func TestDenyResponseWarningIgnored(t *testing.T) {
 	})
 	got := s.git(nil, "version")
 	got.code(t, 77)
-	if want := "gthok: denied by hook gate\n  - hook gate: blocked\n"; string(got.stderr) != want {
+	if want := "gtok: denied by hook gate\n  - hook gate: blocked\n"; string(got.stderr) != want {
 		t.Fatalf("stderr=%q, want=%q", got.stderr, want)
 	}
 	s.absentRecord()
@@ -218,7 +218,7 @@ func TestContinuedWarningKeepsDecisionLog(t *testing.T) {
 	})
 	got := s.git(nil, "version")
 	got.code(t, 0)
-	if want := "gthok: warning from hook advice (continue-on-error)\n  blocked\n"; string(got.stderr) != want {
+	if want := "gtok: warning from hook advice (continue-on-error)\n  blocked\n"; string(got.stderr) != want {
 		t.Fatalf("stderr=%q, want=%q", got.stderr, want)
 	}
 	logs := s.logs()

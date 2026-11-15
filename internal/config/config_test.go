@@ -28,7 +28,7 @@ func TestDefaultsAndVersions(t *testing.T) {
 		if err != nil {
 			t.Fatal(err)
 		}
-		if c.Version != 1 || c.Policy.Mode != ModeObserve || c.Policy.UnknownMutation != UnknownAudit || c.Runtime.HookConcurrency != 4 || c.Runtime.StdinMaxBytes != 8<<20 || c.Runtime.StdinTimeout.D() != DefaultStdinTimeout || c.Runtime.FileMaxBytes != 8<<20 || c.Runtime.CaptureLimit != 1<<20 || !*c.Logging.Enabled || c.Logging.Path != "/config/logs/gthok.jsonl" {
+		if c.Version != 1 || c.Policy.Mode != ModeObserve || c.Policy.UnknownMutation != UnknownAudit || c.Runtime.HookConcurrency != 4 || c.Runtime.StdinMaxBytes != 8<<20 || c.Runtime.StdinTimeout.D() != DefaultStdinTimeout || c.Runtime.FileMaxBytes != 8<<20 || c.Runtime.CaptureLimit != 1<<20 || !*c.Logging.Enabled || c.Logging.Path != "/config/logs/gtok.jsonl" {
 			t.Fatalf("defaults: %+v", c)
 		}
 	}
@@ -79,14 +79,14 @@ func TestContinueOnErrorConfig(t *testing.T) {
 }
 func TestConfigDirectoryPrecedence(t *testing.T) {
 	env := map[string]string{"HOME": "/home/test"}
-	if Dir(env) != "/home/test/.config/gthok" {
+	if Dir(env) != "/home/test/.config/gtok" {
 		t.Fatal(Dir(env))
 	}
 	env["XDG_CONFIG_HOME"] = "/xdg"
-	if Dir(env) != "/xdg/gthok" {
+	if Dir(env) != "/xdg/gtok" {
 		t.Fatal(Dir(env))
 	}
-	env["GTHOK_CONFIG_DIR"] = "/custom"
+	env["GTOK_CONFIG_DIR"] = "/custom"
 	if DefaultPath(env) != "/custom/config.yaml" {
 		t.Fatal(DefaultPath(env))
 	}

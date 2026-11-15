@@ -1,6 +1,6 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gthok/main/schema/config.schema.json
-# gthok user config. Validate with `gthok config validate`.
-# Preview decisions with `gthok explain -- push origin main`.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gtok/main/schema/config.schema.json
+# gtok user config. Validate with `gtok config validate`.
+# Preview decisions with `gtok explain -- push origin main`.
 # Direct calls to the real Git bypass this wrapper; it is not a security boundary.
 version: 1
 
@@ -36,7 +36,7 @@ hooks: {}
 #     captureOutput: false
 
 # User-only path trust runs ALL project executables in these locations as you.
-# Prefer per-executable review with `gthok config trust` when possible.
+# Prefer per-executable review with `gtok config trust` when possible.
 # trust:
 #   repositories: ["~/src/my-repo"]  # exact roots, including linked worktrees
 #   directories: ["~/src/my-org"]   # directory and descendants
@@ -53,5 +53,5 @@ runtime: {}
 logging: {}
 # enabled: true
 # ignoredHooksWarning: true
-# path: /absolute/path/gthok.jsonl
+# path: /absolute/path/gtok.jsonl
 # level: info                       # info | decision (warnings/denials/errors)

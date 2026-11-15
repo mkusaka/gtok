@@ -54,10 +54,10 @@ func testSelf(t testing.TB, root, name string) string {
 
 func TestFindRealGitCandidates(t *testing.T) {
 	root := t.TempDir()
-	self := testSelf(t, root, "gthok-renamed")
+	self := testSelf(t, root, "gtok-renamed")
 	shim := filepath.Join(root, "shim", "git")
 	link(t, self, shim)
-	other := executable(t, filepath.Join(root, "other", "gthok"), "exit 0")
+	other := executable(t, filepath.Join(root, "other", "gtok"), "exit 0")
 	otherShim := filepath.Join(root, "other-shim", "git")
 	link(t, other, otherShim)
 	broken := filepath.Join(root, "broken", "git")
@@ -86,7 +86,7 @@ func TestFindRealGitCandidates(t *testing.T) {
 	if err != nil || got != first {
 		t.Fatalf("path=%q err=%v", got, err)
 	}
-	wantReasons := []string{"relative", "relative", "relative", "gthok shim", "gthok shim", "cannot resolve", "symlink loop", "not executable", "not a regular file", "", "", ""}
+	wantReasons := []string{"relative", "relative", "relative", "gtok shim", "gtok shim", "cannot resolve", "symlink loop", "not executable", "not a regular file", "", "", ""}
 	if len(candidates) != len(wantReasons) {
 		t.Fatalf("candidates=%+v", candidates)
 	}
@@ -102,7 +102,7 @@ func TestFindRealGitCandidates(t *testing.T) {
 
 func TestFindRealGitMissingAndOverride(t *testing.T) {
 	root := t.TempDir()
-	self := testSelf(t, root, "gthok")
+	self := testSelf(t, root, "gtok")
 	shim := filepath.Join(root, "shim", "git")
 	link(t, self, shim)
 	for _, path := range []string{filepath.Dir(shim), filepath.Join(root, "missing"), ""} {
@@ -128,7 +128,7 @@ func TestFindRealGitMissingAndOverride(t *testing.T) {
 
 func TestHomebrewUpgrade(t *testing.T) {
 	root := t.TempDir()
-	self := testSelf(t, root, "gthok")
+	self := testSelf(t, root, "gtok")
 	old := executable(t, filepath.Join(root, "Cellar", "git", "2.101.0", "bin", "git"), "exit 0")
 	shim := filepath.Join(root, "bin", "git")
 	link(t, "../Cellar/git/2.101.0/bin/git", shim)
@@ -164,10 +164,10 @@ func TestNextDepth(t *testing.T) {
 		}
 	}
 	got, depth, err := NextDepth([]string{"GH_PATH=/real/git"})
-	if err != nil || depth != 1 || !reflect.DeepEqual(got, []string{"GH_PATH=/real/git", "GTHOK_DEPTH=1"}) {
+	if err != nil || depth != 1 || !reflect.DeepEqual(got, []string{"GH_PATH=/real/git", "GTOK_DEPTH=1"}) {
 		t.Fatalf("%v %d %v", got, depth, err)
 	}
-	for _, env := range [][]string{{"GTHOK_DEPTH=4"}, {"GTHOK_DEPTH=999999999999999999999"}, {"GTHOK_DEPTH=-1"}, {"GTHOK_DEPTH="}, {"GTHOK_DEPTH=abc"}, {"GTHOK_DEPTH=1", "GTHOK_DEPTH=2"}} {
+	for _, env := range [][]string{{"GTOK_DEPTH=4"}, {"GTOK_DEPTH=999999999999999999999"}, {"GTOK_DEPTH=-1"}, {"GTOK_DEPTH="}, {"GTOK_DEPTH=abc"}, {"GTOK_DEPTH=1", "GTOK_DEPTH=2"}} {
 		if _, _, err := NextDepth(env); err == nil {
 			t.Errorf("accepted %v", env)
 		}
@@ -176,7 +176,7 @@ func TestNextDepth(t *testing.T) {
 
 func BenchmarkFindRealGit(b *testing.B) {
 	root := b.TempDir()
-	self := executable(b, filepath.Join(root, "gthok"), "exit 0")
+	self := executable(b, filepath.Join(root, "gtok"), "exit 0")
 	shim := filepath.Join(root, "shim", "git")
 	link(b, self, shim)
 	real := executable(b, filepath.Join(root, "real", "git"), "exit 0")

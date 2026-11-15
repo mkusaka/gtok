@@ -22,9 +22,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 func testLogger(t testing.TB, path, level string) *Logger {
@@ -76,7 +76,7 @@ func assertMode(t *testing.T, path string, want os.FileMode) {
 }
 
 func TestOpenPermissionsAndAppend(t *testing.T) {
-	path := filepath.Join(t.TempDir(), "logs", "nested", "gthok.jsonl")
+	path := filepath.Join(t.TempDir(), "logs", "nested", "gtok.jsonl")
 	logger := testLogger(t, path, "info")
 	assertMode(t, filepath.Dir(path), 0700)
 	assertMode(t, filepath.Dir(filepath.Dir(path)), 0700)
@@ -130,7 +130,7 @@ func TestOpenRejectsUnsafeFiles(t *testing.T) {
 	for _, kind := range []string{"log-symlink", "lock-symlink", "directory-symlink", "log-directory", "log-fifo"} {
 		t.Run(kind, func(t *testing.T) {
 			root := t.TempDir()
-			path := filepath.Join(root, "logs", "gthok.jsonl")
+			path := filepath.Join(root, "logs", "gtok.jsonl")
 			if err := os.Mkdir(filepath.Dir(path), 0700); err != nil {
 				t.Fatal(err)
 			}
@@ -148,7 +148,7 @@ func TestOpenRejectsUnsafeFiles(t *testing.T) {
 					t.Fatal(err)
 				}
 			case "directory-symlink":
-				path = filepath.Join(root, "linked", "gthok.jsonl")
+				path = filepath.Join(root, "linked", "gtok.jsonl")
 				if err := os.Symlink(filepath.Join(root, "logs"), filepath.Dir(path)); err != nil {
 					t.Fatal(err)
 				}
@@ -491,8 +491,8 @@ func runProcessWriters(t *testing.T, path string, workers, count int) {
 		cmd := exec.CommandContext(ctx, os.Args[0], "-test.run=^TestLoggingProcessHelper$")
 		cmd.Env = []string{
 			"HOME=" + t.TempDir(), "XDG_CONFIG_HOME=" + t.TempDir(), "PATH=" + t.TempDir(),
-			"GTHOK_LOGGING_HELPER=1", "GTHOK_TEST_LOG=" + path,
-			"GTHOK_TEST_WORKER=" + strconv.Itoa(worker), "GTHOK_TEST_COUNT=" + strconv.Itoa(count),
+			"GTOK_LOGGING_HELPER=1", "GTOK_TEST_LOG=" + path,
+			"GTOK_TEST_WORKER=" + strconv.Itoa(worker), "GTOK_TEST_COUNT=" + strconv.Itoa(count),
 		}
 		cmd.Stdin = gateRead
 		cmd.ExtraFiles = []*os.File{readyWrite}
@@ -537,10 +537,10 @@ func runProcessWriters(t *testing.T, path string, workers, count int) {
 }
 
 func TestLoggingProcessHelper(t *testing.T) {
-	if os.Getenv("GTHOK_LOGGING_HELPER") != "1" {
+	if os.Getenv("GTOK_LOGGING_HELPER") != "1" {
 		return
 	}
-	logger, err := OpenWithRedactor(os.Getenv("GTHOK_TEST_LOG"), "info", redact.New(map[string]string{}))
+	logger, err := OpenWithRedactor(os.Getenv("GTOK_TEST_LOG"), "info", redact.New(map[string]string{}))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -555,12 +555,12 @@ func TestLoggingProcessHelper(t *testing.T) {
 	if _, err := io.ReadFull(os.Stdin, gate[:]); err != nil {
 		t.Fatal(err)
 	}
-	count, err := strconv.Atoi(os.Getenv("GTHOK_TEST_COUNT"))
+	count, err := strconv.Atoi(os.Getenv("GTOK_TEST_COUNT"))
 	if err != nil {
 		t.Fatal(err)
 	}
 	for i := range count {
-		id := os.Getenv("GTHOK_TEST_WORKER") + "-" + strconv.Itoa(i)
+		id := os.Getenv("GTOK_TEST_WORKER") + "-" + strconv.Itoa(i)
 		if err := logger.Write(Record{InvocationID: id, Decision: "allow", Diagnostics: []string{"line\nline\x00"}}); err != nil {
 			t.Fatal(err)
 		}
@@ -617,7 +617,7 @@ func TestConcurrentClose(t *testing.T) {
 }
 
 func BenchmarkLoggerWrite(b *testing.B) {
-	path := filepath.Join(b.TempDir(), "logs", "gthok.jsonl")
+	path := filepath.Join(b.TempDir(), "logs", "gtok.jsonl")
 	logger := testLogger(b, path, "info")
 	record := Record{
 		Time:         time.Date(2026, 10, 14, 1, 2, 3, 0, time.UTC),

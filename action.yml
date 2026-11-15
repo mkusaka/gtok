@@ -1,5 +1,5 @@
-name: "Setup gthok"
-description: "Install gthok (Git wrapper with pre/post hooks and policies) and optionally route `git` through it"
+name: "Setup gtok"
+description: "Install gtok (Git wrapper with pre/post hooks and policies) and optionally route `git` through it"
 author: "mkusaka"
 
 branding:
@@ -9,11 +9,11 @@ branding:
 inputs:
   version:
     description: >-
-      gthok release tag to install (e.g. v0.0.1, or "latest").
+      gtok release tag to install (e.g. v0.0.1, or "latest").
     required: false
     default: "latest"
   shim:
-    description: "Put a git -> gthok shim first on PATH so later steps' `git` goes through gthok"
+    description: "Put a git -> gtok shim first on PATH so later steps' `git` goes through gtok"
     required: false
     default: "true"
   token:
@@ -23,16 +23,16 @@ inputs:
 
 outputs:
   version:
-    description: "Installed gthok release tag"
+    description: "Installed gtok release tag"
     value: ${{ steps.resolve.outputs.tag }}
   path:
-    description: "Absolute path of the installed gthok binary"
+    description: "Absolute path of the installed gtok binary"
     value: ${{ steps.install.outputs.path }}
 
 runs:
   using: "composite"
   steps:
-    - name: Resolve gthok release
+    - name: Resolve gtok release
       id: resolve
       shell: bash
       env:
@@ -41,19 +41,19 @@ runs:
         INPUT_VERSION: ${{ inputs.version }}
       run: |
         set -euo pipefail
-        repo="${ACTION_REPO:-mkusaka/gthok}"
+        repo="${ACTION_REPO:-mkusaka/gtok}"
         tag="${INPUT_VERSION:-latest}"
         if [[ "${tag}" == "latest" ]]; then
           tag="$(gh release view --repo "${repo}" --json tagName --jq .tagName)"
         fi
         if [[ ! "${tag}" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-          echo "::error::Expected a gthok release tag in vX.Y.Z format, got '${tag}'."
+          echo "::error::Expected a gtok release tag in vX.Y.Z format, got '${tag}'."
           exit 1
         fi
         echo "repo=${repo}" >> "${GITHUB_OUTPUT}"
         echo "tag=${tag}" >> "${GITHUB_OUTPUT}"
 
-    - name: Install gthok
+    - name: Install gtok
       id: install
       shell: bash
       env:
@@ -67,15 +67,15 @@ runs:
         case "${RUNNER_OS_VALUE}" in
           Linux) os=linux ;;
           macOS) os=darwin ;;
-          *) echo "::error::gthok supports Linux and macOS runners only (got ${RUNNER_OS_VALUE})"; exit 1 ;;
+          *) echo "::error::gtok supports Linux and macOS runners only (got ${RUNNER_OS_VALUE})"; exit 1 ;;
         esac
         case "${RUNNER_ARCH_VALUE}" in
           X64) arch=amd64 ;;
           ARM64) arch=arm64 ;;
           *) echo "::error::Unsupported architecture: ${RUNNER_ARCH_VALUE}"; exit 1 ;;
         esac
-        asset="gthok_${TAG#v}_${os}_${arch}.tar.gz"
-        dir="${RUNNER_TEMP}/gthok"
+        asset="gtok_${TAG#v}_${os}_${arch}.tar.gz"
+        dir="${RUNNER_TEMP}/gtok"
         rm -rf "${dir}" && mkdir -p "${dir}/bin"
         gh release download "${TAG}" --repo "${REPO}" --pattern "${asset}" --pattern checksums.txt --dir "${dir}"
         # Immutable release attestation: the asset is exactly what the release published.
@@ -89,19 +89,19 @@ runs:
             shasum -a 256 -c -
           fi
         })
-        tar -xzf "${dir}/${asset}" -C "${dir}/bin" gthok
-        "${dir}/bin/gthok" version
+        tar -xzf "${dir}/${asset}" -C "${dir}/bin" gtok
+        "${dir}/bin/gtok" version
         echo "${dir}/bin" >> "${GITHUB_PATH}"
-        echo "path=${dir}/bin/gthok" >> "${GITHUB_OUTPUT}"
+        echo "path=${dir}/bin/gtok" >> "${GITHUB_OUTPUT}"
 
-    - name: Route git through gthok
+    - name: Route git through gtok
       if: inputs.shim == 'true'
       shell: bash
       env:
-        GTHOK: ${{ steps.install.outputs.path }}
+        GTOK: ${{ steps.install.outputs.path }}
       run: | # zizmor: ignore[github-env] -- adding the tool to PATH is the purpose; values are fixed RUNNER_TEMP paths
         set -euo pipefail
-        shim_dir="${RUNNER_TEMP}/gthok/shim"
-        "${GTHOK}" shim install --bin-dir "${shim_dir}"
+        shim_dir="${RUNNER_TEMP}/gtok/shim"
+        "${GTOK}" shim install --bin-dir "${shim_dir}"
         # GITHUB_PATH entries are prepended, so later steps resolve `git` to the shim.
         echo "${shim_dir}" >> "${GITHUB_PATH}"

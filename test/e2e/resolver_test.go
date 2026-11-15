@@ -10,7 +10,7 @@ import (
 	"reflect"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestResolverRecordsDoNotHideOriginalRequests(t *testing.T) {
@@ -39,12 +39,12 @@ func TestResolverRecordsDoNotHideOriginalRequests(t *testing.T) {
 			} else {
 				result.code(t, 0)
 				record := s.onlyRecord(args, input)
-				if record.Kind != "execution" || envMap(record.Env)["GTHOK_RESOLVER_QUERY"] != "" || !bytes.Equal(result.stdout, payload) {
+				if record.Kind != "execution" || envMap(record.Env)["GTOK_RESOLVER_QUERY"] != "" || !bytes.Equal(result.stdout, payload) {
 					t.Fatalf("original read command was mistaken for a probe: %+v", record)
 				}
 			}
 			queries := s.resolverRecords()
-			if len(queries) != 1 || !reflect.DeepEqual(queries[0].Argv, args) || queries[0].StdinLength != 0 || envMap(queries[0].Env)["GTHOK_RESOLVER_QUERY"] != "1" {
+			if len(queries) != 1 || !reflect.DeepEqual(queries[0].Argv, args) || queries[0].StdinLength != 0 || envMap(queries[0].Env)["GTOK_RESOLVER_QUERY"] != "1" {
 				t.Fatalf("resolver query records: %+v", queries)
 			}
 		})
@@ -53,7 +53,7 @@ func TestResolverRecordsDoNotHideOriginalRequests(t *testing.T) {
 
 func TestResolverRecordsDoNotHideDelegates(t *testing.T) {
 	s := newSandbox(t)
-	s.env["GTHOK_RESOLVER_QUERY"], s.env["GTHOK_DELEGATE_ID"] = "1", "test-delegate"
+	s.env["GTOK_RESOLVER_QUERY"], s.env["GTOK_DELEGATE_ID"] = "1", "test-delegate"
 	args := []string{"rev-parse", "--show-toplevel"}
 	input := []byte("delegate input")
 	s.run(fakeBinary, input, args...).code(t, 0)
@@ -77,7 +77,7 @@ func TestWrapperResolverUsesOriginalContextAndGlobals(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(repo, "sub"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	s.env["GTHOK_REAL_GIT"] = real
+	s.env["GTOK_REAL_GIT"] = real
 	s.env["RESOLVE_PUSH_URL"] = "ssh://example.test/push"
 	s.configure(func(c *config.Config) {
 		c.Policy.Mode = config.ModeEnforce

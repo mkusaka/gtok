@@ -9,7 +9,7 @@ import (
 
 func TestLocalConfig(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config"), "PATH": os.Getenv("PATH"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null"}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config"), "PATH": os.Getenv("PATH"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null"}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, "README"), "x\n")
 	trustGit(t, repo, "init", "-q")
@@ -33,14 +33,14 @@ func TestLocalConfig(t *testing.T) {
 	if out := trustGit(t, repo, "status", "--porcelain"); strings.Contains(out, LocalName) {
 		t.Fatalf("local config not excluded: %s", out)
 	}
-	// Local only (no .gthok.yaml): its hooks run without trust and come last.
+	// Local only (no .gtok.yaml): its hooks run without trust and come last.
 	writeFixture(t, filepath.Join(repo, LocalName), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: mine, command: [./mine]}]}\n")
 	c, notes, err := LoadEffective("", repo, env)
 	if err != nil || len(c.Hooks) != 1 || c.Hooks[0].ID != "mine" || c.Policy.Mode != ModeEnforce || !HasConfig(repo, env) {
 		t.Fatalf("local only: %+v %v %v", c, notes, err)
 	}
-	// With .gthok.yaml: project hooks need trust, local hooks follow them.
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: team, command: [./team]}]}\n")
+	// With .gtok.yaml: project hooks need trust, local hooks follow them.
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: team, command: [./team]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, true); err != nil {
 		t.Fatal(err)
 	}
@@ -55,7 +55,7 @@ func TestLocalConfig(t *testing.T) {
 		t.Fatalf("tracked: %+v %v %v", c.Hooks, notes, err)
 	}
 	trustGit(t, repo, "rm", "-q", "--cached", LocalName)
-	// trust and files are .gthok.yaml-only.
+	// trust and files are .gtok.yaml-only.
 	writeFixture(t, filepath.Join(repo, LocalName), "version: 1\ntrust: {include: [x]}\n")
 	if _, notes, _ = LoadEffective("", repo, env); !strings.Contains(strings.Join(notes, "\n"), "local config ignored") {
 		t.Fatalf("trust in local: %v", notes)

@@ -13,10 +13,10 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/process"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/process"
 )
 
 // NotHandled is reserved by the delegate protocol, not a normal git exit code.
@@ -35,7 +35,7 @@ type Selection struct {
 // Select returns only the first definite match, and only when the whole
 // invocation is retry-safe. Read effects alone do not prove safe fallback.
 func Select(c *config.Config, s policy.Subject) *Selection {
-	if s.Env["GTHOK_NO_DELEGATE"] == "1" || !safe(s.Result) {
+	if s.Env["GTOK_NO_DELEGATE"] == "1" || !safe(s.Result) {
 		return nil
 	}
 	for _, d := range c.Delegates {
@@ -96,11 +96,11 @@ func Environment(base []string, overrides map[string]string, selected *Selection
 		values[name] = value
 	}
 	// These cannot be disabled by delegate-specific env overrides.
-	values["GTHOK_NO_DELEGATE"] = "1"
-	values["GTHOK_DELEGATE_ID"] = selected.ID
-	values["GTHOK_ACTION"] = selected.Action
-	values["GTHOK_REPO"] = selected.Repo
-	values["GTHOK_REAL_GIT"] = real
+	values["GTOK_NO_DELEGATE"] = "1"
+	values["GTOK_DELEGATE_ID"] = selected.ID
+	values["GTOK_ACTION"] = selected.Action
+	values["GTOK_REPO"] = selected.Repo
+	values["GTOK_REAL_GIT"] = real
 	env := make([]string, 0, len(values))
 	for name, value := range values {
 		env = append(env, name+"="+value)

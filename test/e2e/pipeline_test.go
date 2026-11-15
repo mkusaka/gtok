@@ -15,9 +15,9 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/logging"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/logging"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestPreHookDecisions(t *testing.T) {
@@ -37,7 +37,7 @@ func TestPreHookDecisions(t *testing.T) {
 				if mode == "enforce" && decision == "deny" {
 					result.code(t, 77)
 					s.absentRecord()
-					if !bytes.Contains(result.stderr, []byte("gthok: denied by hook pre")) || !bytes.Contains(result.stderr, []byte("consumer supplied reason")) {
+					if !bytes.Contains(result.stderr, []byte("gtok: denied by hook pre")) || !bytes.Contains(result.stderr, []byte("consumer supplied reason")) {
 						t.Fatal("missing explicit denial/message")
 					}
 				} else {
@@ -190,21 +190,21 @@ func TestNestedRecursionProbeAndInvalidConfig(t *testing.T) {
 	})
 	t.Run("depth", func(t *testing.T) {
 		s := newSandbox(t)
-		s.env["GTHOK_DEPTH"] = "999"
+		s.env["GTOK_DEPTH"] = "999"
 		result := s.git(nil, "version")
 		result.code(t, 1)
 		s.absentRecord()
 	})
 	t.Run("probe-before-config-and-discovery", func(t *testing.T) {
 		s := newSandbox(t)
-		s.env["GTHOK_PROBE"] = "1"
+		s.env["GTOK_PROBE"] = "1"
 		s.env["PATH"] = s.bin
 		if err := os.WriteFile(s.cfg, []byte("invalid: ["), 0600); err != nil {
 			t.Fatal(err)
 		}
 		result := s.git(nil, "anything")
 		result.code(t, 0)
-		if string(result.stdout) != "gthok-probe\n" || len(result.stderr) != 0 {
+		if string(result.stdout) != "gtok-probe\n" || len(result.stderr) != 0 {
 			t.Fatal("probe output changed")
 		}
 		s.absentRecord()
@@ -217,7 +217,7 @@ func TestNestedRecursionProbeAndInvalidConfig(t *testing.T) {
 		result := s.git([]byte{0, 255}, "version")
 		result.code(t, 0)
 		s.onlyRecord([]string{"version"}, []byte{0, 255})
-		if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.HasPrefix(result.stderr, []byte("gthok: invalid config")) {
+		if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.HasPrefix(result.stderr, []byte("gtok: invalid config")) {
 			t.Fatalf("invalid config warning=%q", result.stderr)
 		}
 		if logs := s.logs(); len(logs) != 1 || logs[0].Decision != "passthrough-invalid-config" || len(logs[0].Diagnostics) == 0 {
@@ -228,7 +228,7 @@ func TestNestedRecursionProbeAndInvalidConfig(t *testing.T) {
 
 func (s *sandbox) logs() []logging.Record {
 	s.t.Helper()
-	data, err := os.ReadFile(filepath.Join(filepath.Dir(s.cfg), "logs", "gthok.jsonl"))
+	data, err := os.ReadFile(filepath.Join(filepath.Dir(s.cfg), "logs", "gtok.jsonl"))
 	if err != nil {
 		s.t.Fatal(err)
 	}
@@ -252,7 +252,7 @@ func TestRoutineConfigNotesAbsentFromLogs(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.yaml"), []byte("version: 1\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.yaml"), []byte("version: 1\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	result := s.git(nil, "version")
@@ -292,7 +292,7 @@ func TestInvalidConfigWarningThrottleAndLogging(t *testing.T) {
 		result.code(t, 0)
 		s.onlyRecord(args, input)
 		if warn {
-			if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.HasPrefix(result.stderr, []byte("gthok: invalid config")) {
+			if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.HasPrefix(result.stderr, []byte("gtok: invalid config")) {
 				t.Fatalf("invalid config warning=%q", result.stderr)
 			}
 		} else if len(result.stderr) != 0 {
@@ -374,7 +374,7 @@ func TestNoConfigDefaultsAndLoggingFailures(t *testing.T) {
 				c.Logging.Path = filepath.Join(bad, "log")
 			})
 			if debug {
-				s.env["GTHOK_DEBUG"] = "1"
+				s.env["GTOK_DEBUG"] = "1"
 			}
 			result := s.git(nil, "version")
 			result.code(t, 0)

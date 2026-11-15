@@ -15,7 +15,7 @@ func BenchmarkLoadEffectiveManifestCache(b *testing.B) {
 		b.Run(state, func(b *testing.B) {
 			root := b.TempDir()
 			repo := filepath.Join(root, "repo")
-			env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+			env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 			if err := os.MkdirAll(repo, 0o700); err != nil {
 				b.Fatal(err)
 			}
@@ -33,11 +33,11 @@ func BenchmarkLoadEffectiveManifestCache(b *testing.B) {
 				include = append(include, name)
 				write(filepath.Join(repo, name), strings.Repeat("d", 4096))
 			}
-			write(filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: local, command: [./hook]}]}\ntrust: {include: ["+strings.Join(include, ",")+"]}\n")
+			write(filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: local, command: [./hook]}]}\ntrust: {include: ["+strings.Join(include, ",")+"]}\n")
 			if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 				b.Fatal(err)
 			}
-			cache := filepath.Join(env["GTHOK_CONFIG_DIR"], "state", "manifest-cache.json")
+			cache := filepath.Join(env["GTOK_CONFIG_DIR"], "state", "manifest-cache.json")
 			b.ReportAllocs()
 			b.ResetTimer()
 			for range b.N {

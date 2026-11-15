@@ -9,8 +9,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
 )
 
 func TestProjectFailurePreservesUserEnforcement(t *testing.T) {
@@ -35,7 +35,7 @@ func TestProjectFailurePreservesUserEnforcement(t *testing.T) {
 			if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 				t.Fatal(err)
 			}
-			if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.yaml"), []byte(project.body), 0600); err != nil {
+			if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.yaml"), []byte(project.body), 0600); err != nil {
 				t.Fatal(err)
 			}
 			result := s.git(nil, "push", "origin", "12", "-R", "acme/repo")
@@ -60,7 +60,7 @@ func TestProjectFailurePreservesUserEnforcement(t *testing.T) {
 				if args[0] != "doctor" {
 					result.code(t, 0)
 				}
-				if !bytes.Contains(result.stdout, []byte(project.note)) || !bytes.Contains(result.stdout, []byte(".gthok.yaml")) {
+				if !bytes.Contains(result.stdout, []byte(project.note)) || !bytes.Contains(result.stdout, []byte(".gtok.yaml")) {
 					t.Fatalf("missing project note for %v: %s %s", args, result.stdout, result.stderr)
 				}
 			}
@@ -81,7 +81,7 @@ func TestInvalidUserConfigFailureMode(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			s := newSandbox(t)
-			s.env["GTHOK_FAIL_CLOSED"] = tc.force
+			s.env["GTOK_FAIL_CLOSED"] = tc.force
 			if tc.name == "forced-unreadable" {
 				if err := os.Remove(s.cfg); err != nil {
 					t.Fatal(err)
@@ -141,7 +141,7 @@ func TestHomeDotfilesDoNotBecomeProject(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(home, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(home, ".gthok.yaml"), []byte("version: 1\npolicy: {mode: enforce, rules: [{id: home-deny, decision: deny}]}\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(home, ".gtok.yaml"), []byte("version: 1\npolicy: {mode: enforce, rules: [{id: home-deny, decision: deny}]}\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	s.cwd = filepath.Join(home, "child")
@@ -159,11 +159,11 @@ func TestHomeDotfilesDoNotBecomeProject(t *testing.T) {
 
 func TestFailClosedEnvironmentRejectsInvalidProject(t *testing.T) {
 	s := newSandbox(t)
-	s.env["GTHOK_FAIL_CLOSED"] = "1"
+	s.env["GTOK_FAIL_CLOSED"] = "1"
 	if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.yaml"), []byte("version: ["), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.yaml"), []byte("version: ["), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for range 2 {

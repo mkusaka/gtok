@@ -7,7 +7,7 @@ may change the request.
 ## Pipeline
 
 ```text
-entrypoint (git shim or gthok exec)
+entrypoint (git shim or gtok exec)
   -> minimal Git global-option parse
   -> configuration presence / effective repository discovery
   -> layered configuration and executable trust

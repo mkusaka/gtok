@@ -62,7 +62,7 @@ func TestTaggedVersionProbeIgnoresRequestBehaviorAndStdin(t *testing.T) {
 	for _, mode := range []string{"", "hook", "pty"} {
 		t.Run("mode="+mode, func(t *testing.T) {
 			cmd, path := fakeGitVersionCommand(t, []string{"--version"},
-				"GTHOK_VERSION_QUERY=1", "FAKEGIT_MODE="+mode,
+				"GTOK_VERSION_QUERY=1", "FAKEGIT_MODE="+mode,
 				"FAKEGIT_EXIT=23", "FAKEGIT_SIGNAL=15", "FAKEGIT_SLEEP=1h", "FAKEGIT_CATCH_TERM_EXIT=42",
 				"FAKEGIT_STDOUT_B64="+base64.StdEncoding.EncodeToString([]byte("request output")),
 				"FAKEGIT_STDERR_B64="+base64.StdEncoding.EncodeToString([]byte("request error")),
@@ -108,7 +108,7 @@ func TestVersionProbeRequiresExactTagAndArguments(t *testing.T) {
 		t.Run(tc.name, func(t *testing.T) {
 			input := []byte("original stdin")
 			cmd, path := fakeGitVersionCommand(t, tc.args,
-				"GTHOK_VERSION_QUERY="+tc.tag, "FAKEGIT_EXIT=23",
+				"GTOK_VERSION_QUERY="+tc.tag, "FAKEGIT_EXIT=23",
 				"FAKEGIT_STDOUT_B64="+base64.StdEncoding.EncodeToString([]byte("original output")),
 			)
 			cmd.Stdin = bytes.NewReader(input)

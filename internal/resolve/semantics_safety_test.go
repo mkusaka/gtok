@@ -6,7 +6,7 @@ import (
 	"sort"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestSemanticRemoteUpdateDefaults(t *testing.T) {

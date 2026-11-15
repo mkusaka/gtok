@@ -25,7 +25,7 @@ func TestDelegateConfig(t *testing.T) {
 		if _, err := Parse([]byte(data), ""); err == nil {
 			t.Fatalf("accepted unsafe user match %s", match)
 		}
-		if _, _, err := parseProject([]byte(data), "/repo/.gthok.yaml"); err == nil {
+		if _, _, err := parseProject([]byte(data), "/repo/.gtok.yaml"); err == nil {
 			t.Fatalf("accepted unsafe project match %s", match)
 		}
 	}
@@ -51,7 +51,7 @@ func TestDelegateTrustAndLayers(t *testing.T) {
 	user := "version: 1\ndelegates: [{id: user, match: {effect: read, level: L1}, command: [/bin/true]}]\n"
 	project := "version: 1\ndelegates: [{id: project, match: {effect: read, level: L1}, command: [./hook], files: [script]}]\n"
 	writeFixture(t, DefaultPath(env), user)
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), project)
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), project)
 	writeFixture(t, filepath.Join(repo, "script"), "first")
 	load := func(active, ignored int) *Config {
 		t.Helper()

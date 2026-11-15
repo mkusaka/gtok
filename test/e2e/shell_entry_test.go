@@ -10,16 +10,16 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
 )
 
 func TestShellInit(t *testing.T) {
 	s := newSandbox(t)
-	for shell, fn := range map[string]string{"zsh": `function git { gthok exec -- "$@"; }`, "bash": `function git { gthok exec -- "$@"; }`, "fish": "function git; gthok exec -- $argv; end"} {
+	for shell, fn := range map[string]string{"zsh": `function git { gtok exec -- "$@"; }`, "bash": `function git { gtok exec -- "$@"; }`, "fish": "function git; gtok exec -- $argv; end"} {
 		result := s.management(nil, "shell-init", shell)
 		result.code(t, 0)
-		if !bytes.HasPrefix(result.stdout, []byte("# gthok:")) || !bytes.Contains(result.stdout, []byte("gthok shim install")) || !bytes.HasSuffix(result.stdout, []byte(fn+"\n")) {
+		if !bytes.HasPrefix(result.stdout, []byte("# gtok:")) || !bytes.Contains(result.stdout, []byte("gtok shim install")) || !bytes.HasSuffix(result.stdout, []byte(fn+"\n")) {
 			t.Fatalf("%s: %s", shell, result.stdout)
 		}
 	}
@@ -27,7 +27,7 @@ func TestShellInit(t *testing.T) {
 	s.management(nil, "shell-init").code(t, 2)
 }
 
-// The function and the shim may coexist: gthok exec skips the shim during
+// The function and the shim may coexist: gtok exec skips the shim during
 // discovery, so real git runs exactly once and policy runs once.
 func TestShellFunctionWithShim(t *testing.T) {
 	for _, shell := range []string{"bash", "zsh"} {
@@ -37,12 +37,12 @@ func TestShellFunctionWithShim(t *testing.T) {
 				t.Skip(shell + " not installed")
 			}
 			s := newSandbox(t)
-			s.env["PATH"] = strings.Join([]string{filepath.Dir(gthokBinary), s.bin, filepath.Dir(s.real)}, string(filepath.ListSeparator))
+			s.env["PATH"] = strings.Join([]string{filepath.Dir(gtokBinary), s.bin, filepath.Dir(s.real)}, string(filepath.ListSeparator))
 			s.configure(func(c *config.Config) {
 				yes := true
 				c.Logging.Enabled = &yes
 			})
-			s.run(path, nil, "-c", `eval "$(gthok shell-init `+shell+`)"; git version`).code(t, 0)
+			s.run(path, nil, "-c", `eval "$(gtok shell-init `+shell+`)"; git version`).code(t, 0)
 			if records := s.records(); len(records) != 1 || records[0].Argv0 != "git" {
 				t.Fatalf("real git records=%+v", records)
 			}
@@ -77,7 +77,7 @@ func TestDoctorShellEntry(t *testing.T) {
 	s.management(nil, "exec", "--", "version").code(t, 0)
 	checks = doctor()
 	entry := checks["shell-entry"]
-	if entry.Status != install.StatusInfo || !strings.Contains(entry.Detail, "bypasses gthok") || entry.Fix == "" || !regexp.MustCompile(`last used \d{4}-\d\d-\d\d \d\d:\d\d:\d\d [+-]\d\d:\d\d `).MatchString(entry.Detail) {
+	if entry.Status != install.StatusInfo || !strings.Contains(entry.Detail, "bypasses gtok") || entry.Fix == "" || !regexp.MustCompile(`last used \d{4}-\d\d-\d\d \d\d:\d\d:\d\d [+-]\d\d:\d\d `).MatchString(entry.Detail) {
 		t.Fatalf("shell entry: %+v", entry)
 	}
 	for _, name := range []string{"path-precedence", "shim-ownership"} {

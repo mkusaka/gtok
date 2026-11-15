@@ -6,8 +6,8 @@ from another rule, gate or pre-hook.
 
 ## Configuration layers
 
-User `config.yaml` loads before repository `.gthok.yaml` and personal
-`.gthok.local.yaml`. Discovery follows the effective Git repository, including
+User `config.yaml` loads before repository `.gtok.yaml` and personal
+`.gtok.local.yaml`. Discovery follows the effective Git repository, including
 root options and environment. Projects and personal overlays can tighten user
 policy and append rules/hooks, not relax it. Runtime/logging are user-only.
 Project policy does not need executable trust. Personal local executables are
@@ -88,7 +88,7 @@ metadata are **not** a no.
 `decision: warn` annotates execution without denying. It does not change the
 policy decision or expectation vocabulary. Rule, transform and successful-hook
 warnings remain structured in explain/hooks-test/log output and are printed
-with the `gthok:` prefix only when execution is permitted. A hook's warning
+with the `gtok:` prefix only when execution is permitted. A hook's warning
 alongside an effective deny is not another allow decision.
 
 ## Inactive gates and trust
@@ -103,9 +103,9 @@ See [security](security.md#project-configuration-trust).
 Check rules without running the requested Git command:
 
 ```sh
-gthok config validate
-gthok explain --no-transforms --json -- push --force origin HEAD:refs/heads/main
-gthok hooks test --expect-policy deny --expect deny -- push --force origin HEAD:refs/heads/main
+gtok config validate
+gtok explain --no-transforms --json -- push --force origin HEAD:refs/heads/main
+gtok hooks test --expect-policy deny --expect deny -- push --force origin HEAD:refs/heads/main
 ```
 
 Explain predicts selection, not hook outcomes. Hooks test runs trusted code.

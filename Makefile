@@ -4,13 +4,13 @@ LDFLAGS := -s -w -X main.version=$(VERSION) -X main.commit=$(COMMIT)
 
 .PHONY: build test race lint fuzz bench schema fmt cross generate generate-check registry
 build:
-	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/gthok ./cmd/gthok
+	CGO_ENABLED=0 go build -trimpath -ldflags "$(LDFLAGS)" -o bin/gtok ./cmd/gtok
 fmt:
 	@out="$$(gofmt -l .)"; if [ -n "$$out" ]; then printf '%s\n' "$$out"; exit 1; fi
 CROSS_DIR ?= dist/cross
 cross:
 	@set -e; for os in darwin linux; do for arch in amd64 arm64; do \
-		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go build -trimpath -ldflags "$(LDFLAGS)" -o "$(CROSS_DIR)/gthok_$${os}_$${arch}" ./cmd/gthok; \
+		CGO_ENABLED=0 GOOS=$$os GOARCH=$$arch go build -trimpath -ldflags "$(LDFLAGS)" -o "$(CROSS_DIR)/gtok_$${os}_$${arch}" ./cmd/gtok; \
 	done; done
 test:
 	go test ./...
@@ -42,10 +42,10 @@ fuzz:
 		go test -run '^$$' -fuzz "^$${t%%:*}$$" -fuzztime $$time $$pkg; \
 	done
 .PHONY: differential
-GTHOK_DIFF_CASES ?= 300
-GTHOK_DIFF_SEED ?= 17
+GTOK_DIFF_CASES ?= 300
+GTOK_DIFF_SEED ?= 17
 differential:
-	GTHOK_DIFF_CASES="$(GTHOK_DIFF_CASES)" GTHOK_DIFF_SEED="$(GTHOK_DIFF_SEED)" go test -count=1 -v -timeout=50m -run '^TestDifferential$$' ./test/differential
+	GTOK_DIFF_CASES="$(GTOK_DIFF_CASES)" GTOK_DIFF_SEED="$(GTOK_DIFF_SEED)" go test -count=1 -v -timeout=50m -run '^TestDifferential$$' ./test/differential
 
 bench:
 	go test -run '^$$' -bench . -benchmem ./...

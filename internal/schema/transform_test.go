@@ -68,7 +68,7 @@ func TestTransformEnvironmentSchema(t *testing.T) {
 	}
 	for _, name := range []string{
 		"", "1CUSTOM", "A=B", "A-B", "A.B", "A B", "A\n", "A\x00B", "日本語",
-		"GTHOK_", "GTHOK_EVENT_ID", "GIT_DIR", "GIT_CONFIG_GLOBAL", "XDG_CONFIG_HOME", "HOME", "PATH",
+		"GTOK_", "GTOK_EVENT_ID", "GIT_DIR", "GIT_CONFIG_GLOBAL", "XDG_CONFIG_HOME", "HOME", "PATH",
 		"LD_PRELOAD", "LD_LIBRARY_PATH", "DYLD_", "DYLD_INSERT_LIBRARIES", "GIT_WORK_TREE", "GIT_NAMESPACE",
 	} {
 		for _, value := range []any{"set", nil} {

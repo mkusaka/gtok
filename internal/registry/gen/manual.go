@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 // Manual parsers remain adapters. This extracts literal comparisons and their

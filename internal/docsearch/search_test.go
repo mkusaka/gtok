@@ -7,7 +7,7 @@ import (
 	"strings"
 	"testing"
 
-	gthok "github.com/mkusaka/gthok"
+	gtok "github.com/mkusaka/gtok"
 )
 
 func TestTokenizer(t *testing.T) {
@@ -119,7 +119,7 @@ func TestVersionURLsAndResultJSON(t *testing.T) {
 		{"v1.2.3-dirty", "main"}, {"1.2", "main"}, {"v0.0.0-20261018000000-abcdef123456", "main"},
 	} {
 		results := index.Search("needle", tc.version, 1)
-		want := "https://github.com/mkusaka/gthok/blob/" + tc.ref + "/README.md#needle"
+		want := "https://github.com/mkusaka/gtok/blob/" + tc.ref + "/README.md#needle"
 		if len(results) != 1 || results[0].URL != want {
 			t.Errorf("version %q results = %+v, want URL %s", tc.version, results, want)
 		}
@@ -138,7 +138,7 @@ func TestVersionURLsAndResultJSON(t *testing.T) {
 }
 
 func TestEmbeddedCorpusSearch(t *testing.T) {
-	index, err := Load(gthok.Docs)
+	index, err := Load(gtok.Docs)
 	if err != nil {
 		t.Fatal(err)
 	}

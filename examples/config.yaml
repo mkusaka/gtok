@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gthok/v0.0.1/schema/config.schema.json
-# User config: ~/.config/gthok/config.yaml. Build binaries as described in README.md.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gtok/v0.0.1/schema/config.schema.json
+# User config: ~/.config/gtok/config.yaml. Build binaries as described in README.md.
 version: 1
 policy:
   mode: enforce

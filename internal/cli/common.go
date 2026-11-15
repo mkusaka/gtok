@@ -15,15 +15,15 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize"
-	native "github.com/mkusaka/gthok/internal/normalize/git"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/process"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize"
+	native "github.com/mkusaka/gtok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/process"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func environment() map[string]string {
@@ -47,7 +47,7 @@ func nestedEnvironment(env map[string]string) (map[string]string, func(), error)
 	for k, v := range env {
 		values[k] = v
 	}
-	values["GTHOK_NESTED"], values["GTHOK_NESTED_TOKEN"] = "1", token
+	values["GTOK_NESTED"], values["GTOK_NESTED_TOKEN"] = "1", token
 	return values, cleanup, nil
 }
 
@@ -56,7 +56,7 @@ func realGit(c *config.Config, env map[string]string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	override := env["GTHOK_REAL_GIT"]
+	override := env["GTOK_REAL_GIT"]
 	if override == "" && c != nil {
 		override = c.Runtime.RealGit
 	}
@@ -64,7 +64,7 @@ func realGit(c *config.Config, env map[string]string) (string, error) {
 	if err != nil && override == "" && len(candidates) > 0 {
 		var skipped []string
 		for _, candidate := range candidates {
-			if candidate.Skipped == "gthok shim" {
+			if candidate.Skipped == "gtok shim" {
 				skipped = append(skipped, candidate.Path)
 			}
 		}
@@ -72,7 +72,7 @@ func realGit(c *config.Config, env map[string]string) (string, error) {
 		if len(skipped) > 0 {
 			detail = strings.Join(skipped, ", ")
 		}
-		err = fmt.Errorf("real git not found on PATH (skipped: %s). Install Git, or set runtime.realGit / GTHOK_REAL_GIT. Run 'gthok doctor' for details", detail)
+		err = fmt.Errorf("real git not found on PATH (skipped: %s). Install Git, or set runtime.realGit / GTOK_REAL_GIT. Run 'gtok doctor' for details", detail)
 	}
 	return real, err
 }
@@ -124,7 +124,7 @@ func aliasAnalysisArgv(argv []string) []string {
 				value = g.Tokens[i]
 			}
 			if strings.HasPrefix(strings.ToLower(value), "alias.") {
-				value = "gthok." + value[len("alias."):]
+				value = "gtok." + value[len("alias."):]
 				if attached {
 					value = key + "=" + value
 				}
@@ -308,7 +308,7 @@ func ignoredHooksWarning(c *config.Config, dir string, now time.Time) string {
 			kind = "hooks/transforms"
 		}
 	}
-	return fmt.Sprintf("%d project %s in %s are not active: %s; review and run 'gthok config trust'; for permanent repository trust: gthok config trust repo .", len(inactive), kind, project.Path, strings.Join(inactive, "; "))
+	return fmt.Sprintf("%d project %s in %s are not active: %s; review and run 'gtok config trust'; for permanent repository trust: gtok config trust repo .", len(inactive), kind, project.Path, strings.Join(inactive, "; "))
 }
 
 func ignoredHookDescription(h config.IgnoredHook) string {

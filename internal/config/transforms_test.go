@@ -25,7 +25,7 @@ func TestTransformConfig(t *testing.T) {
 		if _, err := Parse(data, ""); err == nil {
 			t.Fatalf("accepted user %s", key)
 		}
-		if _, _, err := parseProject(data, "/repo/.gthok.yaml"); err == nil {
+		if _, _, err := parseProject(data, "/repo/.gtok.yaml"); err == nil {
 			t.Fatalf("accepted project %s", key)
 		}
 	}
@@ -52,7 +52,7 @@ func TestTransformRejectsContinueOnError(t *testing.T) {
 	for _, value := range []string{"true", "false", "null"} {
 		data := []byte("version: 1\ntransforms: {pre: [{id: edit, command: [./filter], continueOnError: " + value + "}]}\n")
 		_, userErr := Parse(data, "")
-		_, _, projectErr := parseProject(data, "/repo/.gthok.yaml")
+		_, _, projectErr := parseProject(data, "/repo/.gtok.yaml")
 		for _, err := range []error{userErr, projectErr} {
 			if err == nil || !strings.Contains(err.Error(), "transforms.pre[0].continueOnError") || !strings.Contains(err.Error(), "use onError: allow") {
 				t.Fatalf("continueOnError %s: %v", value, err)
@@ -80,7 +80,7 @@ func TestTransformTimeoutRange(t *testing.T) {
 func TestTransformSelectiveTrustAndNoGate(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
 	body := "version: 1\nhooks: {pre: [{id: gate, command: [./hook]}]}\ntransforms: {pre: [{id: edit, command: [./hook], files: [own]}]}\ntrust: {include: [shared]}\n"
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), body)
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), body)
 	writeFixture(t, filepath.Join(repo, "own"), "first")
 	writeFixture(t, filepath.Join(repo, "shared"), "shared")
 	if _, _, _, _, err := TrustProject("", repo, env, false, true, "edit"); err != nil {
@@ -120,7 +120,7 @@ func TestTransformSelectiveTrustAndNoGate(t *testing.T) {
 func TestTransformUserProjectMerge(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
 	writeFixture(t, DefaultPath(env), "version: 1\ntransforms: {pre: [{id: user, command: [/bin/true]}]}\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\ntransforms: {pre: [{id: project, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\ntransforms: {pre: [{id: project, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, true); err != nil {
 		t.Fatal(err)
 	}
@@ -131,7 +131,7 @@ func TestTransformUserProjectMerge(t *testing.T) {
 	if len(c.Transforms) != 2 || c.Transforms[0].ID != "user" || c.Transforms[1].ID != "project" || !filepath.IsAbs(c.Transforms[1].Command[0]) {
 		t.Fatalf("merge: %+v", c.Transforms)
 	}
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: user, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: user, command: [./hook]}]}\n")
 	c, _, err = LoadEffective("", repo, env)
 	if err != nil {
 		t.Fatal(err)

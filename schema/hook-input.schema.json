@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/hook-input.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/hook-input.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -191,7 +191,7 @@
           "type": "boolean"
         },
         "via": {
-          "description": "Wrapper entry point: shim or explicit gthok exec; both enforce the same policy.",
+          "description": "Wrapper entry point: shim or explicit gtok exec; both enforce the same policy.",
           "enum": [
             "shim",
             "exec"
@@ -895,6 +895,6 @@
     "invocation",
     "classification"
   ],
-  "title": "gthok hook input",
+  "title": "gtok hook input",
   "type": "object"
 }

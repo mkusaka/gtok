@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize/actions"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize/actions"
 )
 
 func adminTestOperation(t *testing.T, argv ...string) (model.Result, model.Operation) {

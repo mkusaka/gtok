@@ -8,9 +8,9 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 // Transform executes exactly one serial request transform. Scheduling and

@@ -1,7 +1,7 @@
 package normalize
 
 import (
-	"github.com/mkusaka/gthok/internal/normalize/actions"
+	"github.com/mkusaka/gtok/internal/normalize/actions"
 	"testing"
 )
 

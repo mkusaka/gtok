@@ -3,9 +3,9 @@
 package normalize
 
 import (
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 func Normalize(inv model.Invocation) (res model.Result) {

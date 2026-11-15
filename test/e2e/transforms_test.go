@@ -3,7 +3,7 @@
 package e2e
 
 import (
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 	"testing"
 )
 

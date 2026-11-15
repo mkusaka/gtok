@@ -18,7 +18,7 @@ func TestProjectFailureRetainsWholeUserConfig(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			root := t.TempDir()
-			env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+			env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 			repo := filepath.Join(root, "repo")
 			writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 			global := DefaultPath(env)
@@ -27,7 +27,7 @@ func TestProjectFailureRetainsWholeUserConfig(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			project := filepath.Join(repo, ".gthok.yaml")
+			project := filepath.Join(repo, ".gtok.yaml")
 			if tc.name == "read" {
 				if err := os.Mkdir(project, 0700); err != nil {
 					t.Fatal(err)
@@ -45,7 +45,7 @@ func TestProjectFailureRetainsWholeUserConfig(t *testing.T) {
 			if len(got.Diagnostics) != 1 || !strings.Contains(strings.Join(notes, "\n"), "ignored; user config retained") {
 				t.Fatalf("project failure not reported: diagnostics=%v notes=%v", got.Diagnostics, notes)
 			}
-			env["GTHOK_FAIL_CLOSED"] = "1"
+			env["GTOK_FAIL_CLOSED"] = "1"
 			got, _, err = LoadEffective(global, repo, env)
 			if !FailClosed(err, env) || !reflect.DeepEqual(got.Policy, want.Policy) {
 				t.Fatalf("forced failure must retain user config and return an error: %+v, %v", got, err)
@@ -56,7 +56,7 @@ func TestProjectFailureRetainsWholeUserConfig(t *testing.T) {
 
 func TestProjectUnknownKeysAreAdvisory(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo := filepath.Join(root, "repo")
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 	body := `version: 1
@@ -77,7 +77,7 @@ hooks:
       env: {ANY_NAME: value}
 trust: {futureTrust: true}
 `
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), body)
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), body)
 	c, notes, err := LoadEffective("", repo, env)
 	if err != nil {
 		t.Fatal(err)
@@ -124,7 +124,7 @@ func TestInvalidUserRawMode(t *testing.T) {
 			if got := FailClosed(err, nil); got != tc.closed {
 				t.Fatalf("failClosed=%v want=%v: %v", got, tc.closed, err)
 			}
-			if !FailClosed(err, map[string]string{"GTHOK_FAIL_CLOSED": "1"}) {
+			if !FailClosed(err, map[string]string{"GTOK_FAIL_CLOSED": "1"}) {
 				t.Fatal("environment override ignored")
 			}
 		})

@@ -7,8 +7,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestHistoryCommitModes(t *testing.T) {

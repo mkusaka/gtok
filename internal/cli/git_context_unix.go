@@ -12,11 +12,11 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/gitmeta"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/model"
-	native "github.com/mkusaka/gthok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/model"
+	native "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 func effectiveContext(args []string, cwd string, env map[string]string) (string, map[string]string) {

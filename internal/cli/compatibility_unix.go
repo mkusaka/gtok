@@ -5,9 +5,9 @@ package cli
 import (
 	"fmt"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // A snapshot belongs to one pipeline invocation, including transform re-analysis.

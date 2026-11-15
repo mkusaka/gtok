@@ -9,9 +9,9 @@ import (
 )
 
 func TestMain(m *testing.M) {
-	if os.Getenv("GTHOK_INSTALL_TEST_HELPER") == "1" {
-		if os.Getenv("GTHOK_PROBE") == "1" {
-			fmt.Print("gthok-probe\n")
+	if os.Getenv("GTOK_INSTALL_TEST_HELPER") == "1" {
+		if os.Getenv("GTOK_PROBE") == "1" {
+			fmt.Print("gtok-probe\n")
 			os.Exit(0)
 		}
 		os.Exit(9)
@@ -29,7 +29,7 @@ func enableFixture(t *testing.T, name string) EnableOptions {
 }
 
 func TestEnableDisableLifecycle(t *testing.T) {
-	for _, name := range []string{"gthok", "gthok-1.2"} {
+	for _, name := range []string{"gtok", "gtok-1.2"} {
 		t.Run(name, func(t *testing.T) {
 			o := enableFixture(t, name)
 			r, err := Enable(o)
@@ -40,7 +40,7 @@ func TestEnableDisableLifecycle(t *testing.T) {
 			if err != nil || info.Mode().Perm() != 0600 {
 				t.Fatalf("state info=%v err=%v", info, err)
 			}
-			if err := ProbeShim(r.ShimPath, []string{"GTHOK_INSTALL_TEST_HELPER=1", "GTHOK_PROBE=old", "HOME=" + t.TempDir(), "PATH=" + o.PathEnv}); err != nil {
+			if err := ProbeShim(r.ShimPath, []string{"GTOK_INSTALL_TEST_HELPER=1", "GTOK_PROBE=old", "HOME=" + t.TempDir(), "PATH=" + o.PathEnv}); err != nil {
 				t.Fatal(err)
 			}
 			again, err := Enable(o)
@@ -64,13 +64,13 @@ func TestEnableDisableLifecycle(t *testing.T) {
 }
 
 func TestEnableUpgradeAndMovedExecutable(t *testing.T) {
-	o := enableFixture(t, "gthok-1.2")
+	o := enableFixture(t, "gtok-1.2")
 	first, err := Enable(o)
 	if err != nil {
 		t.Fatal(err)
 	}
 	old := o.Self
-	o.Self = testSelf(t, filepath.Dir(old), "gthok-1.3")
+	o.Self = testSelf(t, filepath.Dir(old), "gtok-1.3")
 	// The old target is still executable and renamed: state must exclude it
 	// from real-git discovery during the upgrade.
 	updated, err := Enable(o)
@@ -98,7 +98,7 @@ func TestEnableUpgradeAndMovedExecutable(t *testing.T) {
 func TestForeignCollisionAndDisablePreservesReplacement(t *testing.T) {
 	for _, kind := range []string{"file", "symlink", "broken-symlink", "directory"} {
 		t.Run(kind, func(t *testing.T) {
-			o := enableFixture(t, "gthok")
+			o := enableFixture(t, "gtok")
 			shim := filepath.Join(o.BinDir, "git")
 			switch kind {
 			case "file":
@@ -106,7 +106,7 @@ func TestForeignCollisionAndDisablePreservesReplacement(t *testing.T) {
 			case "symlink":
 				link(t, executable(t, filepath.Join(filepath.Dir(o.Self), "foreign"), "printf foreign"), shim)
 			case "broken-symlink":
-				link(t, "/nonexistent-gthok-install-test", shim)
+				link(t, "/nonexistent-gtok-install-test", shim)
 			case "directory":
 				if err := os.MkdirAll(shim, 0755); err != nil {
 					t.Fatal(err)
@@ -131,7 +131,7 @@ func TestForeignCollisionAndDisablePreservesReplacement(t *testing.T) {
 			}
 		})
 	}
-	o := enableFixture(t, "gthok")
+	o := enableFixture(t, "gtok")
 	r, err := Enable(o)
 	if err != nil {
 		t.Fatal(err)
@@ -163,7 +163,7 @@ func TestOwnershipWithoutState(t *testing.T) {
 	if owned, err := IsOwnedShim(shim, self, ""); err != nil || !owned {
 		t.Fatalf("SameFile ownership: %t %v", owned, err)
 	}
-	other := testSelf(t, root, "gthok")
+	other := testSelf(t, root, "gtok")
 	if err := os.Remove(shim); err != nil {
 		t.Fatal(err)
 	}
@@ -177,7 +177,7 @@ func TestOwnershipWithoutState(t *testing.T) {
 }
 
 func TestPathPrecedenceAndSymlinkedBinDir(t *testing.T) {
-	o := enableFixture(t, "gthok")
+	o := enableFixture(t, "gtok")
 	realDir := filepath.Join(filepath.Dir(o.Self), "real")
 	for _, tc := range []struct {
 		path   string
@@ -205,7 +205,7 @@ func TestPathPrecedenceAndSymlinkedBinDir(t *testing.T) {
 }
 
 func TestEnableFailureDoesNotInstall(t *testing.T) {
-	o := enableFixture(t, "gthok")
+	o := enableFixture(t, "gtok")
 	o.PathEnv = o.BinDir
 	if _, err := Enable(o); err == nil {
 		t.Fatal("enabled without real git")
@@ -230,7 +230,7 @@ func TestEnableFailureDoesNotInstall(t *testing.T) {
 
 func TestProbeRejectsWrongOutputAndExit(t *testing.T) {
 	root := t.TempDir()
-	for _, body := range []string{"printf 'gthok-probe'", "printf 'gthok-probe\\n'; exit 1", "printf 'foreign\\n'"} {
+	for _, body := range []string{"printf 'gtok-probe'", "printf 'gtok-probe\\n'; exit 1", "printf 'foreign\\n'"} {
 		path := executable(t, filepath.Join(root, "git"), body)
 		if err := ProbeShim(path, []string{"HOME=" + root, "PATH=/nonexistent"}); err == nil {
 			t.Errorf("accepted %q", body)
@@ -246,20 +246,20 @@ func TestEnableHomebrewShimSurvivesUpgrade(t *testing.T) {
 		t.Fatal(err)
 	}
 	install := func(version string) string {
-		cellar := filepath.Join(root, "Cellar", "gthok", version, "bin")
+		cellar := filepath.Join(root, "Cellar", "gtok", version, "bin")
 		if err := os.MkdirAll(cellar, 0755); err != nil {
 			t.Fatal(err)
 		}
-		self := filepath.Join(cellar, "gthok")
-		if err := os.Rename(testSelf(t, root, "gthok-build"), self); err != nil {
+		self := filepath.Join(cellar, "gtok")
+		if err := os.Rename(testSelf(t, root, "gtok-build"), self); err != nil {
 			t.Fatal(err)
 		}
-		opt := filepath.Join(root, "opt", "gthok")
+		opt := filepath.Join(root, "opt", "gtok")
 		_ = os.Remove(opt)
 		if err := os.MkdirAll(filepath.Dir(opt), 0755); err != nil {
 			t.Fatal(err)
 		}
-		if err := os.Symlink(filepath.Join("..", "Cellar", "gthok", version), opt); err != nil {
+		if err := os.Symlink(filepath.Join("..", "Cellar", "gtok", version), opt); err != nil {
 			t.Fatal(err)
 		}
 		return self
@@ -272,13 +272,13 @@ func TestEnableHomebrewShimSurvivesUpgrade(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	stable := filepath.Join(root, "opt", "gthok", "bin", "gthok")
+	stable := filepath.Join(root, "opt", "gtok", "bin", "gtok")
 	if target, err := os.Readlink(r.ShimPath); err != nil || target != stable {
 		t.Fatalf("shim target %q err=%v, want %q", target, err, stable)
 	}
 	// brew upgrade: new Cellar version, opt repointed, old version removed.
 	newSelf := install("1.1.0")
-	if err := os.RemoveAll(filepath.Join(root, "Cellar", "gthok", "1.0.0")); err != nil {
+	if err := os.RemoveAll(filepath.Join(root, "Cellar", "gtok", "1.0.0")); err != nil {
 		t.Fatal(err)
 	}
 	if _, err := os.Stat(r.ShimPath); err != nil {
@@ -301,8 +301,8 @@ func TestEnableHomebrewShimSurvivesUpgrade(t *testing.T) {
 // `mise prune` keep working; a Homebrew Cellar install points at opt.
 func TestStableTargetMiseAndHomebrew(t *testing.T) {
 	root := t.TempDir()
-	mise := filepath.Join(root, "mise", "installs", "github-mkusaka-gthok")
-	exe := filepath.Join(mise, "0.0.18", "bin", "gthok")
+	mise := filepath.Join(root, "mise", "installs", "github-mkusaka-gtok")
+	exe := filepath.Join(mise, "0.0.18", "bin", "gtok")
 	if err := os.MkdirAll(filepath.Dir(exe), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -315,11 +315,11 @@ func TestStableTargetMiseAndHomebrew(t *testing.T) {
 	if err := os.Symlink("./0.0.18", filepath.Join(mise, "latest")); err != nil {
 		t.Fatal(err)
 	}
-	if got, want := stableTarget(exe), filepath.Join(mise, "latest", "bin", "gthok"); got != want {
+	if got, want := stableTarget(exe), filepath.Join(mise, "latest", "bin", "gtok"); got != want {
 		t.Fatalf("mise: got %s want %s", got, want)
 	}
 	// latest pointing at another version must not be used.
-	other := filepath.Join(mise, "0.0.17", "bin", "gthok")
+	other := filepath.Join(mise, "0.0.17", "bin", "gtok")
 	if err := os.MkdirAll(filepath.Dir(other), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -329,7 +329,7 @@ func TestStableTargetMiseAndHomebrew(t *testing.T) {
 	if got := stableTarget(other); got != other {
 		t.Fatalf("stale latest used: %s", got)
 	}
-	cellar := filepath.Join(root, "brew", "Cellar", "gthok", "0.0.18", "bin", "gthok")
+	cellar := filepath.Join(root, "brew", "Cellar", "gtok", "0.0.18", "bin", "gtok")
 	if err := os.MkdirAll(filepath.Dir(cellar), 0o755); err != nil {
 		t.Fatal(err)
 	}
@@ -339,10 +339,10 @@ func TestStableTargetMiseAndHomebrew(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(root, "brew", "opt"), 0o755); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.Symlink("../Cellar/gthok/0.0.18", filepath.Join(root, "brew", "opt", "gthok")); err != nil {
+	if err := os.Symlink("../Cellar/gtok/0.0.18", filepath.Join(root, "brew", "opt", "gtok")); err != nil {
 		t.Fatal(err)
 	}
-	if got, want := stableTarget(cellar), filepath.Join(root, "brew", "opt", "gthok", "bin", "gthok"); got != want {
+	if got, want := stableTarget(cellar), filepath.Join(root, "brew", "opt", "gtok", "bin", "gtok"); got != want {
 		t.Fatalf("homebrew: got %s want %s", got, want)
 	}
 }

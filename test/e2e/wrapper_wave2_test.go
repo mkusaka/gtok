@@ -7,8 +7,8 @@ import (
 	"path/filepath"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
 )
 
 func TestWrapperExecFailureLog(t *testing.T) {
@@ -40,7 +40,7 @@ func TestWrapperNestedHookLifecycle(t *testing.T) {
 				c.Policy.Mode = config.ModeEnforce
 				h := s.hook("nested", phase)
 				h.Command = []string{"/bin/sh", "-c", `/bin/cat >/dev/null; git version || exit; printf '{"decision":"allow"}'`}
-				h.Env = map[string]string{"GTHOK_NESTED_TOKEN": "cannot override invocation token"}
+				h.Env = map[string]string{"GTOK_NESTED_TOKEN": "cannot override invocation token"}
 				c.Hooks = []config.Hook{h}
 			})
 			s.git(nil, "version").code(t, 0)
@@ -53,13 +53,13 @@ func TestWrapperNestedHookLifecycle(t *testing.T) {
 				nestedIndex = 1
 			}
 			helper := envMap(records[nestedIndex].Env)
-			if helper["GTHOK_NESTED"] != "1" || len(helper["GTHOK_NESTED_TOKEN"]) != 64 || helper["GTHOK_DEPTH"] != "2" {
+			if helper["GTOK_NESTED"] != "1" || len(helper["GTOK_NESTED_TOKEN"]) != 64 || helper["GTOK_DEPTH"] != "2" {
 				t.Fatalf("nested helper env=%v", helper)
 			}
 			if install.ValidNestedToken(filepath.Dir(s.cfg), helper) {
 				t.Fatal("hook token survived wrapper exit/exec")
 			}
-			if child := envMap(records[1-nestedIndex].Env); child["GTHOK_NESTED_TOKEN"] != "" {
+			if child := envMap(records[1-nestedIndex].Env); child["GTOK_NESTED_TOKEN"] != "" {
 				t.Fatal("helper token leaked to original git invocation")
 			}
 		})

@@ -11,9 +11,9 @@ import (
 	"sync"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 // Resolver belongs to one invocation. Configure it before use. Env is the

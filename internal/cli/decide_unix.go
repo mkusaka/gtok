@@ -7,10 +7,10 @@ import (
 	"io"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 type denial struct {
@@ -91,7 +91,7 @@ func evaluateConfig(c *config.Config, subject policy.Subject) policy.Evaluation 
 		if !yes {
 			continue
 		}
-		reason := fmt.Sprintf("hook %s is not trusted (changed since trust); run 'gthok config trust'", h.ID)
+		reason := fmt.Sprintf("hook %s is not trusted (changed since trust); run 'gtok config trust'", h.ID)
 		evaluation.WouldDeny = true
 		evaluation.Decision = protocol.DecisionDeny
 		if c.Policy.Mode == config.ModeObserve {
@@ -186,7 +186,7 @@ func printDenials(w io.Writer, denials []denial, redact func(string) string) {
 		return d.Source + " " + id
 	}
 	first := denials[0]
-	header := "gthok: denied by " + source(first)
+	header := "gtok: denied by " + source(first)
 	if first.ErrorKind != "" {
 		header += " (error: " + first.ErrorKind + ")"
 	}
@@ -206,7 +206,7 @@ func printDenials(w io.Writer, denials []denial, redact func(string) string) {
 // printWarning is shared by git-runs-only diagnostics. Callers must first rule
 // out an enforced denial; the entire warning uses the denial display bounds.
 func printWarning(w io.Writer, source, id, detail, message string, redact func(string) string) {
-	entry := "gthok: warning from " + source + " " + strings.ReplaceAll(redact(id), "\n", `\n`)
+	entry := "gtok: warning from " + source + " " + strings.ReplaceAll(redact(id), "\n", `\n`)
 	if detail != "" {
 		entry += " (" + strings.ReplaceAll(detail, "\n", `\n`) + ")"
 	}

@@ -1,8 +1,8 @@
 package git
 
 import (
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // NeedsStdin only requests finite, one-way input used by analysis. Interactive

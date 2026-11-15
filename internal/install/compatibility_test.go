@@ -45,7 +45,7 @@ func TestGitVersionProbeDoesNotCacheOrReadStdin(t *testing.T) {
 	root := t.TempDir()
 	path, calls := filepath.Join(root, "git"), filepath.Join(root, "calls")
 	for _, version := range []string{"2.56.0", "2.57.1"} {
-		executable(t, path, "test \"$#\" = 1 && test \"$1\" = --version && test \"$GTHOK_VERSION_QUERY\" = 1 || exit 2\n"+
+		executable(t, path, "test \"$#\" = 1 && test \"$1\" = --version && test \"$GTOK_VERSION_QUERY\" = 1 || exit 2\n"+
 			"if read -r line; then exit 3; fi\nprintf 'probe\\n' >> '"+calls+"'\nprintf 'git version "+version+"\\n'")
 		got, err := GitVersion(path, []string{"PATH=/nonexistent"})
 		if err != nil || got != version {

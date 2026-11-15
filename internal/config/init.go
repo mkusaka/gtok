@@ -65,7 +65,7 @@ func Init(scope, cwd string, env map[string]string) (string, error) {
 	return path, f.Close()
 }
 
-// ExcludeLocal adds /.gthok.local.yaml to the repository's info/exclude (shared
+// ExcludeLocal adds /.gtok.local.yaml to the repository's info/exclude (shared
 // by all worktrees) unless an entry is already there; .gitignore is untouched.
 func ExcludeLocal(root string) (string, error) {
 	out, err := exec.Command("git", "-C", root, "rev-parse", "--path-format=absolute", "--git-path", "info/exclude").Output()

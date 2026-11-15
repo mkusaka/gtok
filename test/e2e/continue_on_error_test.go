@@ -8,8 +8,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestContinueOnErrorRunsGhAndPreservesStatus(t *testing.T) {
@@ -52,11 +52,11 @@ func TestContinueOnErrorRunsGhAndPreservesStatus(t *testing.T) {
 			got := s.git(nil, args...)
 			got.code(t, tc.exit)
 			s.onlyRecord(args, nil)
-			want := "gthok: warning from hook advice (continue-on-error)\n  review required\n  [REDACTED]\\x1b[31m\n"
+			want := "gtok: warning from hook advice (continue-on-error)\n  review required\n  [REDACTED]\\x1b[31m\n"
 			outcome, decision := protocol.OutcomeOK, protocol.DecisionDeny
 			if tc.malfunction {
 				outcome, decision = protocol.OutcomeError, ""
-				want = "gthok: warning from hook advice (continue-on-error)\n  exit status 23\n"
+				want = "gtok: warning from hook advice (continue-on-error)\n  exit status 23\n"
 				if tc.redactInput {
 					want += "    stderr: (withheld; redactInput)\n"
 				} else {
@@ -105,7 +105,7 @@ func TestContinueOnErrorSuppressesWarningWhenDenied(t *testing.T) {
 	got := s.git(nil, "version")
 	got.code(t, 77)
 	s.absentRecord()
-	if want := "gthok: denied by hook gate\n  - hook gate: blocking review\n"; string(got.stderr) != want {
+	if want := "gtok: denied by hook gate\n  - hook gate: blocking review\n"; string(got.stderr) != want {
 		t.Fatalf("stderr=%q, want=%q", got.stderr, want)
 	}
 	logs := s.logs()

@@ -31,18 +31,18 @@ const (
 	DefaultResolveTimeout            = 2 * time.Second
 	DefaultHookMaxOutputBytes  int64 = 1 << 20
 	DefaultLoggingLevel              = "info"
-	DefaultLoggingRelativePath       = "logs/gthok.jsonl"
+	DefaultLoggingRelativePath       = "logs/gtok.jsonl"
 )
 
 // Dir uses only the supplied environment, so callers can isolate config lookup.
 func Dir(env map[string]string) string {
-	if d := env["GTHOK_CONFIG_DIR"]; d != "" {
+	if d := env["GTOK_CONFIG_DIR"]; d != "" {
 		return d
 	}
 	if d := env["XDG_CONFIG_HOME"]; d != "" {
-		return filepath.Join(d, "gthok")
+		return filepath.Join(d, "gtok")
 	}
-	return filepath.Join(env["HOME"], ".config", "gthok")
+	return filepath.Join(env["HOME"], ".config", "gtok")
 }
 func DefaultPath(env map[string]string) string { return filepath.Join(Dir(env), "config.yaml") }
 
@@ -148,7 +148,7 @@ func (e *userConfigError) Unwrap() error { return e.error }
 // FailClosed reports whether an invalid user config must prevent git execution.
 func FailClosed(err error, env map[string]string) bool {
 	var failure *userConfigError
-	return err != nil && (env["GTHOK_FAIL_CLOSED"] == "1" || errors.As(err, &failure) && failure.enforce)
+	return err != nil && (env["GTOK_FAIL_CLOSED"] == "1" || errors.As(err, &failure) && failure.enforce)
 }
 
 func invalidUserConfig(path string, data []byte, cause error) error {

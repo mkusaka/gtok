@@ -10,7 +10,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestBodyFileDefaultStdinTimeoutReplaysLiveBinaryRemainder(t *testing.T) {

@@ -22,7 +22,7 @@ func checkNamed(t *testing.T, checks []Check, name string) Check {
 }
 func doctorFixture(t *testing.T) DoctorOptions {
 	t.Helper()
-	o := enableFixture(t, "gthok")
+	o := enableFixture(t, "gtok")
 	result, err := Enable(o)
 	if err != nil {
 		t.Fatal(err)
@@ -62,9 +62,9 @@ func TestDoctorBuildVersion(t *testing.T) {
 			case "directory":
 				o.Self = filepath.Dir(o.Self)
 			}
-			c := checkNamed(t, Checks(o), "gthok")
+			c := checkNamed(t, Checks(o), "gtok")
 			if c.Status != tc.want {
-				t.Fatalf("gthok check = %+v, want status %s", c, tc.want)
+				t.Fatalf("gtok check = %+v, want status %s", c, tc.want)
 			}
 			if strings.Contains(c.Detail, warning) != (tc.want == StatusWarn) {
 				t.Errorf("unexpected development warning: %+v", c)
@@ -82,7 +82,7 @@ func TestDoctorBuildVersion(t *testing.T) {
 func TestDoctorHealthyAndRecursionRisks(t *testing.T) {
 	o := doctorFixture(t)
 	checks := Checks(o)
-	for _, name := range []string{"gthok", "real-git", "path-precedence", "shim-ownership", "recursion-risk"} {
+	for _, name := range []string{"gtok", "real-git", "path-precedence", "shim-ownership", "recursion-risk"} {
 		if c := checkNamed(t, checks, name); c.Status != StatusOK {
 			t.Errorf("%+v", c)
 		}
@@ -94,11 +94,11 @@ func TestDoctorHealthyAndRecursionRisks(t *testing.T) {
 		t.Errorf("%+v", c)
 	}
 	shim := filepath.Join(o.BinDir, "git")
-	o.Env = []string{"GTHOK_DEPTH=4"}
+	o.Env = []string{"GTOK_DEPTH=4"}
 	if c := checkNamed(t, Checks(o), "recursion-risk"); c.Status != StatusFail || !strings.Contains(c.Detail, "recursion limit") {
 		t.Errorf("%+v", c)
 	}
-	o.Env = []string{"GTHOK_DEPTH=3"}
+	o.Env = []string{"GTOK_DEPTH=3"}
 	if c := checkNamed(t, Checks(o), "recursion-risk"); c.Status != StatusOK {
 		t.Errorf("%+v", c)
 	}
@@ -249,7 +249,7 @@ func TestDoctorNeverExecutesKnownRenamedShim(t *testing.T) {
 	o := doctorFixture(t)
 	root := filepath.Dir(o.Self)
 	marker := filepath.Join(root, "executed")
-	foreignSelf := executable(t, filepath.Join(root, "gthok-old-renamed"), "printf executed > '"+marker+"'")
+	foreignSelf := executable(t, filepath.Join(root, "gtok-old-renamed"), "printf executed > '"+marker+"'")
 	otherShim := filepath.Join(root, "other-bin", "git")
 	link(t, foreignSelf, otherShim)
 	state, err := loadState(o.StateDir)
@@ -306,7 +306,7 @@ func TestDoctorMissingBinaryAndRealGit(t *testing.T) {
 	o := doctorFixture(t)
 	o.Self = filepath.Join(filepath.Dir(o.Self), "missing")
 	checks := Checks(o)
-	if c := checkNamed(t, checks, "gthok"); c.Status != StatusFail {
+	if c := checkNamed(t, checks, "gtok"); c.Status != StatusFail {
 		t.Errorf("%+v", c)
 	}
 	if c := checkNamed(t, checks, "real-git"); c.Status != StatusFail {

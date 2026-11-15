@@ -12,7 +12,7 @@ import (
 
 func hookTrustRecord(t *testing.T, repo string, env map[string]string) trustEntry {
 	t.Helper()
-	canonical, err := filepath.EvalSymlinks(filepath.Join(repo, ".gthok.yaml"))
+	canonical, err := filepath.EvalSymlinks(filepath.Join(repo, ".gtok.yaml"))
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -61,7 +61,7 @@ func TestHookTrustIgnoresNonExecutableYAMLChanges(t *testing.T) {
 				t.Fatal(err)
 			}
 			before := hookTrustRecord(t, repo, env)
-			writeFixture(t, filepath.Join(repo, ".gthok.yaml"), replacement)
+			writeFixture(t, filepath.Join(repo, ".gtok.yaml"), replacement)
 			assertHookTrust(t, repo, env, []string{"review"}, nil)
 			if _, _, _, diff, err := TrustProject("", repo, env, false, false); err != nil || len(diff) != 0 {
 				t.Fatalf("non-executable YAML generated file diff: %q, %v", diff, err)
@@ -88,7 +88,7 @@ func TestHookTrustDependencyIsolation(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			repo, env, _ := trustRepositoryFixture(t)
-			project := filepath.Join(repo, ".gthok.yaml")
+			project := filepath.Join(repo, ".gtok.yaml")
 			writeFixture(t, project, body)
 			for _, path := range []string{"a", "b", "c", "own-a", "own-b", "shared", "global"} {
 				writeFixture(t, filepath.Join(repo, path), "reviewed "+path)
@@ -145,7 +145,7 @@ func TestHookTrustDefinitionFields(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			repo, env, _ := trustRepositoryFixture(t)
-			project := filepath.Join(repo, ".gthok.yaml")
+			project := filepath.Join(repo, ".gtok.yaml")
 			hook := "id: a, command: [./hook]"
 			phase := "pre"
 			if tc.base == "post" {
@@ -189,7 +189,7 @@ func TestContinueOnErrorChangeRevokesTrust(t *testing.T) {
 	for _, initial := range []bool{false, true} {
 		t.Run(fmt.Sprint(initial), func(t *testing.T) {
 			repo, env, _ := trustRepositoryFixture(t)
-			project := filepath.Join(repo, ".gthok.yaml")
+			project := filepath.Join(repo, ".gtok.yaml")
 			body := func(value bool) string {
 				return fmt.Sprintf("version: 1\nhooks: {pre: [{id: review, command: [./hook], continueOnError: %t}, {id: sibling, command: [./hook]}]}\n", value)
 			}
@@ -210,7 +210,7 @@ func TestContinueOnErrorChangeRevokesTrust(t *testing.T) {
 
 func TestHookTrustFileDeduplication(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks:\n  pre:\n  - {id: a, command: [./hook], files: [hook, ./hook, data, data]}\n  - {id: b, command: [./hook], files: [data]}\ntrust: {include: [hook, data, ./data]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks:\n  pre:\n  - {id: a, command: [./hook], files: [hook, ./hook, data, data]}\n  - {id: b, command: [./hook], files: [data]}\ntrust: {include: [hook, data, ./data]}\n")
 	writeFixture(t, filepath.Join(repo, "data"), "shared data")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
@@ -228,13 +228,13 @@ func TestHookTrustFileDeduplication(t *testing.T) {
 
 func TestSelectiveHookTrustPreservesSiblingBaseline(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
 	}
 	before := hookTrustRecord(t, repo, env)
 	writeFixture(t, filepath.Join(repo, "hook"), "selectively reviewed code\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook], timeout: 3s}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook], timeout: 3s}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false, "a"); err != nil {
 		t.Fatal(err)
 	}
@@ -277,7 +277,7 @@ func TestProjectHookFilesValidation(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: review, command: [./hook], files: ["+string(quoted)+"]}]}\n")
+			writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: review, command: [./hook], files: ["+string(quoted)+"]}]}\n")
 			if _, _, _, _, err := TrustProject("", repo, env, false, false); err == nil {
 				t.Fatalf("unsafe dependency %q accepted", path)
 			}
@@ -291,7 +291,7 @@ func TestProjectHookFilesValidation(t *testing.T) {
 
 func TestMissingProjectHookFilesTracked(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook], files: [missing]}, {id: b, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook], files: [missing]}, {id: b, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
 	}
@@ -333,7 +333,7 @@ func TestLegacyTrustRecordsNeverAuthorize(t *testing.T) {
 
 func TestHookTrustStableAcrossUnrelatedHookAndMapOrder(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	project := filepath.Join(repo, ".gthok.yaml")
+	project := filepath.Join(repo, ".gtok.yaml")
 	writeFixture(t, project, "version: 1\nhooks:\n  pre:\n  - {id: a, command: [./hook], env: {A: one, B: two}, files: [x, y]}\n  - {id: b, command: [./hook]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
@@ -352,7 +352,7 @@ func TestHookTrustStableAcrossUnrelatedHookAndMapOrder(t *testing.T) {
 
 func TestSelectiveInitialTrustLeavesSiblingUntrusted(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook]}, {id: b, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false, "a"); err != nil {
 		t.Fatal(err)
 	}
@@ -372,7 +372,7 @@ func TestHookFilesContainedSymlinkAndRemoval(t *testing.T) {
 	if err := os.Symlink("data", filepath.Join(repo, "link")); err != nil {
 		t.Fatal(err)
 	}
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook], files: [link]}, {id: b, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {pre: [{id: a, command: [./hook], files: [link]}, {id: b, command: [./hook]}]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 		t.Fatal(err)
 	}
@@ -399,7 +399,7 @@ func TestIgnoredHookGateBlocking(t *testing.T) {
 	} {
 		t.Run(tc.name, func(t *testing.T) {
 			repo, env, _ := trustRepositoryFixture(t)
-			writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks: {"+tc.phase+": [{id: review, command: [./hook]"+tc.definition+"}]}\n")
+			writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks: {"+tc.phase+": [{id: review, command: [./hook]"+tc.definition+"}]}\n")
 			if tc.trust {
 				if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
 					t.Fatal(err)

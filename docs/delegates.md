@@ -34,9 +34,9 @@ environment. Relative executable paths resolve from the config directory;
 other argument paths retain ordinary process-cwd semantics. Never configure a
 delegate that silently changes the request or starts a write before declining.
 
-Metadata environment includes `GTHOK_DELEGATE_ID`, `GTHOK_ACTION`, `GTHOK_REPO`,
-`GTHOK_REAL_GIT` and `GTHOK_NO_DELEGATE=1`. That last value prevents recursive
-routing. Setting `GTHOK_NO_DELEGATE=1` for a call disables delegates, not policy
+Metadata environment includes `GTOK_DELEGATE_ID`, `GTOK_ACTION`, `GTOK_REPO`,
+`GTOK_REAL_GIT` and `GTOK_NO_DELEGATE=1`. That last value prevents recursive
+routing. Setting `GTOK_NO_DELEGATE=1` for a call disables delegates, not policy
 or hooks. Project delegates use executable content/path trust; inactive ones are
 ignored, never gates. User/personal trust follows the usual rules.
 
@@ -51,7 +51,7 @@ ignored, never gates. User/personal trust follows the usual rules.
 | Other exit status or signal | Pass through unchanged; post hooks see this actual result. |
 
 Exit 125 is permitted to have stderr, but not stdout. A timeout after **either**
-output stream is unsafe to retry. Fallback/error emits a `gthok:` warning.
+output stream is unsafe to retry. Fallback/error emits a `gtok:` warning.
 Stdout/stderr stream through monitored pipes, so a delegate does not see TTY
 outputs. Non-TTY stdin is privately replayable for fallback; an incomplete live
 analysis spool cannot safely route. A declining delegate must not consume TTY

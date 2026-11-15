@@ -1,8 +1,8 @@
 package redact
 
 import (
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
 	"strings"
 	"testing"
 )

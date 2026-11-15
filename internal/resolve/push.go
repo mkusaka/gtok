@@ -5,7 +5,7 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func isPush(op model.Operation) bool {

@@ -1,9 +1,9 @@
 version: 2
-project_name: gthok
+project_name: gtok
 
 builds:
-  - main: ./cmd/gthok
-    binary: gthok
+  - main: ./cmd/gtok
+    binary: gtok
     env:
       - CGO_ENABLED=0
     flags:
@@ -20,17 +20,17 @@ builds:
 
 archives:
   - formats: ["tar.gz"]
-    # mise use github:mkusaka/gthok auto-detects these OS/architecture assets.
+    # mise use github:mkusaka/gtok auto-detects these OS/architecture assets.
     name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     files:
       - README.md
       - LICENSE
 
 nfpms:
-  - package_name: gthok
+  - package_name: gtok
     file_name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
     vendor: mkusaka
-    homepage: https://github.com/mkusaka/gthok
+    homepage: https://github.com/mkusaka/gtok
     maintainer: mkusaka <https://github.com/mkusaka>
     description: Transparent Git wrapper with canonical operations, policies, and pre/post hooks.
     license: MIT
@@ -39,9 +39,9 @@ nfpms:
     dependencies: [git]
     contents:
       - src: README.md
-        dst: /usr/share/doc/gthok/README.md
+        dst: /usr/share/doc/gtok/README.md
       - src: LICENSE
-        dst: /usr/share/doc/gthok/LICENSE
+        dst: /usr/share/doc/gtok/LICENSE
 
 checksum:
   name_template: checksums.txt

@@ -1,8 +1,8 @@
 # Exit status
 
-Once Git or a handled delegate executes, gthok preserves its status and re-raises
+Once Git or a handled delegate executes, gtok preserves its status and re-raises
 its terminating signal. Post-hook failures never change that outcome. Wrapper
-origin decisions use the stable stderr prefix **`gthok:`** and JSONL diagnostics.
+origin decisions use the stable stderr prefix **`gtok:`** and JSONL diagnostics.
 
 | Status | Wrapper meaning |
 | --- | --- |
@@ -23,13 +23,13 @@ A successful post hook returning deny is diagnostic only.
 The first denial line is stable:
 
 ```text
-gthok: denied by hook protected-ref (+1 more)
+gtok: denied by hook protected-ref (+1 more)
   - hook protected-ref: Protected branch update rejected.
   - hook scanner: hook timed out
 ```
 
 A malfunction-only denial includes its error kind, for example:
-`gthok: denied by hook scanner (error: timeout)`. Sources include rule, policy,
+`gtok: denied by hook scanner (error: timeout)`. Sources include rule, policy,
 config (including an inactive gate ID), hook, transform or delegate. Messages
 remain redacted/control-sanitized; structured JSON keeps full diagnostic fields.
 Content denials take precedence over error-only denials.

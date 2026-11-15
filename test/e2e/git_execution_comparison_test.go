@@ -13,7 +13,7 @@ import (
 	"syscall"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 type gitRepositoryState struct {
@@ -126,7 +126,7 @@ func TestGitExecutionComparison(t *testing.T) {
 		{"config", []string{"config", "set", "fixture.value", "two words"}, nil, 0},
 		{"clean preview", []string{"clean", "-n"}, nil, 0},
 		{"clean", []string{"clean", "-f"}, nil, 0},
-		{"usage 129", []string{"branch", "--gthok-invalid-option"}, nil, 129},
+		{"usage 129", []string{"branch", "--gtok-invalid-option"}, nil, 129},
 		{"missing revision", []string{"rev-parse", "--verify", "refs/heads/missing"}, nil, 128},
 	} {
 		t.Run(tc.name, func(t *testing.T) {

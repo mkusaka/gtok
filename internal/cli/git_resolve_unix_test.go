@@ -19,7 +19,7 @@ func TestManagementResolverUsesOriginalContextAndGlobals(t *testing.T) {
 	for key, value := range env {
 		t.Setenv(key, value)
 	}
-	t.Setenv("GTHOK_REAL_GIT", real)
+	t.Setenv("GTOK_REAL_GIT", real)
 	t.Setenv("RESOLVE_PUSH_URL", "ssh://example.test/push")
 	t.Setenv("RESOLVE_TEST_SECRET", "fixture-inline-value")
 	args := []string{"-C", "repo", "-C", "sub", "-C", "..", "--git-dir=.git", "--work-tree=.", "--namespace=fixture", "-c", "remote.origin.url=https://example.test/fixture-inline-value", "--config-env=remote.origin.pushurl=RESOLVE_PUSH_URL", "status"}
@@ -36,7 +36,7 @@ func TestManagementResolverUsesOriginalContextAndGlobals(t *testing.T) {
 		if remote.URL != "https://example.test/fixture-inline-value" || len(remote.PushURLs) != 1 || remote.PushURLs[0] != "ssh://example.test/push" {
 			t.Fatalf("raw config globals were lost: %+v", remote)
 		}
-		if _, ok := a.invocation.Env["GTHOK_RESOLVER_QUERY"]; ok {
+		if _, ok := a.invocation.Env["GTOK_RESOLVER_QUERY"]; ok {
 			t.Fatal("resolver provenance leaked into invocation environment")
 		}
 	}
@@ -46,10 +46,10 @@ func TestManagementNoResolveDoesNotDiscoverGit(t *testing.T) {
 	root := t.TempDir()
 	t.Chdir(root)
 	t.Setenv("HOME", root)
-	t.Setenv("GTHOK_CONFIG_DIR", root)
+	t.Setenv("GTOK_CONFIG_DIR", root)
 	t.Setenv("GIT_CONFIG_NOSYSTEM", "1")
 	t.Setenv("GIT_CONFIG_GLOBAL", "/dev/null")
-	t.Setenv("GTHOK_REAL_GIT", filepath.Join(root, "missing-git"))
+	t.Setenv("GTOK_REAL_GIT", filepath.Join(root, "missing-git"))
 	t.Setenv("PATH", root)
 	a, err := managementAnalyze([]string{"status"}, false, false, false, true)
 	if err != nil {

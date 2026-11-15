@@ -7,10 +7,10 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
 )
 
 const (
@@ -33,7 +33,7 @@ type Runner struct {
 	Redact      func(string) string
 	// Redactor is shared across serial transforms, hook input and diagnostics.
 	Redactor *redact.Redactor
-	// Source is exported to hooks as GTHOK_EVENT_SOURCE (shim, exec or test).
+	// Source is exported to hooks as GTOK_EVENT_SOURCE (shim, exec or test).
 	// Hooks may use it only to skip side effects (notifications) in tests,
 	// never to change their decision.
 	Source string

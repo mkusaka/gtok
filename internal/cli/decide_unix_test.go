@@ -7,10 +7,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 func TestDenialOrderingAndStatus(t *testing.T) {
@@ -26,7 +26,7 @@ func TestDenialOrderingAndStatus(t *testing.T) {
 	got := decide(config.ModeEnforce, evaluation, pre, false)
 	var stderr bytes.Buffer
 	printDenials(&stderr, got.Denials, func(s string) string { return strings.ReplaceAll(s, "secret", "[REDACTED]") })
-	want := "gthok: denied by rule first (+3 more)\n  - rule first: rule reason\n  - policy unknownMutation: policy reason\n  - hook content: first line\n    [REDACTED] continuation\n  - hook failed: exit status 23\n"
+	want := "gtok: denied by rule first (+3 more)\n  - rule first: rule reason\n  - policy unknownMutation: policy reason\n  - hook content: first line\n    [REDACTED] continuation\n  - hook failed: exit status 23\n"
 	if got.ExitCode != 77 || stderr.String() != want {
 		t.Fatalf("status=%d stderr=%q", got.ExitCode, stderr.String())
 	}
@@ -49,7 +49,7 @@ func TestHookErrorDenialKinds(t *testing.T) {
 			got := decide(config.ModeEnforce, policy.Evaluation{}, pre, false)
 			var stderr bytes.Buffer
 			printDenials(&stderr, got.Denials, func(s string) string { return s })
-			want := "gthok: denied by hook gate (error: " + tc.kind + ")\n  - hook gate: detail\n"
+			want := "gtok: denied by hook gate (error: " + tc.kind + ")\n  - hook gate: detail\n"
 			if got.ExitCode != 78 || stderr.String() != want {
 				t.Fatalf("status=%d stderr=%q", got.ExitCode, stderr.String())
 			}
@@ -72,13 +72,13 @@ func TestSkippedStdinPolicyRelabel(t *testing.T) {
 }
 
 func TestDenialRedactionPreservesGrammar(t *testing.T) {
-	for _, secret := range []string{"gthok", "hook", "error", "timeout"} {
+	for _, secret := range []string{"gtok", "hook", "error", "timeout"} {
 		t.Run(secret, func(t *testing.T) {
 			var stderr bytes.Buffer
 			printDenials(&stderr, []denial{{Source: "hook", ID: secret + "\r\ninjected", Message: secret, ErrorKind: "timeout"}}, func(s string) string {
 				return strings.ReplaceAll(s, secret, "[REDACTED]")
 			})
-			want := "gthok: denied by hook [REDACTED]\\x0d\\ninjected (error: timeout)\n  - hook [REDACTED]\\x0d\\ninjected: [REDACTED]\n"
+			want := "gtok: denied by hook [REDACTED]\\x0d\\ninjected (error: timeout)\n  - hook [REDACTED]\\x0d\\ninjected: [REDACTED]\n"
 			if stderr.String() != want {
 				t.Fatalf("stderr=%q, want=%q", stderr.String(), want)
 			}
@@ -97,7 +97,7 @@ func TestErrorDenialShowsStderrTail(t *testing.T) {
 	printDenials(&stderr, got.Denials, func(s string) string { return s })
 	out := stderr.String()
 	for _, want := range []string{
-		"gthok: denied by hook gate (error: exit 127) (+1 more)",
+		"gtok: denied by hook gate (error: exit 127) (+1 more)",
 		"      stderr: loading config\n      stderr: env: bun: No such file or directory",
 		"      stderr: (withheld; redactInput)",
 	} {
@@ -140,7 +140,7 @@ func TestContinuedWarningDiagnostics(t *testing.T) {
 			printHookWarnings(&stderr, pre, []config.Hook{{ID: "advice", RedactInput: tc.redactInput}}, func(s string) string {
 				return strings.ReplaceAll(s, "secret", "[REDACTED]")
 			})
-			want := "gthok: warning from hook advice (continue-on-error)\n" + strings.ReplaceAll(tc.want, "secret", "[REDACTED]")
+			want := "gtok: warning from hook advice (continue-on-error)\n" + strings.ReplaceAll(tc.want, "secret", "[REDACTED]")
 			if stderr.String() != want {
 				t.Fatalf("stderr=%q, want=%q", stderr.String(), want)
 			}
@@ -154,7 +154,7 @@ func TestWarningSanitizesAndBoundsWholeEntry(t *testing.T) {
 		strings.Repeat("secret\x1b[31m"+strings.Repeat("界", 500)+"\n", 50),
 		func(s string) string { return strings.ReplaceAll(s, "secret", "[REDACTED]") })
 	out := stderr.String()
-	if !strings.HasPrefix(out, "gthok: warning from hook [REDACTED]\\x0d\\ninjected (continue-on-error)\n") ||
+	if !strings.HasPrefix(out, "gtok: warning from hook [REDACTED]\\x0d\\ninjected (continue-on-error)\n") ||
 		strings.ContainsAny(out, "\x1b\r") || strings.Contains(out, "secret") ||
 		!strings.Contains(out, "truncated)") || len(out) > 4<<10 || strings.Count(out, "\n") > 40 {
 		t.Fatalf("unsafe or unbounded warning: %q", out)
@@ -162,13 +162,13 @@ func TestWarningSanitizesAndBoundsWholeEntry(t *testing.T) {
 }
 
 func TestWarningRedactionPreservesGrammar(t *testing.T) {
-	for _, secret := range []string{"gthok", "hook", "continue-on-error"} {
+	for _, secret := range []string{"gtok", "hook", "continue-on-error"} {
 		t.Run(secret, func(t *testing.T) {
 			var stderr bytes.Buffer
 			printWarning(&stderr, "hook", secret, "continue-on-error", secret, func(s string) string {
 				return strings.ReplaceAll(s, secret, "[REDACTED]")
 			})
-			if want := "gthok: warning from hook [REDACTED] (continue-on-error)\n  [REDACTED]\n"; stderr.String() != want {
+			if want := "gtok: warning from hook [REDACTED] (continue-on-error)\n  [REDACTED]\n"; stderr.String() != want {
 				t.Fatalf("stderr=%q, want=%q", stderr.String(), want)
 			}
 		})

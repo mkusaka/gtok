@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/transform-response.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/transform-response.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -18,7 +18,7 @@
       "description": "Environment edits; string values set variables and null unsets them.",
       "propertyNames": {
         "not": {
-          "pattern": "^(GTHOK_.*|GIT_.*|DYLD_.*|XDG_CONFIG_HOME|HOME|PATH|LD_PRELOAD|LD_LIBRARY_PATH)$"
+          "pattern": "^(GTOK_.*|GIT_.*|DYLD_.*|XDG_CONFIG_HOME|HOME|PATH|LD_PRELOAD|LD_LIBRARY_PATH)$"
         },
         "pattern": "^[A-Za-z_][A-Za-z0-9_]*$"
       },
@@ -50,6 +50,6 @@
   "required": [
     "schemaVersion"
   ],
-  "title": "gthok transform response",
+  "title": "gtok transform response",
   "type": "object"
 }

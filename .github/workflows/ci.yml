@@ -79,8 +79,8 @@ jobs:
         if: matrix.os == 'linux' && matrix.arch == 'amd64'
         run: make differential
         env:
-          GTHOK_DIFF_CASES: '300'
-          GTHOK_DIFF_SEED: '17'
+          GTOK_DIFF_CASES: '300'
+          GTOK_DIFF_SEED: '17'
       - name: Race test
         run: make race
         env:
@@ -92,7 +92,7 @@ jobs:
       - name: Build
         run: make build
       - name: Cross-compile release targets
-        run: make cross CROSS_DIR="$RUNNER_TEMP/gthok-cross"
+        run: make cross CROSS_DIR="$RUNNER_TEMP/gtok-cross"
 
   lint:
     name: golangci-lint

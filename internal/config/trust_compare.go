@@ -11,13 +11,13 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/gitmeta"
 )
 
 // Repository provenance only selects a review baseline. It never grants trust
 // or participates in the content digest, including when metadata is unavailable.
 func currentTrustEntry(project, canonical string, p *Config, files []trustedFile, env map[string]string) trustEntry {
-	entry := trustEntry{ManifestVersion: 2, FirstPath: canonical, ConfigPath: ".gthok.yaml", Files: files,
+	entry := trustEntry{ManifestVersion: 2, FirstPath: canonical, ConfigPath: ".gtok.yaml", Files: files,
 		HookDigests: make(map[string]string, len(p.Hooks)+len(p.Transforms)), Definitions: make(map[string]json.RawMessage, len(p.Hooks)+len(p.Transforms))}
 	for _, h := range p.trustHooks() {
 		definition := hookDefinition(h)

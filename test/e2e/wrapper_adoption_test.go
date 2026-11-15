@@ -12,8 +12,8 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
 	"go.yaml.in/yaml/v3"
 )
 
@@ -58,7 +58,7 @@ func TestAnyConfigEnablesDefaultLogging(t *testing.T) {
 				if err := os.Mkdir(filepath.Join(s.cwd, ".git"), 0700); err != nil {
 					t.Fatal(err)
 				}
-				if err := os.WriteFile(filepath.Join(s.cwd, ".gthok.yaml"), []byte("version: 1\n"), 0600); err != nil {
+				if err := os.WriteFile(filepath.Join(s.cwd, ".gtok.yaml"), []byte("version: 1\n"), 0600); err != nil {
 					t.Fatal(err)
 				}
 			} else if err := os.WriteFile(s.cfg, []byte("version: 1\n"), 0600); err != nil {
@@ -97,7 +97,7 @@ func warningProject(t *testing.T, s *sandbox, change func(*config.Config)) (stri
 	if err != nil {
 		t.Fatal(err)
 	}
-	path := filepath.Join(s.cwd, ".gthok.yaml")
+	path := filepath.Join(s.cwd, ".gtok.yaml")
 	if err := os.WriteFile(path, data, 0600); err != nil {
 		t.Fatal(err)
 	}
@@ -119,10 +119,10 @@ func TestIgnoredHooksWarningThrottleAndManifestChanges(t *testing.T) {
 			}
 			return result.stderr
 		}
-		if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.Contains(result.stderr, []byte("2 project hooks")) || !bytes.Contains(result.stderr, []byte(reason)) || !bytes.Contains(result.stderr, []byte("gthok config trust")) {
+		if bytes.Count(result.stderr, []byte("\n")) != 1 || !bytes.Contains(result.stderr, []byte("2 project hooks")) || !bytes.Contains(result.stderr, []byte(reason)) || !bytes.Contains(result.stderr, []byte("gtok config trust")) {
 			t.Fatalf("missing one-line actionable hook warning: %s", result.stderr)
 		}
-		if !bytes.Contains(result.stderr, []byte("gthok config trust repo .")) {
+		if !bytes.Contains(result.stderr, []byte("gtok config trust repo .")) {
 			t.Fatalf("missing permanent repository trust hint: %s", result.stderr)
 		}
 		return result.stderr
@@ -180,13 +180,13 @@ func TestIgnoredHooksWarningSuppression(t *testing.T) {
 					t.Fatal(err)
 				}
 				defer cleanup()
-				s.env["GTHOK_NESTED"], s.env["GTHOK_NESTED_TOKEN"] = "1", token
+				s.env["GTOK_NESTED"], s.env["GTOK_NESTED_TOKEN"] = "1", token
 			case "invalid-user", "fail-closed":
 				if err := os.WriteFile(s.cfg, []byte("version: 1\nunknown: true\n"), 0600); err != nil {
 					t.Fatal(err)
 				}
 				if scenario == "fail-closed" {
-					s.env["GTHOK_FAIL_CLOSED"] = "1"
+					s.env["GTOK_FAIL_CLOSED"] = "1"
 					wantCode = 78
 				}
 			case "invalid-project":

@@ -1,8 +1,8 @@
 # Hook protocol
 
-A gthok hook is a trusted program that reads one JSON document on stdin and
+A gtok hook is a trusted program that reads one JSON document on stdin and
 writes at most one JSON response on stdout. Commands are argv arrays, not shell
-snippets. Git-native hooks are unrelated: `--no-verify` never bypasses gthok.
+snippets. Git-native hooks are unrelated: `--no-verify` never bypasses gtok.
 
 ## Input envelope
 
@@ -26,8 +26,8 @@ A successful status does not establish which remote refs changed.
 Inspect the actual envelope without running hooks or Git:
 
 ```sh
-gthok hooks test --print-input -- push origin HEAD:refs/heads/main
-gthok hooks test --print-input --hook deny-force-push -- push --force origin main
+gtok hooks test --print-input -- push origin HEAD:refs/heads/main
+gtok hooks test --print-input --hook deny-force-push -- push --force origin main
 ```
 
 Trusted transforms still run. Display is redacted unless --show-secrets, and a
@@ -95,7 +95,7 @@ the requested process and post phase.
 
 ## Synthetic tests and diagnostics
 
-`gthok hooks test --json --expect deny -- <args>` runs transforms and hooks for
+`gtok hooks test --json --expect deny -- <args>` runs transforms and hooks for
 real, but never the requested command/delegate. Post tests use a synthetic
 result (`--phase post --exit-code 1`). `--expect` compares FINAL;
 `--expect-hooks` compares allow/deny/abstain; `--expect-policy` compares
@@ -109,7 +109,7 @@ hooks, so it cannot predict their responses.
 Terminal hook text is credential-redacted and control-sanitized, limited to
 40 lines / 4 KiB per entry and 500 Unicode characters per line. JSON/log values
 retain structured data rather than terminal escaping. Wrapper denials use the
-stable `gthok:` prefix; see [exit status](exit-status.md).
+stable `gtok:` prefix; see [exit status](exit-status.md).
 
 Examples: [deny force push](../examples/hooks/deny-force-push/main.go),
 [audit history](../examples/hooks/audit-history/main.go), and
@@ -126,7 +126,7 @@ See [transforms](transforms.md) for editable paths and round-trip checks.
 ## Transform environment edits
 
 A transform may return a flat env map: strings set variables and null unsets.
-Names/values are validated; private GTHOK variables cannot be changed. Edited
+Names/values are validated; private GTOK variables cannot be changed. Edited
 values are never displayed in transform diagnostics, even with --show-secrets;
 only changed names and transform IDs are reported. Selection uses the request
 and environment before that entry, with earlier successful edits visible.

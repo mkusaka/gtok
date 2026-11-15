@@ -5,9 +5,9 @@ Normalize Git argv into operations before deciding whether to run it. Inspect
 `effect: read` alone does not prove a command harmless or safe to retry.
 
 ```sh
-gthok normalize --no-resolve -- push --force-with-lease origin HEAD:refs/heads/main
-gthok normalize --no-resolve -- reset --hard HEAD~1
-gthok actions 'ref.*' --json
+gtok normalize --no-resolve -- push --force-with-lease origin HEAD:refs/heads/main
+gtok normalize --no-resolve -- reset --hard HEAD~1
+gtok actions 'ref.*' --json
 ```
 
 ## Result contract
@@ -79,8 +79,8 @@ what is read; on a write operation what may change.
 Capabilities are side channels: `external-exec` (filters, textconv, exec commands,
 signature tools), `editor`, `network`, `file-write`, `index-refresh`,
 `interactive`, `pager`. They may be conservative possibilities, not proof a
-child was actually started. Git-native hooks are distinct from gthok hooks;
-`noVerify` records user intent and never disables gthok's pipeline.
+child was actually started. Git-native hooks are distinct from gtok hooks;
+`noVerify` records user intent and never disables gtok's pipeline.
 
 `status` normally has `index-refresh`; disabling optional locks can remove it.
 Porcelain `diff` may refresh the index and use external diff/textconv.
@@ -101,7 +101,7 @@ unverified Git version. `unknownReason` values are `unknown-command`,
 `remote-state`, `unverified-version`, `invalid-option-combination`. The last
 means the registry's `exclusive` groups (CMDMODE options with different values,
 `die_for_incompatible_opt`) say Git will refuse the options together; Git exits
-before acting, and gthok reports a conservative unknown operation instead of
+before acting, and gtok reports a conservative unknown operation instead of
 guessing which option wins. Unknown known syntax must not be labeled
 opaque merely because its semantic adapter is incomplete. Some adapters retain
 a known write effect with opaque input: do not ignore `unknownReason`.
@@ -237,8 +237,8 @@ resolution. See [architecture](architecture.md) and [transforms](transforms.md).
 
 The [complete action catalogue](action-catalogue.md) lists every registered
 action with its family, default effect, example scopes and command routes
-(omit the leading Git executable in gthok commands). Effects and scopes can
+(omit the leading Git executable in gtok commands). Effects and scopes can
 change with flags/input: use normalize for a particular request.
-`gthok actions --json` includes example scopes, not an exhaustive scope union for
+`gtok actions --json` includes example scopes, not an exhaustive scope union for
 all possible options. Input-selected actions share `update-ref --stdin` routes;
 the transaction document selects the actual operation.

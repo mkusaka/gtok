@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/config.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/config.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -4843,6 +4843,6 @@
       "type": "integer"
     }
   },
-  "title": "gthok config.yaml",
+  "title": "gtok config.yaml",
   "type": "object"
 }

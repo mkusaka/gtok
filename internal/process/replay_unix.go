@@ -94,7 +94,7 @@ func (r *InputReplay) Close() {
 }
 
 func privateReplayFile() (*os.File, error) {
-	f, err := os.CreateTemp("", "gthok-delegate-stdin-*")
+	f, err := os.CreateTemp("", "gtok-delegate-stdin-*")
 	if err != nil {
 		return nil, err
 	}

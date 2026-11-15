@@ -35,13 +35,13 @@ func trustRepositoryFixture(t *testing.T) (string, map[string]string, string) {
 		t.Fatal(err)
 	}
 	repo := filepath.Join(root, "repo")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: review, command: [./hook]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: review, command: [./hook]}]}\n")
 	writeFixture(t, filepath.Join(repo, "hook"), "reviewed code\n")
 	trustGit(t, repo, "init", "-b", "main")
 	trustGit(t, repo, "add", ".")
 	trustGit(t, repo, "commit", "-m", "reviewed")
 	commit := trustGit(t, repo, "rev-parse", "HEAD")
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config"), "PATH": os.Getenv("PATH"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null"}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config"), "PATH": os.Getenv("PATH"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null"}
 	return repo, env, commit
 }
 
@@ -95,7 +95,7 @@ func TestTrustComparisonWorktreeCloneAndShallow(t *testing.T) {
 				writeFixture(t, filepath.Join(gitdir, "commondir"), "../..\n")
 				writeFixture(t, filepath.Join(gitdir, "HEAD"), trustGit(t, repo, "rev-parse", "HEAD")+"\n")
 				writeFixture(t, filepath.Join(other, ".git"), "gitdir: "+gitdir+"\n")
-				for _, path := range []string{".gthok.yaml", "hook"} {
+				for _, path := range []string{".gtok.yaml", "hook"} {
 					data, err := os.ReadFile(filepath.Join(repo, path))
 					if err != nil {
 						t.Fatal(err)
@@ -123,14 +123,14 @@ func TestTrustComparisonWorktreeCloneAndShallow(t *testing.T) {
 
 func TestPreviousTrustSelection(t *testing.T) {
 	file := func(path string) trustedFile { return trustedFile{Path: path, SHA256: contentHash([]byte(path))} }
-	current := trustEntry{FirstPath: "/repo/.gthok.yaml", ConfigPath: ".gthok.yaml", CommonDir: "/repo/.git", RemoteURL: "github.com/org/repo", Files: []trustedFile{file("hook"), file("data"), file(".gitleaks.toml")}}
+	current := trustEntry{FirstPath: "/repo/.gtok.yaml", ConfigPath: ".gtok.yaml", CommonDir: "/repo/.git", RemoteURL: "github.com/org/repo", Files: []trustedFile{file("hook"), file("data"), file(".gitleaks.toml")}}
 	now := time.Now()
-	fallback := trustEntry{FirstPath: "/fallback/.gthok.yaml", ConfigPath: ".gthok.yaml", Files: []trustedFile{file("hook"), file("data")}, TrustedAt: now}
-	remote := trustEntry{FirstPath: "/clone/.gthok.yaml", RemoteURL: current.RemoteURL, TrustedAt: now.Add(-time.Hour)}
+	fallback := trustEntry{FirstPath: "/fallback/.gtok.yaml", ConfigPath: ".gtok.yaml", Files: []trustedFile{file("hook"), file("data")}, TrustedAt: now}
+	remote := trustEntry{FirstPath: "/clone/.gtok.yaml", RemoteURL: current.RemoteURL, TrustedAt: now.Add(-time.Hour)}
 	path := trustEntry{FirstPath: current.FirstPath, TrustedAt: now.Add(-2 * time.Hour)}
-	common := trustEntry{FirstPath: "/worktree/.gthok.yaml", CommonDir: current.CommonDir, TrustedAt: now.Add(-3 * time.Hour)}
+	common := trustEntry{FirstPath: "/worktree/.gtok.yaml", CommonDir: current.CommonDir, TrustedAt: now.Add(-3 * time.Hour)}
 	newerCommon := common
-	newerCommon.FirstPath, newerCommon.TrustedAt = "/newer-worktree/.gthok.yaml", common.TrustedAt.Add(time.Minute)
+	newerCommon.FirstPath, newerCommon.TrustedAt = "/newer-worktree/.gtok.yaml", common.TrustedAt.Add(time.Minute)
 	store := map[string]trustEntry{"fallback": fallback, "remote": remote, "path": path, "common": common, "newer-common": newerCommon}
 	for _, want := range []trustEntry{newerCommon, common, path, remote, fallback} {
 		got := previousTrustEntry(current, store)
@@ -143,7 +143,7 @@ func TestPreviousTrustSelection(t *testing.T) {
 			}
 		}
 	}
-	unrelated := trustEntry{FirstPath: "/unrelated/.gthok.yaml", ConfigPath: ".gthok.yaml", Files: []trustedFile{file(".gitleaks.toml"), file("other-hook")}, TrustedAt: now}
+	unrelated := trustEntry{FirstPath: "/unrelated/.gtok.yaml", ConfigPath: ".gtok.yaml", Files: []trustedFile{file(".gitleaks.toml"), file("other-hook")}, TrustedAt: now}
 	notes, previous := trustComparisonNotes(current, map[string]trustEntry{"unrelated": unrelated})
 	if previous != nil || !reflect.DeepEqual(notes, []string{"no previous trust record for this repository"}) {
 		t.Fatalf("an incidental shared include must not identify a repository: %v, %+v", notes, previous)
@@ -169,7 +169,7 @@ func TestPreviousTrustSelection(t *testing.T) {
 
 func TestTrustChangedAddedRemoved(t *testing.T) {
 	repo, env, _ := trustRepositoryFixture(t)
-	project := filepath.Join(repo, ".gthok.yaml")
+	project := filepath.Join(repo, ".gtok.yaml")
 	body, err := os.ReadFile(project)
 	if err != nil {
 		t.Fatal(err)
@@ -199,7 +199,7 @@ func TestTrustDryRunWritesNothing(t *testing.T) {
 	if _, _, _, _, err := TrustProject("", repo, env, true, false); err != nil {
 		t.Fatal(err)
 	}
-	if _, err := os.Stat(env["GTHOK_CONFIG_DIR"]); !os.IsNotExist(err) {
+	if _, err := os.Stat(env["GTOK_CONFIG_DIR"]); !os.IsNotExist(err) {
 		t.Fatalf("dry-run created config/cache/store: %v", err)
 	}
 	if _, _, _, _, err := TrustProject("", repo, env, false, false); err != nil {
@@ -212,7 +212,7 @@ func TestTrustDryRunWritesNothing(t *testing.T) {
 	}
 	capture := func() map[string]snapshot {
 		result := make(map[string]snapshot)
-		err := filepath.WalkDir(env["GTHOK_CONFIG_DIR"], func(path string, entry fs.DirEntry, err error) error {
+		err := filepath.WalkDir(env["GTOK_CONFIG_DIR"], func(path string, entry fs.DirEntry, err error) error {
 			if err != nil {
 				return err
 			}
@@ -250,9 +250,9 @@ func TestTrustDryRunWritesNothing(t *testing.T) {
 // same way in every worktree; earlier grants stay valid for other branches.
 func TestTrustSharedAcrossGitWorktrees(t *testing.T) {
 	root := t.TempDir()
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	repo, wt := filepath.Join(root, "repo"), filepath.Join(root, "wt")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: gate, command: [./hook]}, {id: audit, onError: ignore, command: [./audit]}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: gate, command: [./hook]}, {id: audit, onError: ignore, command: [./audit]}]}\n")
 	writeFixture(t, filepath.Join(repo, "hook"), "v1\n")
 	writeFixture(t, filepath.Join(repo, "audit"), "audit\n")
 	trustGit(t, repo, "init", "-q")

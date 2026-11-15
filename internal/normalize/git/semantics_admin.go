@@ -5,8 +5,8 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/registry"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/registry"
 )
 
 func init() {

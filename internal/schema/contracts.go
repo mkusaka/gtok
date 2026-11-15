@@ -1,10 +1,10 @@
 package schema
 
 import (
-	"github.com/mkusaka/gthok/internal/delegates"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/delegates"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
 // Management contracts mirror the CLI envelopes; their nested types are shared
@@ -66,7 +66,7 @@ type ActionEntry struct {
 	Git    []string      `json:"git"`
 }
 
-// Version is the release metadata printed by gthok version --json.
+// Version is the release metadata printed by gtok version --json.
 type Version struct {
 	Version string `json:"version"`
 	Commit  string `json:"commit,omitempty"`

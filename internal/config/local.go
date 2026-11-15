@@ -9,14 +9,14 @@ import (
 	"path/filepath"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
-	"github.com/mkusaka/gthok/internal/install"
+	"github.com/mkusaka/gtok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/install"
 )
 
 // LocalName is the personal, uncommitted project config (like CLAUDE.local.md).
-const LocalName = ".gthok.local.yaml"
+const LocalName = ".gtok.local.yaml"
 
-// localPath returns the repository-root .gthok.local.yaml when it exists.
+// localPath returns the repository-root .gtok.local.yaml when it exists.
 func localPath(cwd, home string) (string, error) {
 	root, err := projectRoot(cwd, home)
 	if root == "" || err != nil {
@@ -40,7 +40,7 @@ func LocalPath(cwd string, env map[string]string) (string, error) {
 	return filepath.Join(filepath.Dir(project), LocalName), nil
 }
 
-// mergeLocal layers .gthok.local.yaml after the project config. It is written by
+// mergeLocal layers .gtok.local.yaml after the project config. It is written by
 // the user, so its hooks run without trust; the same restrictions as a project
 // config apply otherwise (no runtime/logging, policy can only tighten).
 func mergeLocal(c *Config, notes []string, cwd string, env map[string]string) (*Config, []string, error) {
@@ -48,7 +48,7 @@ func mergeLocal(c *Config, notes []string, cwd string, env map[string]string) (*
 		message := "local config ignored: " + err.Error()
 		c.Diagnostics = append(c.Diagnostics, message)
 		notes = append(notes, message)
-		if env["GTHOK_FAIL_CLOSED"] == "1" {
+		if env["GTOK_FAIL_CLOSED"] == "1" {
 			return c, notes, err
 		}
 		return c, notes, nil
@@ -75,11 +75,11 @@ func mergeLocal(c *Config, notes []string, cwd string, env map[string]string) (*
 		return ignore(local, err)
 	}
 	if field(n, "trust") != nil {
-		return ignore(local, fmt.Errorf("%s: trust is only meaningful in .gthok.yaml", local))
+		return ignore(local, fmt.Errorf("%s: trust is only meaningful in .gtok.yaml", local))
 	}
 	for _, h := range p.trustHooks() {
 		if h.Files != nil {
-			return ignore(local, fmt.Errorf("%s: hook %s: files is only meaningful in .gthok.yaml (local hooks run without trust)", local, h.ID))
+			return ignore(local, fmt.Errorf("%s: hook %s: files is only meaningful in .gtok.yaml (local hooks run without trust)", local, h.ID))
 		}
 	}
 	notes = append(notes, projectUnknownKeys(n, local)...)
@@ -110,8 +110,8 @@ func gitTracked(dir, name, override string, env map[string]string) bool {
 	if err != nil {
 		return true
 	}
-	if env["GTHOK_REAL_GIT"] != "" {
-		override = env["GTHOK_REAL_GIT"]
+	if env["GTOK_REAL_GIT"] != "" {
+		override = env["GTOK_REAL_GIT"]
 	}
 	real, _, err := install.FindRealGit(install.DiscoverOptions{Self: self, PathEnv: env["PATH"], Override: override})
 	if err != nil {

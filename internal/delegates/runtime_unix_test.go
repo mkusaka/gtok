@@ -11,10 +11,10 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/process"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/process"
 )
 
 func TestGitDelegateSelectionRequiresRetrySafety(t *testing.T) {
@@ -31,7 +31,7 @@ func TestGitDelegateSelectionRequiresRetrySafety(t *testing.T) {
 		t.Fatal("unsafe retry selected")
 	}
 	r.Classification.RetrySafe = true
-	if Select(c, policy.Subject{Result: r, Env: map[string]string{"GTHOK_NO_DELEGATE": "1"}}) != nil {
+	if Select(c, policy.Subject{Result: r, Env: map[string]string{"GTOK_NO_DELEGATE": "1"}}) != nil {
 		t.Fatal("nested delegation allowed")
 	}
 }

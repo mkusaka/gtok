@@ -55,9 +55,9 @@ today=$(date -u +%Y-%m-%d)
 awk -v tag="$tag" -v today="$today" -v prev="$latest" '
   !done && /^## \[Unreleased\]/ { print "## [Unreleased]"; print ""; print "## [" tag "] - " today; done = 1; next }
   /^\[Unreleased\]: / {
-    print "[Unreleased]: https://github.com/mkusaka/gthok/compare/" tag "...HEAD"
-    if (prev == "") print "[" tag "]: https://github.com/mkusaka/gthok/releases/tag/" tag
-    else print "[" tag "]: https://github.com/mkusaka/gthok/compare/" prev "..." tag
+    print "[Unreleased]: https://github.com/mkusaka/gtok/compare/" tag "...HEAD"
+    if (prev == "") print "[" tag "]: https://github.com/mkusaka/gtok/releases/tag/" tag
+    else print "[" tag "]: https://github.com/mkusaka/gtok/compare/" prev "..." tag
     next
   }
   { print }

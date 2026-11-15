@@ -42,7 +42,7 @@ func FuzzTrustLifecycle(f *testing.F) {
 			t.Fatal(err)
 		}
 		m := newTrustModel(filepath.Join(root, "repo"))
-		env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+		env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 		writeFixture(t, filepath.Join(m.repo, ".git"), "gitdir: elsewhere\n")
 		writeFixture(t, DefaultPath(env), "version: 1\n")
 		for _, name := range trustModelFiles {
@@ -164,7 +164,7 @@ func (m *trustModel) writeProject(t *testing.T) {
 		}
 		b.WriteString("}\n")
 	}
-	writeFixture(t, filepath.Join(m.repo, ".gthok.yaml"), b.String())
+	writeFixture(t, filepath.Join(m.repo, ".gtok.yaml"), b.String())
 }
 
 func (m *trustModel) fingerprint(j int) string {
@@ -193,7 +193,7 @@ func (m *trustModel) check(t *testing.T, env map[string]string, step string) {
 	if err != nil {
 		t.Fatalf("%s: %v", step, err)
 	}
-	project := filepath.Join(m.repo, ".gthok.yaml")
+	project := filepath.Join(m.repo, ".gtok.yaml")
 	active, reasons := map[string]bool{}, map[string]string{}
 	for _, h := range c.Hooks {
 		if h.Source == project {

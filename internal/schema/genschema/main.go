@@ -1,4 +1,4 @@
-// Command genschema writes gthok's config and hook JSON Schemas.
+// Command genschema writes gtok's config and hook JSON Schemas.
 // It is invoked by go generate ./internal/schema and make schema.
 package main
 
@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mkusaka/gthok/internal/schema"
+	"github.com/mkusaka/gtok/internal/schema"
 )
 
 func main() {

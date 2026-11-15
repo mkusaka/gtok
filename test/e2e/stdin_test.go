@@ -9,7 +9,7 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestOversizedAnalysisStillReplaysEveryByte(t *testing.T) {
@@ -78,7 +78,7 @@ func TestDisabledLoggingObserveFastPathPreservesUnanalysedStdin(t *testing.T) {
 	if len(result.stdout) != 0 || len(result.stderr) != 0 {
 		t.Fatal("pure passthrough emitted diagnostics")
 	}
-	if _, err := os.Stat(filepath.Join(filepath.Dir(s.cfg), "logs", "gthok.jsonl")); !os.IsNotExist(err) {
+	if _, err := os.Stat(filepath.Join(filepath.Dir(s.cfg), "logs", "gtok.jsonl")); !os.IsNotExist(err) {
 		t.Fatal("disabled logging created a log")
 	}
 }

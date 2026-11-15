@@ -324,7 +324,7 @@ func parseTrustStore(data []byte) (map[string]trustEntry, []string, error) {
 }
 
 func validateTrustEntry(key string, entry trustEntry) error {
-	if !validDigest(key) || (key != trustKey(entry) && key != contentHash([]byte(entry.FirstPath))) || entry.ManifestVersion != 2 || !filepath.IsAbs(entry.FirstPath) || filepath.Clean(entry.FirstPath) != entry.FirstPath || entry.ConfigPath != ".gthok.yaml" || entry.TrustedAt.IsZero() || len(entry.HookDigests) == 0 {
+	if !validDigest(key) || (key != trustKey(entry) && key != contentHash([]byte(entry.FirstPath))) || entry.ManifestVersion != 2 || !filepath.IsAbs(entry.FirstPath) || filepath.Clean(entry.FirstPath) != entry.FirstPath || entry.ConfigPath != ".gtok.yaml" || entry.TrustedAt.IsZero() || len(entry.HookDigests) == 0 {
 		return errors.New("invalid trust entry")
 	}
 	for _, file := range entry.Files {
@@ -365,7 +365,7 @@ func readTrustStore(env map[string]string) (map[string]trustEntry, []string) {
 		}
 	}
 	if err != nil {
-		return make(map[string]trustEntry), []string{fmt.Sprintf("Trust store: %s is invalid or unreadable (%v); no project hooks trusted; run gthok config trust", path, err)}
+		return make(map[string]trustEntry), []string{fmt.Sprintf("Trust store: %s is invalid or unreadable (%v); no project hooks trusted; run gtok config trust", path, err)}
 	}
 	return store, notes
 }
@@ -424,7 +424,7 @@ func trustProjectPath(path, cwd string, env map[string]string) (string, error) {
 		return "", err
 	}
 	if filepath.Join(dir, filepath.Base(path)) != project {
-		return "", fmt.Errorf("%s is not the repository-root .gthok.yaml (%s)", path, project)
+		return "", fmt.Errorf("%s is not the repository-root .gtok.yaml (%s)", path, project)
 	}
 	return project, nil
 }

@@ -5,7 +5,7 @@ import (
 	"path/filepath"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/gitmeta"
 )
 
 // TrustMatch returns the key and original entry covering this checkout or its

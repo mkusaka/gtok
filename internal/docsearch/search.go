@@ -109,7 +109,7 @@ var developmentVersion = regexp.MustCompile(`(?:[+-]dirty|-[0-9]+-g[0-9a-f]+|-[0
 
 // SourceURL is file's GitHub URL at the tag matching version (main for dev builds).
 func SourceURL(version, file string) string {
-	return "https://github.com/mkusaka/gthok/blob/" + versionRef(version) + "/" + file
+	return "https://github.com/mkusaka/gtok/blob/" + versionRef(version) + "/" + file
 }
 
 func versionRef(version string) string {

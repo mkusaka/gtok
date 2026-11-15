@@ -1,4 +1,4 @@
-// Package config defines and loads gthok's YAML configuration.
+// Package config defines and loads gtok's YAML configuration.
 // types.go is the shared contract; loading/validation/defaults live elsewhere
 // in this package.
 package config
@@ -10,7 +10,7 @@ import (
 	"go.yaml.in/yaml/v3"
 )
 
-// Config is ~/.config/gthok/config.yaml (version 1).
+// Config is ~/.config/gtok/config.yaml (version 1).
 type Config struct {
 	Version    int           `yaml:"version" json:"version" enum:"1" doc:"Config format version; must be 1."`
 	Policy     Policy        `yaml:"policy" json:"policy"`
@@ -140,7 +140,7 @@ type Hook struct {
 	// bounded by Runtime.CaptureLimit. Default false.
 	CaptureOutput bool `yaml:"captureOutput" json:"captureOutput,omitempty" doc:"Post hooks only: include git stdout/stderr (base64, bounded) in the hook input."`
 	RedactInput   bool `yaml:"redactInput" json:"redactInput,omitempty" doc:"Redact credentials in this hook's input; enable for hooks that forward input elsewhere. Default false: hooks receive raw input."`
-	// MaxOutputBytes bounds what gthok reads from the hook's stdout/stderr
+	// MaxOutputBytes bounds what gtok reads from the hook's stdout/stderr
 	// (default 1 MiB / 64 KiB).
 	MaxOutputBytes int64 `yaml:"maxOutputBytes" json:"maxOutputBytes,omitempty"`
 	// Source is load-time provenance, not a configurable YAML field.
@@ -163,7 +163,7 @@ type Runtime struct {
 type Logging struct {
 	Enabled             *bool  `yaml:"enabled" json:"enabled,omitempty"` // default true
 	IgnoredHooksWarning *bool  `yaml:"ignoredHooksWarning" json:"ignoredHooksWarning,omitempty" doc:"Warn on stderr about enabled project hooks withheld by trust, at most once per project manifest per ten minutes. Default true; user config only."`
-	Path                string `yaml:"path" json:"path,omitempty"` // default <config dir>/logs/gthok.jsonl
+	Path                string `yaml:"path" json:"path,omitempty"` // default <config dir>/logs/gtok.jsonl
 	// Level: "info" logs every invocation; "decision" logs warnings, non-allow decisions and errors.
 	Level string `yaml:"level" json:"level,omitempty" enum:"info,decision"`
 }

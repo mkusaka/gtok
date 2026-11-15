@@ -1,4 +1,4 @@
-// Package schema generates JSON Schemas from gthok's tagged Go contracts.
+// Package schema generates JSON Schemas from gtok's tagged Go contracts.
 package schema
 
 //go:generate go run ./genschema -dir ../../schema
@@ -11,14 +11,14 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/docsearch"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/logging"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/docsearch"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/logging"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
-const baseID = "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/"
+const baseID = "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/"
 
 // Files lists the canonical published contracts and generated filenames.
 func Files() map[string]string {
@@ -52,16 +52,16 @@ func Generate(name string) (map[string]any, error) {
 		trustProps := props["trust"].(map[string]any)["properties"].(map[string]any)
 		if name == "project-config" {
 			filename = "project.schema.json"
-			s["title"] = "gthok project .gthok.yaml"
+			s["title"] = "gtok project .gtok.yaml"
 			delete(trustProps, "repositories")
 			delete(trustProps, "directories")
 		} else {
-			s["title"] = "gthok config.yaml"
+			s["title"] = "gtok config.yaml"
 			if name == "local-config" {
 				filename = "local.schema.json"
-				s["title"] = "gthok personal .gthok.local.yaml"
+				s["title"] = "gtok personal .gtok.local.yaml"
 			}
-			// Only .gthok.yaml is trust-gated: no include or hook files; only
+			// Only .gtok.yaml is trust-gated: no include or hook files; only
 			// the user config may waive trust for repositories.
 			delete(trustProps, "include")
 			if name == "local-config" {
@@ -97,13 +97,13 @@ func Generate(name string) (map[string]any, error) {
 		s = schemaFor(reflect.TypeFor[logging.Record](), "", "json")
 	case "hook-input":
 		s = schemaFor(reflect.TypeFor[protocol.Input](), "", "json")
-		s["title"] = "gthok hook input"
+		s["title"] = "gtok hook input"
 	case "hook-response":
 		s = schemaFor(reflect.TypeFor[protocol.Response](), "", "json")
-		s["title"] = "gthok hook response"
+		s["title"] = "gtok hook response"
 	case "transform-response":
 		s = schemaFor(reflect.TypeFor[protocol.TransformResponse](), "", "json")
-		s["title"] = "gthok transform response"
+		s["title"] = "gtok transform response"
 		props := s["properties"].(map[string]any)
 		props["set"].(map[string]any)["propertyNames"] = map[string]any{"pattern": protocol.TransformPathPattern}
 		props["unset"].(map[string]any)["items"] = map[string]any{"type": "string", "pattern": protocol.TransformPathPattern}

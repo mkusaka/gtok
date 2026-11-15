@@ -5,10 +5,10 @@ package delegates
 import (
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/normalize"
-	"github.com/mkusaka/gthok/internal/policy"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/normalize"
+	"github.com/mkusaka/gtok/internal/policy"
 )
 
 func TestGitSelectionRequiresRetrySafety(t *testing.T) {

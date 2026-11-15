@@ -9,7 +9,7 @@ import (
 	"strings"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/gitmeta"
 )
 
 // No caller can supply a command or an option to a query.
@@ -214,13 +214,13 @@ func (r *Resolver) run(ctx context.Context, q query) ([]byte, error) {
 	cmd.Dir = r.cwd
 	for k, v := range r.env {
 		switch k {
-		case "GIT_TERMINAL_PROMPT", "GIT_OPTIONAL_LOCKS", "GIT_PAGER", "PAGER", "LC_ALL", "GIT_NO_LAZY_FETCH", "GTHOK_RESOLVER_QUERY":
+		case "GIT_TERMINAL_PROMPT", "GIT_OPTIONAL_LOCKS", "GIT_PAGER", "PAGER", "LC_ALL", "GIT_NO_LAZY_FETCH", "GTOK_RESOLVER_QUERY":
 			continue
 		}
 		cmd.Env = append(cmd.Env, k+"="+v)
 	}
 	// Query provenance is for diagnostics/recorders, never an execution bypass.
-	cmd.Env = append(cmd.Env, "GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0", "GIT_PAGER=cat", "PAGER=cat", "LC_ALL=C", "GIT_NO_LAZY_FETCH=1", "GTHOK_RESOLVER_QUERY=1")
+	cmd.Env = append(cmd.Env, "GIT_TERMINAL_PROMPT=0", "GIT_OPTIONAL_LOCKS=0", "GIT_PAGER=cat", "PAGER=cat", "LC_ALL=C", "GIT_NO_LAZY_FETCH=1", "GTOK_RESOLVER_QUERY=1")
 	cmd.WaitDelay = 100 * time.Millisecond
 	var stdout, stderr boundedOutput
 	cmd.Stdout, cmd.Stderr = &stdout, &stderr

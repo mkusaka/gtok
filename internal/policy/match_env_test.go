@@ -3,8 +3,8 @@ package policy
 import (
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestMatchInvocationEnvironment(t *testing.T) {

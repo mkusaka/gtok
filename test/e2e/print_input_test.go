@@ -4,8 +4,8 @@ package e2e
 
 import (
 	"encoding/json"
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 	"testing"
 )
 

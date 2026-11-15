@@ -26,7 +26,7 @@ type Candidate struct {
 func FindRealGit(o DiscoverOptions) (string, []Candidate, error) {
 	self, err := os.Stat(o.Self)
 	if err != nil {
-		return "", nil, fmt.Errorf("identify gthok executable %q: %w", o.Self, err)
+		return "", nil, fmt.Errorf("identify gtok executable %q: %w", o.Self, err)
 	}
 	if o.Override != "" {
 		c := inspectCandidate(o.Override, self)
@@ -83,8 +83,8 @@ func inspectCandidate(path string, self os.FileInfo) Candidate {
 	switch {
 	case err != nil:
 		c.Skipped = err.Error()
-	case self != nil && os.SameFile(info, self), filepath.Base(resolved) == "gthok":
-		c.Skipped = "gthok shim"
+	case self != nil && os.SameFile(info, self), filepath.Base(resolved) == "gtok":
+		c.Skipped = "gtok shim"
 	case !info.Mode().IsRegular():
 		c.Skipped = "not a regular file"
 	case info.Mode().Perm()&0111 == 0:

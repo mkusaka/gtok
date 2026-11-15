@@ -11,11 +11,11 @@ import (
 	"slices"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/gitmeta"
+	"github.com/mkusaka/gtok/internal/gitmeta"
 	"go.yaml.in/yaml/v3"
 )
 
-// projectForbidden are the top-level sections a project .gthok.yaml may not set.
+// projectForbidden are the top-level sections a project .gtok.yaml may not set.
 var projectForbidden = []string{"runtime", "logging"}
 
 // LoadEffective never executes hooks. Valid project policy always applies; only
@@ -55,7 +55,7 @@ func loadUserAndProject(global, cwd string, env map[string]string) (*Config, []s
 			notes[sourceIndex] = fmt.Sprintf("Project config: %s (ignored; user config retained)", project)
 		}
 		notes = append(notes, message)
-		if env["GTHOK_FAIL_CLOSED"] == "1" {
+		if env["GTOK_FAIL_CLOSED"] == "1" {
 			return c, notes, err
 		}
 		return c, notes, nil
@@ -142,7 +142,7 @@ func loadUserAndProject(global, cwd string, env map[string]string) (*Config, []s
 			if meta.Reason == "changed since trust" && !bytes.Equal(previous.Definitions[h.ID], current.Definitions[h.ID]) {
 				note += "; definition changed"
 			}
-			notes = append(notes, note+"; run gthok config trust")
+			notes = append(notes, note+"; run gtok config trust")
 		}
 		if len(withheld) != 0 {
 			state, _ := json.Marshal(withheld)
@@ -158,7 +158,7 @@ func loadUserAndProject(global, cwd string, env map[string]string) (*Config, []s
 	if len(p.trustHooks()) == 0 {
 		status = "policy loaded; no project hooks"
 	} else if len(withheld) != 0 {
-		status = "policy loaded; some hooks ignored; run gthok config trust"
+		status = "policy loaded; some hooks ignored; run gtok config trust"
 	}
 	notes[sourceIndex] = fmt.Sprintf("Project config: %s (%s)", project, status)
 	merged := *c
@@ -397,7 +397,7 @@ func findProject(cwd, home string) (string, error) {
 	if root == "" || err != nil {
 		return "", err
 	}
-	p := filepath.Join(root, ".gthok.yaml")
+	p := filepath.Join(root, ".gtok.yaml")
 	if _, err := os.Stat(p); err == nil {
 		return p, nil
 	} else if !errors.Is(err, os.ErrNotExist) {
@@ -406,7 +406,7 @@ func findProject(cwd, home string) (string, error) {
 	return "", nil
 }
 
-// ProjectPath is where the project config for cwd lives: .gthok.yaml at the
+// ProjectPath is where the project config for cwd lives: .gtok.yaml at the
 // nearest enclosing directory containing .git (searching strictly below $HOME).
 func ProjectPath(cwd string, env map[string]string) (string, error) {
 	root, err := projectRoot(cwd, env["HOME"])
@@ -416,7 +416,7 @@ func ProjectPath(cwd string, env map[string]string) (string, error) {
 	if root == "" {
 		return "", fmt.Errorf("%s is not inside a git repository; project config lives at the repository root", cwd)
 	}
-	return filepath.Join(root, ".gthok.yaml"), nil
+	return filepath.Join(root, ".gtok.yaml"), nil
 }
 
 // projectRoot returns the nearest directory (symlinks resolved) at or above

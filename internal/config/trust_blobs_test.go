@@ -10,7 +10,7 @@ import (
 
 func blobTestEnv(t *testing.T) map[string]string {
 	t.Helper()
-	return map[string]string{"GTHOK_CONFIG_DIR": filepath.Join(t.TempDir(), "config")}
+	return map[string]string{"GTOK_CONFIG_DIR": filepath.Join(t.TempDir(), "config")}
 }
 
 func blobTestWrite(t *testing.T, path string, data []byte) {

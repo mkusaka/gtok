@@ -23,25 +23,25 @@ import (
 	"testing"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/protocol"
 	"go.yaml.in/yaml/v3"
 )
 
-var gthokBinary, fakeBinary string
+var gtokBinary, fakeBinary string
 
 func TestMain(m *testing.M) {
-	gthokPath, gthokSet := os.LookupEnv("GTHOK_E2E_GTHOK_BINARY")
-	fakePath, fakeSet := os.LookupEnv("GTHOK_E2E_FAKEGIT_BINARY")
-	if gthokSet || fakeSet {
-		if !gthokSet || !fakeSet || gthokPath == "" || fakePath == "" {
-			fmt.Fprintln(os.Stderr, "GTHOK_E2E_GTHOK_BINARY and GTHOK_E2E_FAKEGIT_BINARY must both name prebuilt executable files")
+	gtokPath, gtokSet := os.LookupEnv("GTOK_E2E_GTOK_BINARY")
+	fakePath, fakeSet := os.LookupEnv("GTOK_E2E_FAKEGIT_BINARY")
+	if gtokSet || fakeSet {
+		if !gtokSet || !fakeSet || gtokPath == "" || fakePath == "" {
+			fmt.Fprintln(os.Stderr, "GTOK_E2E_GTOK_BINARY and GTOK_E2E_FAKEGIT_BINARY must both name prebuilt executable files")
 			os.Exit(1)
 		}
 		for _, target := range []struct {
 			name, path string
 			binary     *string
-		}{{"GTHOK_E2E_GTHOK_BINARY", gthokPath, &gthokBinary}, {"GTHOK_E2E_FAKEGIT_BINARY", fakePath, &fakeBinary}} {
+		}{{"GTOK_E2E_GTOK_BINARY", gtokPath, &gtokBinary}, {"GTOK_E2E_FAKEGIT_BINARY", fakePath, &fakeBinary}} {
 			path, err := filepath.Abs(target.path)
 			if err != nil {
 				fmt.Fprintf(os.Stderr, "%s: %v\n", target.name, err)
@@ -62,18 +62,18 @@ func TestMain(m *testing.M) {
 	}
 	_, source, _, _ := runtime.Caller(0)
 	root := filepath.Clean(filepath.Join(filepath.Dir(source), "../.."))
-	dir, err := os.MkdirTemp("", "gthok-e2e-build-")
+	dir, err := os.MkdirTemp("", "gtok-e2e-build-")
 	if err != nil {
 		fmt.Fprintln(os.Stderr, err)
 		os.Exit(1)
 	}
-	gthokBinary, fakeBinary = filepath.Join(dir, "gthok"), filepath.Join(dir, "fakegit")
-	for _, target := range []struct{ path, pkg string }{{gthokBinary, "./cmd/gthok"}, {fakeBinary, "./test/fakegit"}} {
+	gtokBinary, fakeBinary = filepath.Join(dir, "gtok"), filepath.Join(dir, "fakegit")
+	for _, target := range []struct{ path, pkg string }{{gtokBinary, "./cmd/gtok"}, {fakeBinary, "./test/fakegit"}} {
 		ctx, cancel := context.WithTimeout(context.Background(), 2*time.Minute)
 		// Avoid competing with concurrently running package/race suites for
 		// compiler workers; fixture builds are setup, not a performance test.
 		args := []string{"build", "-p=1", "-o", target.path}
-		if target.pkg == "./cmd/gthok" {
+		if target.pkg == "./cmd/gtok" {
 			args = append(args, "-ldflags=-X main.version=e2e-version -X main.commit=e2e-commit")
 		}
 		args = append(args, target.pkg)
@@ -132,7 +132,7 @@ func newSandbox(t *testing.T) *sandbox {
 	if err = os.WriteFile(s.real, body, 0700); err != nil {
 		t.Fatal(err)
 	}
-	s.env = map[string]string{"HOME": filepath.Join(root, "home"), "XDG_CONFIG_HOME": filepath.Join(root, "xdg"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "GTHOK_CONFIG_DIR": filepath.Dir(s.cfg), "PATH": s.bin + string(os.PathListSeparator) + filepath.Dir(s.real), "TMPDIR": filepath.Join(root, "tmp"), "FAKEGIT_RECORD": s.record, "LANG": "C", "TERM": "xterm"}
+	s.env = map[string]string{"HOME": filepath.Join(root, "home"), "XDG_CONFIG_HOME": filepath.Join(root, "xdg"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "GTOK_CONFIG_DIR": filepath.Dir(s.cfg), "PATH": s.bin + string(os.PathListSeparator) + filepath.Dir(s.real), "TMPDIR": filepath.Join(root, "tmp"), "FAKEGIT_RECORD": s.record, "LANG": "C", "TERM": "xterm"}
 	s.configure(nil)
 	result := s.management(nil, "shim", "install", "--bin-dir", s.bin)
 	result.code(t, 0)
@@ -203,7 +203,7 @@ func (s *sandbox) git(input []byte, args ...string) outcome {
 	return s.run(filepath.Join(s.bin, "git"), input, args...)
 }
 func (s *sandbox) management(input []byte, args ...string) outcome {
-	return s.run(gthokBinary, input, args...)
+	return s.run(gtokBinary, input, args...)
 }
 
 func (o outcome) code(t *testing.T, want int) {
@@ -369,7 +369,7 @@ func TestTransparentExecution(t *testing.T) {
 					for k, v := range s.env {
 						expected[k] = v
 					}
-					expected["GTHOK_DEPTH"] = "1"
+					expected["GTOK_DEPTH"] = "1"
 					if got := envMap(r.Env); !reflect.DeepEqual(got, expected) {
 						t.Fatalf("environment changed:\ngot=%v\nwant=%v", got, expected)
 					}
@@ -499,7 +499,7 @@ func TestStartErrors(t *testing.T) {
 				}
 				path := filepath.Join(s.root, "bad-git")
 				want := 127
-				body := []byte("#!/no/such/gthok-e2e-interpreter\n")
+				body := []byte("#!/no/such/gtok-e2e-interpreter\n")
 				if kind == "invalid-image" {
 					body = []byte("invalid executable image")
 					want = 126
@@ -507,11 +507,11 @@ func TestStartErrors(t *testing.T) {
 				if err := os.WriteFile(path, body, 0700); err != nil {
 					t.Fatal(err)
 				}
-				s.env["GTHOK_REAL_GIT"] = path
+				s.env["GTOK_REAL_GIT"] = path
 				result := s.git(nil, "version")
 				result.code(t, want)
 				s.absentRecord()
-				if !bytes.HasPrefix(result.stderr, []byte("gthok:")) {
+				if !bytes.HasPrefix(result.stderr, []byte("gtok:")) {
 					t.Fatal("missing start error diagnostic")
 				}
 				if supervised {
@@ -534,7 +534,7 @@ func TestMissingRealGitConciseWrapperAndDetailedDoctor(t *testing.T) {
 	result := s.git(nil, "version")
 	result.code(t, 127)
 	s.absentRecord()
-	if !bytes.HasPrefix(result.stderr, []byte("gthok:")) || !bytes.Contains(result.stderr, []byte(shim)) || bytes.Count(result.stderr, []byte("\n")) != 1 {
+	if !bytes.HasPrefix(result.stderr, []byte("gtok:")) || !bytes.Contains(result.stderr, []byte(shim)) || bytes.Count(result.stderr, []byte("\n")) != 1 {
 		t.Fatalf("missing-git diagnostic=%q", result.stderr)
 	}
 	for _, noisy := range []string{missingDir, "lstat", "no such file or directory"} {
@@ -564,7 +564,7 @@ func TestMissingRealGitConciseWrapperAndDetailedDoctor(t *testing.T) {
 
 // The suite exercises the binary releases ship: built without cgo.
 func TestBinaryIsCGOFree(t *testing.T) {
-	info, err := buildinfo.ReadFile(gthokBinary)
+	info, err := buildinfo.ReadFile(gtokBinary)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -573,5 +573,5 @@ func TestBinaryIsCGOFree(t *testing.T) {
 			return
 		}
 	}
-	t.Fatalf("%s was built with cgo: %+v", gthokBinary, info.Settings)
+	t.Fatalf("%s was built with cgo: %+v", gtokBinary, info.Settings)
 }

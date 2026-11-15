@@ -6,8 +6,8 @@ import (
 	"sort"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	gitnormalize "github.com/mkusaka/gthok/internal/normalize/git"
+	"github.com/mkusaka/gtok/internal/model"
+	gitnormalize "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 func (r *Resolver) loadConfig(ctx context.Context) {

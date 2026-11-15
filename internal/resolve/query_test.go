@@ -10,7 +10,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func TestClosedQueryTemplates(t *testing.T) {
@@ -103,7 +103,7 @@ func TestSelectionGlobals(t *testing.T) {
 
 func TestQueryEnvironment(t *testing.T) {
 	f := newFixture(t)
-	keys := map[string]string{"GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0", "GIT_PAGER": "cat", "PAGER": "cat", "LC_ALL": "C", "GIT_NO_LAZY_FETCH": "1", "GTHOK_RESOLVER_QUERY": "1"}
+	keys := map[string]string{"GIT_TERMINAL_PROMPT": "0", "GIT_OPTIONAL_LOCKS": "0", "GIT_PAGER": "cat", "PAGER": "cat", "LC_ALL": "C", "GIT_NO_LAZY_FETCH": "1", "GTOK_RESOLVER_QUERY": "1"}
 	r := f.resolver()
 	for key := range keys {
 		r.Env[key] = "wrong"
@@ -147,10 +147,10 @@ func TestPromisorObjectQueriesNeverFetch(t *testing.T) {
 	f.config("remote.origin.promisor", "true")
 	f.config("extensions.partialClone", "origin")
 	marker, ssh := filepath.Join(f.root, "ssh-started"), filepath.Join(f.root, "deny-ssh")
-	if err := os.WriteFile(ssh, []byte("#!/bin/sh\n: > \"$GTHOK_TEST_SSH_RECORD\"\nexit 1\n"), 0700); err != nil {
+	if err := os.WriteFile(ssh, []byte("#!/bin/sh\n: > \"$GTOK_TEST_SSH_RECORD\"\nexit 1\n"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	f.env["GIT_SSH"], f.env["GIT_SSH_VARIANT"], f.env["GTHOK_TEST_SSH_RECORD"] = ssh, "ssh", marker
+	f.env["GIT_SSH"], f.env["GIT_SSH_VARIANT"], f.env["GTOK_TEST_SSH_RECORD"] = ssh, "ssh", marker
 	f.env["GIT_NO_LAZY_FETCH"] = "0"
 	r := f.resolver()
 	r.Local()

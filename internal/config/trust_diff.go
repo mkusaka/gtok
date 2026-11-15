@@ -8,7 +8,7 @@ import (
 	"os"
 	"path/filepath"
 
-	"github.com/mkusaka/gthok/internal/textdiff"
+	"github.com/mkusaka/gtok/internal/textdiff"
 )
 
 var errTrustCopyTooLarge = errors.New("no stored copy (over 1 MiB)")

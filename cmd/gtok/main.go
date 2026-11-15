@@ -1,4 +1,4 @@
-// Command gthok is both the gthok management CLI and, when invoked as "git",
+// Command gtok is both the gtok management CLI and, when invoked as "git",
 // a transparent wrapper around the real Git executable.
 package main
 
@@ -7,7 +7,7 @@ import (
 	"path/filepath"
 	"runtime/debug"
 
-	"github.com/mkusaka/gthok/internal/cli"
+	"github.com/mkusaka/gtok/internal/cli"
 )
 
 var version = "dev"

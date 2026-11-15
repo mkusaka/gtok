@@ -5,7 +5,7 @@ package cli
 import (
 	"os"
 
-	native "github.com/mkusaka/gthok/internal/normalize/git"
+	native "github.com/mkusaka/gtok/internal/normalize/git"
 )
 
 func analysisNeedsStdin(argv []string, stdin *os.File) bool {

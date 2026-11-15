@@ -121,7 +121,7 @@ func ownedShim(path, self string, s shimState) (bool, error) {
 	if !actual.Mode().IsRegular() {
 		return false, nil
 	}
-	if filepath.Base(resolved) == "gthok" {
+	if filepath.Base(resolved) == "gtok" {
 		return true, nil
 	}
 	current, err := os.Stat(self)
@@ -131,7 +131,7 @@ func ownedShim(path, self string, s shimState) (bool, error) {
 	return os.SameFile(actual, current), nil
 }
 
-// IsOwnedShim recognizes symlinks by matching recorded target, resolved gthok
+// IsOwnedShim recognizes symlinks by matching recorded target, resolved gtok
 // basename, or SameFile with Self. Regular files are never owned shims.
 func IsOwnedShim(path, self, stateDir string) (bool, error) {
 	abs, err := filepath.Abs(path)
@@ -161,14 +161,14 @@ func Enable(o EnableOptions) (EnableResult, error) {
 	}
 	self, err = filepath.EvalSymlinks(self)
 	if err != nil {
-		return result, fmt.Errorf("resolve gthok executable: %w", err)
+		return result, fmt.Errorf("resolve gtok executable: %w", err)
 	}
 	info, err := os.Stat(self)
 	if err != nil {
 		return result, err
 	}
 	if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
-		return result, errors.New("gthok executable must be a regular executable file")
+		return result, errors.New("gtok executable must be a regular executable file")
 	}
 	target := stableTarget(self)
 	if o.BinDir == "" {
@@ -200,7 +200,7 @@ func Enable(o EnableOptions) (EnableResult, error) {
 			if target, err := os.Readlink(path); err == nil {
 				detail = "symlink to " + target
 			}
-			return result, fmt.Errorf("%s exists and is not managed by gthok (%s); remove it or choose --bin-dir", path, detail)
+			return result, fmt.Errorf("%s exists and is not managed by gtok (%s); remove it or choose --bin-dir", path, detail)
 		}
 	}
 	_, candidates, err := FindRealGit(DiscoverOptions{PathEnv: o.PathEnv, Self: self})
@@ -258,8 +258,8 @@ func Enable(o EnableOptions) (EnableResult, error) {
 }
 
 // stableTarget returns the path the shim should point at. A Homebrew install
-// resolves to <prefix>/Cellar/gthok/<version>/bin/gthok, which `brew upgrade`
-// deletes; <prefix>/opt/gthok/bin/gthok follows upgrades, so prefer it when it
+// resolves to <prefix>/Cellar/gtok/<version>/bin/gtok, which `brew upgrade`
+// deletes; <prefix>/opt/gtok/bin/gtok follows upgrades, so prefer it when it
 // currently resolves to the same executable.
 func stableTarget(self string) string {
 	dir, name := filepath.Split(self)
@@ -306,7 +306,7 @@ func miseLatest(parts []string, name, self string) string {
 }
 
 func replaceShim(path, self string, s shimState) error {
-	f, err := os.CreateTemp(filepath.Dir(path), ".gthok-shim-*")
+	f, err := os.CreateTemp(filepath.Dir(path), ".gtok-shim-*")
 	if err != nil {
 		return err
 	}
@@ -407,17 +407,17 @@ func pathPrecedence(shim, pathEnv string) (bool, string, string) {
 func ProbeShim(shim string, env []string) error {
 	probeEnv := make([]string, 0, len(env)+1)
 	for _, e := range env {
-		if !strings.HasPrefix(e, "GTHOK_PROBE=") {
+		if !strings.HasPrefix(e, "GTOK_PROBE=") {
 			probeEnv = append(probeEnv, e)
 		}
 	}
-	probeEnv = append(probeEnv, "GTHOK_PROBE=1")
+	probeEnv = append(probeEnv, "GTOK_PROBE=1")
 	out, err := runDiagnostic(shim, probeEnv)
 	if err != nil {
 		return fmt.Errorf("shim probe failed: %w", err)
 	}
-	if out != "gthok-probe\n" {
-		return fmt.Errorf("shim probe returned %s, expected gthok-probe newline", strconv.Quote(out))
+	if out != "gtok-probe\n" {
+		return fmt.Errorf("shim probe returned %s, expected gtok-probe newline", strconv.Quote(out))
 	}
 	return nil
 }

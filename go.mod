@@ -1,4 +1,4 @@
-module github.com/mkusaka/gthok
+module github.com/mkusaka/gtok
 
 go 1.26.5
 

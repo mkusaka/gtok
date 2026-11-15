@@ -10,10 +10,10 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
-// A repository's .gthok.yaml or .gthok.local.yaml cannot loosen the user's
+// A repository's .gtok.yaml or .gtok.local.yaml cannot loosen the user's
 // enforcement: the real request is still denied before git starts, and a
 // project hook runs only when the user config trusts the repository.
 func TestOverlaysCannotWeakenUserEnforcement(t *testing.T) {
@@ -55,7 +55,7 @@ func TestOverlaysCannotWeakenUserEnforcement(t *testing.T) {
 					t.Fatal(err)
 				}
 			}
-			for name, body := range map[string]string{".gthok.yaml": tc.project, ".gthok.local.yaml": tc.local} {
+			for name, body := range map[string]string{".gtok.yaml": tc.project, ".gtok.local.yaml": tc.local} {
 				if body == "" {
 					continue
 				}
@@ -75,7 +75,7 @@ func TestOverlaysCannotWeakenUserEnforcement(t *testing.T) {
 				got := s.git(nil, req.args...)
 				got.code(t, 77)
 				s.absentRecord()
-				if !bytes.HasPrefix(got.stderr, []byte("gthok: denied by "+req.deniedBy)) {
+				if !bytes.HasPrefix(got.stderr, []byte("gtok: denied by "+req.deniedBy)) {
 					t.Fatalf("%v: stderr=%q", req.args, got.stderr)
 				}
 			}

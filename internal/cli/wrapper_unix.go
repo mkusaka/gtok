@@ -14,18 +14,18 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/delegates"
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/hooks"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/logging"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/process"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/redact"
-	"github.com/mkusaka/gthok/internal/resolve"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/delegates"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/hooks"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/logging"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/process"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/redact"
+	"github.com/mkusaka/gtok/internal/resolve"
 )
 
 // Wrapper executes args as real git, enforcing configured pre-decisions. It
@@ -35,11 +35,11 @@ func Wrapper(args []string) int {
 	return wrapper(args, os.Args[0], "shim")
 }
 
-// Version is the gthok version reported under `git --version`; set by main.
+// Version is the gtok version reported under `git --version`; set by main.
 var Version = "dev"
 
 // execGit replaces the process with git, except for `git --version` / `git version`
-// on a terminal, which runs git and then reports gthok below git's own version.
+// on a terminal, which runs git and then reports gtok below git's own version.
 // Piped output stays byte-identical for scripts and hooks that parse it.
 func execGit(opts process.Options, args []string) error {
 	if len(args) != 1 || args[0] != "--version" && args[0] != "version" || !install.IsTTY(os.Stdout) {
@@ -50,15 +50,15 @@ func execGit(opts process.Options, args []string) error {
 		return result.StartErr
 	}
 	if result.ExitCode == 0 {
-		_, _ = fmt.Fprintf(os.Stdout, "gthok version %s (wrapping %s)\n", Version, opts.Path)
+		_, _ = fmt.Fprintf(os.Stdout, "gtok version %s (wrapping %s)\n", Version, opts.Path)
 	}
 	result.Exit()
 	return nil
 }
 
 func wrapper(args []string, argv0, via string) int {
-	if os.Getenv("GTHOK_PROBE") == "1" {
-		_, _ = fmt.Fprintln(os.Stdout, "gthok-probe")
+	if os.Getenv("GTOK_PROBE") == "1" {
+		_, _ = fmt.Fprintln(os.Stdout, "gtok-probe")
 		return 0
 	}
 	env := environment()
@@ -70,7 +70,7 @@ func wrapper(args []string, argv0, via string) int {
 		if redactor == nil {
 			redactor = redact.New(env)
 		}
-		fmt.Fprintln(os.Stderr, "gthok:", redactor.String(err.Error()))
+		fmt.Fprintln(os.Stderr, "gtok:", redactor.String(err.Error()))
 		return code
 	}
 	cwd, err := os.Getwd()
@@ -108,7 +108,7 @@ func wrapper(args []string, argv0, via string) int {
 	if !failClosed {
 		real, err = realGit(cfg, env)
 		if err != nil {
-			fmt.Fprintf(os.Stderr, "gthok: %s.\n", redactor.String(err.Error()))
+			fmt.Fprintf(os.Stderr, "gtok: %s.\n", redactor.String(err.Error()))
 			return 127
 		}
 		childEnv, _, err = install.NextDepth(os.Environ())
@@ -126,7 +126,7 @@ func wrapper(args []string, argv0, via string) int {
 	warnIgnoredHooks := func() {
 		if configErr == nil && !nested {
 			if warning := ignoredHooksWarning(cfg, config.Dir(env), started); warning != "" {
-				fmt.Fprintln(os.Stderr, "gthok:", strings.Join(strings.Fields(redactor.String(warning)), " "))
+				fmt.Fprintln(os.Stderr, "gtok:", strings.Join(strings.Fields(redactor.String(warning)), " "))
 			}
 		}
 	}
@@ -141,8 +141,8 @@ func wrapper(args []string, argv0, via string) int {
 	var logger *logging.Logger
 	var logOpenErr error
 	debug := func(err error) {
-		if err != nil && env["GTHOK_DEBUG"] == "1" {
-			fmt.Fprintln(os.Stderr, "gthok:", redactor.String(err.Error()))
+		if err != nil && env["GTOK_DEBUG"] == "1" {
+			fmt.Fprintln(os.Stderr, "gtok:", redactor.String(err.Error()))
 		}
 	}
 	if cfg.Logging.Enabled == nil || *cfg.Logging.Enabled {
@@ -178,7 +178,7 @@ func wrapper(args []string, argv0, via string) int {
 	}
 	if configErr != nil {
 		if failClosed {
-			printDenials(os.Stderr, []denial{{Source: "config", Message: configErr.Error() + "\nfail-closed: not running git — run 'gthok config validate'"}}, redactor.String)
+			printDenials(os.Stderr, []denial{{Source: "config", Message: configErr.Error() + "\nfail-closed: not running git — run 'gtok config validate'"}}, redactor.String)
 			record.Decision = "deny-invalid-config"
 			record.Diagnostics = []string{"invalid config: " + configErr.Error()}
 			logRecord()
@@ -186,7 +186,7 @@ func wrapper(args []string, argv0, via string) int {
 		}
 		if warnInvalidConfig(config.Dir(env), configFailurePath(config.DefaultPath(env), notes), configErr, started) {
 			warning := strings.Join(strings.Fields(redactor.String(configErr.Error())), " ")
-			fmt.Fprintf(os.Stderr, "gthok: invalid config (%s); running git without hooks — run 'gthok config validate'\n", warning)
+			fmt.Fprintf(os.Stderr, "gtok: invalid config (%s); running git without hooks — run 'gtok config validate'\n", warning)
 		}
 		record.Decision = "passthrough-invalid-config"
 		record.Diagnostics = []string{"invalid config: " + configErr.Error()}
@@ -218,7 +218,7 @@ func wrapper(args []string, argv0, via string) int {
 		if err != nil {
 			return fatal(err, 1)
 		}
-		hookEnv = append(childEnv, "GTHOK_NESTED_TOKEN="+helperEnv["GTHOK_NESTED_TOKEN"])
+		hookEnv = append(childEnv, "GTOK_NESTED_TOKEN="+helperEnv["GTOK_NESTED_TOKEN"])
 	}
 	defer releaseNested()
 	runner := &hooks.Runner{Hooks: cfg.Hooks, BaseDir: cfg.Dir, Concurrency: cfg.Runtime.HookConcurrency, Env: hookEnv, RealGit: real, Redact: redactor.String, Redactor: redactor, Source: via}
@@ -264,13 +264,13 @@ func wrapper(args []string, argv0, via string) int {
 			stopHelpers()
 			return fatal(err, 1)
 		}
-		token := helperEnv["GTHOK_NESTED_TOKEN"]
+		token := helperEnv["GTOK_NESTED_TOKEN"]
 		helperEnv = make(map[string]string, len(inv.Env)+2)
 		for name, value := range inv.Env {
 			helperEnv[name] = value
 		}
 		if token != "" {
-			helperEnv["GTHOK_NESTED"], helperEnv["GTHOK_NESTED_TOKEN"] = "1", token
+			helperEnv["GTOK_NESTED"], helperEnv["GTOK_NESTED_TOKEN"] = "1", token
 		}
 	}
 	subject := policy.Subject{Result: result, Argv: result.Source.Argv, Env: inv.Env}
@@ -364,7 +364,7 @@ func wrapper(args []string, argv0, via string) int {
 			text := "delegate " + selectedDelegate.ID + ": " + message
 			record.Warnings = append(record.Warnings, protocol.Warning{Source: "delegate", ID: selectedDelegate.ID, Text: message})
 			record.Diagnostics = append(record.Diagnostics, text)
-			fmt.Fprintln(os.Stderr, terminalText("gthok: warning: "+strings.Join(strings.Fields(redactor.String(text)), " ")))
+			fmt.Fprintln(os.Stderr, terminalText("gtok: warning: "+strings.Join(strings.Fields(redactor.String(text)), " ")))
 		})
 	}
 	ctx, stopHelpers = watchHelpers(helperSignals, len(post) > 0)
@@ -379,8 +379,8 @@ func wrapper(args []string, argv0, via string) int {
 	subject.Outcome = input.Result
 	post = runner.Select(config.PhasePost, subject)
 	runner.Env = opts.Env
-	if token := helperEnv["GTHOK_NESTED_TOKEN"]; token != "" {
-		runner.Env = append(append([]string(nil), opts.Env...), "GTHOK_NESTED_TOKEN="+token)
+	if token := helperEnv["GTOK_NESTED_TOKEN"]; token != "" {
+		runner.Env = append(append([]string(nil), opts.Env...), "GTOK_NESTED_TOKEN="+token)
 	}
 	aggregate := runner.Run(ctx, config.PhasePost, post, input)
 	if caught := stopHelpers(); caught != 0 {
@@ -434,7 +434,7 @@ func shouldSpool(c *config.Config, result model.Result, env map[string]string) (
 			return true, false
 		}
 	}
-	if env["GTHOK_NO_DELEGATE"] != "1" {
+	if env["GTOK_NO_DELEGATE"] != "1" {
 		for _, d := range c.Delegates {
 			if couldMatch(d.Match) {
 				return true, false

@@ -10,7 +10,7 @@ import (
 	"slices"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 	"go.yaml.in/yaml/v3"
 )
 
@@ -67,7 +67,7 @@ func TestProjectTrustIncludeSchema(t *testing.T) {
 	if err := checkSchema(mustSchema(t, "config"), valid, "$"); err == nil {
 		t.Fatal("user config must reject project-only trust")
 	}
-	for _, invalid := range []map[string]any{{"include": []any{1}}, {"projects": []any{"/repo/.gthok.yaml"}}} {
+	for _, invalid := range []map[string]any{{"include": []any{1}}, {"projects": []any{"/repo/.gtok.yaml"}}} {
 		valid["trust"] = invalid
 		if err := checkSchema(mustSchema(t, "project-config"), valid, "$"); err == nil {
 			t.Fatalf("invalid trust section accepted: %v", invalid)
@@ -101,7 +101,7 @@ func TestConfigTemplatesMatchSchema(t *testing.T) {
 	if err := os.MkdirAll(filepath.Join(repo, ".git"), 0o700); err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": home, "GTHOK_CONFIG_DIR": filepath.Join(home, "cfg")}
+	env := map[string]string{"HOME": home, "GTOK_CONFIG_DIR": filepath.Join(home, "cfg")}
 	for scope, name := range map[string]string{config.ScopeUser: "config", config.ScopeProject: "project-config", config.ScopeLocal: "local-config"} {
 		path, err := config.Init(scope, repo, env)
 		if err != nil {

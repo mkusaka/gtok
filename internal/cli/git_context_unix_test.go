@@ -9,9 +9,9 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/gitargs"
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/gitargs"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 func gitContextFixture(t *testing.T) (string, string, map[string]string) {
@@ -24,7 +24,7 @@ func gitContextFixture(t *testing.T) (string, string, map[string]string) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	env := map[string]string{"HOME": root, "PATH": filepath.Dir(real) + ":/usr/bin:/bin", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "PATH": filepath.Dir(real) + ":/usr/bin:/bin", "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	return real, root, env
 }
 func contextGit(t *testing.T, real, cwd string, env map[string]string, args ...string) {
@@ -46,7 +46,7 @@ func TestEffectiveConfigRepository(t *testing.T) {
 	if err := os.Mkdir(filepath.Join(other, "sub"), 0700); err != nil {
 		t.Fatal(err)
 	}
-	if err := os.WriteFile(filepath.Join(repo, ".gthok.yaml"), []byte("version: 1\n"), 0600); err != nil {
+	if err := os.WriteFile(filepath.Join(repo, ".gtok.yaml"), []byte("version: 1\n"), 0600); err != nil {
 		t.Fatal(err)
 	}
 	for _, tc := range []struct {

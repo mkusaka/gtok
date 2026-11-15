@@ -11,7 +11,7 @@ import (
 	"syscall"
 	"time"
 
-	"github.com/mkusaka/gthok/internal/model"
+	"github.com/mkusaka/gtok/internal/model"
 )
 
 // Spool holds analysis bytes and a byte-exact stdin replay. It never owns source.
@@ -40,7 +40,7 @@ func (s *Spool) RequiresSupervision() bool { return s.supervised }
 // SpoolBytes creates a private, immediately unlinked replay for a transformed
 // stdin payload. Unlike capture, its complete bytes are already available.
 func SpoolBytes(data []byte) (*Spool, error) {
-	file, err := os.CreateTemp("", "gthok-stdin-*")
+	file, err := os.CreateTemp("", "gtok-stdin-*")
 	if err != nil {
 		return nil, err
 	}
@@ -115,7 +115,7 @@ func SpoolStdin(f *os.File, maxBytes int64, timeout time.Duration) (*Spool, erro
 		return s, nil
 	}
 
-	prefix, err := os.CreateTemp("", "gthok-stdin-*")
+	prefix, err := os.CreateTemp("", "gtok-stdin-*")
 	if err != nil {
 		return fail(err)
 	}

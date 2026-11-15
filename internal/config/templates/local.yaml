@@ -1,5 +1,5 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gthok/main/schema/local.schema.json
-# Personal repository overrides, created with `gthok config init --scope local`.
+# yaml-language-server: $schema=https://raw.githubusercontent.com/mkusaka/gtok/main/schema/local.schema.json
+# Personal repository overrides, created with `gtok config init --scope local`.
 # This file is auto-trusted only while untracked. Do not commit credentials here.
 # It cannot weaken user policy or set runtime, logging or trust.
 version: 1

@@ -12,7 +12,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func TestHooksRawInput(t *testing.T) {
@@ -62,7 +62,7 @@ func TestHooksRedactInputIsolationAndLogs(t *testing.T) {
 			if masked.Redactions <= 0 || masked.Invocation.Argv[len(args)-1] != want || masked.Invocation.Expanded[len(args)-1] != want {
 				t.Fatalf("masked input: %+v", masked)
 			}
-			for _, path := range []string{filepath.Join(s.root, "masked.json"), filepath.Join(filepath.Dir(s.cfg), "logs", "gthok.jsonl")} {
+			for _, path := range []string{filepath.Join(s.root, "masked.json"), filepath.Join(filepath.Dir(s.cfg), "logs", "gtok.jsonl")} {
 				data, err := os.ReadFile(path)
 				if err != nil {
 					t.Fatal(err)

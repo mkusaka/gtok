@@ -1,6 +1,6 @@
-# gthok
+# gtok
 
-`gthok` is a Unix Git wrapper: it classifies operations, applies declarative
+`gtok` is a Unix Git wrapper: it classifies operations, applies declarative
 policy and trusted pre/post hooks, then runs the real Git. It understands modes
 and effects, not just command names: `branch -D` and `update-ref -d` are both
 ref deletions; a push with a lease differs from an unconditional force push.
@@ -8,7 +8,7 @@ ref deletions; a push with a lease differs from an unconditional force push.
 **A guardrail, not an OS security boundary.** Calling the real Git directly or
 using another client bypasses it. Keep server-side branch protection for
 requirements that must hold for every client. Hooks run as your user.
-Git's `--no-verify` does not bypass gthok.
+Git's `--no-verify` does not bypass gtok.
 
 ## Install
 
@@ -21,47 +21,47 @@ unverified version, `runtime.gitCompatibility: conservative` (default) retains
 classification but reduces coverage and disables mutation-free/retry-safe
 claims. `verified-only` makes operations unknown so your unknown-operation
 policy applies; it does not block Git by itself. No-config passthrough and
-`--no-resolve` skip the probe. `gthok doctor` reports path/version/compatibility.
+`--no-resolve` skip the probe. `gtok doctor` reports path/version/compatibility.
 See [compatibility](docs/compatibility.md) for details.
 
 ```sh
-brew install mkusaka/tap/gthok
+brew install mkusaka/tap/gtok
 # Or use mise; no plugin needed:
-mise use -g github:mkusaka/gthok
+mise use -g github:mkusaka/gtok
 # Or build with the Go version in go.mod:
-go install github.com/mkusaka/gthok/cmd/gthok@latest
+go install github.com/mkusaka/gtok/cmd/gtok@latest
 ```
 
-Release archives are named `gthok_<version>_<os>_<arch>.tar.gz`, for example
-`gthok_0.0.1_darwin_arm64.tar.gz`. Download the matching archive and checksums
-from [Releases](https://github.com/mkusaka/gthok/releases), verify its SHA-256,
-and install the `gthok` binary into a stable directory on PATH.
+Release archives are named `gtok_<version>_<os>_<arch>.tar.gz`, for example
+`gtok_0.0.1_darwin_arm64.tar.gz`. Download the matching archive and checksums
+from [Releases](https://github.com/mkusaka/gtok/releases), verify its SHA-256,
+and install the `gtok` binary into a stable directory on PATH.
 
 ```sh
-gthok shim install                    # ~/.local/bin/git -> gthok
+gtok shim install                    # ~/.local/bin/git -> gtok
 export PATH="$HOME/.local/bin:$PATH"
-gthok doctor
+gtok doctor
 ```
 
-The real Git must remain on PATH, or be set with `GTHOK_REAL_GIT` /
-user-only `runtime.realGit`. Discovery excludes gthok itself and rejects
+The real Git must remain on PATH, or be set with `GTOK_REAL_GIT` /
+user-only `runtime.realGit`. Discovery excludes gtok itself and rejects
 recursive shims. Installation never edits shell rc files. Refresh your shell's
 command cache after changing PATH (`hash -r` in bash, `rehash` in zsh).
-Uninstall the owned shim with `gthok shim uninstall` before deleting the binary.
+Uninstall the owned shim with `gtok shim uninstall` before deleting the binary.
 Use the same `--bin-dir DIR` for a custom install/uninstall location.
 
-Without a shim, `gthok exec -- <git args>` uses the identical pipeline.
-For an interactive shell, `eval "$(gthok shell-init zsh)"` (or `bash`; for fish,
-`gthok shell-init fish | source`) defines a `git` function. Functions do not
+Without a shim, `gtok exec -- <git args>` uses the identical pipeline.
+For an interactive shell, `eval "$(gtok shell-init zsh)"` (or `bash`; for fish,
+`gtok shell-init fish | source`) defines a `git` function. Functions do not
 cover direct process launches or shells that do not load that startup file.
 
 ### GitHub Action
 
 ```yaml
-- uses: mkusaka/gthok@v0.0.1 # Pin a reviewed commit SHA in production.
+- uses: mkusaka/gtok@v0.0.1 # Pin a reviewed commit SHA in production.
   with:
     version: v0.0.1
-- run: gthok exec -- status --short
+- run: gtok exec -- status --short
 ```
 
 The `version` input selects a release (`vX.Y.Z` or `latest`); `shim: false`
@@ -70,35 +70,35 @@ See [installation notes](docs/notes/install.md) for release verification.
 
 ## Quick start
 
-Repos without applicable configuration are pure passthrough: gthok starts no
-normalizer, logger, spool or hook runner. A user config activates gthok globally.
+Repos without applicable configuration are pure passthrough: gtok starts no
+normalizer, logger, spool or hook runner. A user config activates gtok globally.
 New configurations default to **observe**, which reports would-deny without
 blocking Git. Inspect results before switching to enforce.
 
 ```sh
-gthok config init --scope user
-gthok normalize --no-resolve -- push --force origin HEAD:refs/heads/main
-gthok explain --no-transforms -- reset --hard HEAD~1
-gthok actions 'remote.push.*' --json
-gthok docs search "force push lease"
+gtok config init --scope user
+gtok normalize --no-resolve -- push --force origin HEAD:refs/heads/main
+gtok explain --no-transforms -- reset --hard HEAD~1
+gtok actions 'remote.push.*' --json
+gtok docs search "force push lease"
 ```
 
 Put Git arguments after `--`, without a leading `git`. For example,
-`gthok exec -- git status` does **not** mean `gthok exec -- status`.
+`gtok exec -- git status` does **not** mean `gtok exec -- status`.
 `normalize --no-resolve` launches no subprocess; it does not load aliases or
 repository context through Git. Omitted resolution is uncertainty, not safety.
 
 ## Policy and configuration
 
-Files load in order: user `config.yaml` → repository-root `.gthok.yaml` →
-personal `.gthok.local.yaml`. The effective repository follows `-C`,
+Files load in order: user `config.yaml` → repository-root `.gtok.yaml` →
+personal `.gtok.local.yaml`. The effective repository follows `-C`,
 `--git-dir`, `--work-tree`, `--bare` and Git's environment. Project/local policy
 can tighten, not weaken, user policy. Only user config sets runtime/logging.
 The personal file is auto-trusted **only while untracked**; initialization adds
 it to `.git/info/exclude` rather than `.gitignore`.
 
-User config is `$GTHOK_CONFIG_DIR/config.yaml`, otherwise
-`$XDG_CONFIG_HOME/gthok/config.yaml`, otherwise `~/.config/gthok/config.yaml`.
+User config is `$GTOK_CONFIG_DIR/config.yaml`, otherwise
+`$XDG_CONFIG_HOME/gtok/config.yaml`, otherwise `~/.config/gtok/config.yaml`.
 
 ```yaml
 version: 1
@@ -129,11 +129,11 @@ apply conservatively unless `onUnresolved: ignore` is explicit. Allow responses
 never lift a deny. See [policy and matchers](docs/policy-and-matchers.md).
 
 ```sh
-gthok config init                   # shared .gthok.yaml
-gthok config init --scope local     # personal, per checkout
-gthok config validate
-gthok config trust --dry-run        # inspect executable definitions and content
-gthok config trust                  # activate reviewed project executables
+gtok config init                   # shared .gtok.yaml
+gtok config init --scope local     # personal, per checkout
+gtok config validate
+gtok config trust --dry-run        # inspect executable definitions and content
+gtok config trust                  # activate reviewed project executables
 ```
 
 Project policy applies without executable trust. Hooks/transforms/delegates
@@ -142,14 +142,14 @@ directory permits future checked-out code there to run as you; inspect
 [security](docs/security.md) before using `config trust repo` / `config trust dir`.
 Invalid user configuration that declares enforce mode fails closed (78);
 observe/undetermined mode normally fails open with a warning.
-`GTHOK_FAIL_CLOSED=1` rejects invalid configuration in either mode.
+`GTOK_FAIL_CLOSED=1` rejects invalid configuration in either mode.
 
 ## Hooks and transforms
 
 Build the Git examples into your private user config directory:
 
 ```sh
-config_dir="${GTHOK_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gthok}"
+config_dir="${GTOK_CONFIG_DIR:-${XDG_CONFIG_HOME:-$HOME/.config}/gtok}"
 mkdir -p "$config_dir/hooks" "$config_dir/transforms" "$config_dir/logs"
 go build -o "$config_dir/hooks/deny-force-push" ./examples/hooks/deny-force-push
 go build -o "$config_dir/hooks/audit-history" ./examples/hooks/audit-history
@@ -176,8 +176,8 @@ See [hook protocol](docs/hook-protocol.md), [transforms](docs/transforms.md), an
 [retry-safe delegates](docs/delegates.md).
 
 ```sh
-gthok hooks test --expect deny -- push --force origin HEAD:refs/heads/main
-gthok hooks test --print-input -- commit -m message
+gtok hooks test --expect deny -- push --force origin HEAD:refs/heads/main
+gtok hooks test --print-input -- commit -m message
 ```
 
 `hooks test` runs trusted transforms and selected hooks, never the request or
@@ -189,25 +189,25 @@ local-only: neither diagnostic makes a remote query to learn the remote's refs.
 
 | Command | Purpose |
 | --- | --- |
-| `gthok exec -- <args>` | Execute through the same pipeline as the `git` shim. |
-| `gthok normalize [--no-resolve] -- <args>` | Redacted normalization JSON. |
-| `gthok explain [--json] [--no-transforms] -- <args>` | Policy, transforms and hook/delegate selection; no requested Git execution. |
-| `gthok hooks list [--json]` | Active/inactive hook inventory. |
-| `gthok hooks test [--json] [--expect deny] -- <args>` | Run transforms and hooks against a synthetic request. |
-| `gthok config init/validate/path` | Create, validate or locate configuration. |
-| `gthok config trust/untrust` | Review or revoke executable trust. |
-| `gthok shim install/uninstall [--bin-dir DIR]` | Manage only the owned PATH shim. |
-| `gthok shell-init bash/zsh/fish` | Print an interactive-shell function. |
-| `gthok doctor [--json]` | Installation/config/executable checks, including real Git path/version/compatibility. |
-| `gthok actions [glob] [--json]` | Actions, effects, example scopes and Git routes. A literal prefix also works. |
-| `gthok docs [id]`, `docs --all`, `docs search "query"` | Embedded offline Markdown and top-five JSON search. |
-| `gthok schema <name>` | Print a Draft 2020-12 schema. |
-| `gthok version [--json]` | Release, commit, Go and platform metadata (text by default). |
+| `gtok exec -- <args>` | Execute through the same pipeline as the `git` shim. |
+| `gtok normalize [--no-resolve] -- <args>` | Redacted normalization JSON. |
+| `gtok explain [--json] [--no-transforms] -- <args>` | Policy, transforms and hook/delegate selection; no requested Git execution. |
+| `gtok hooks list [--json]` | Active/inactive hook inventory. |
+| `gtok hooks test [--json] [--expect deny] -- <args>` | Run transforms and hooks against a synthetic request. |
+| `gtok config init/validate/path` | Create, validate or locate configuration. |
+| `gtok config trust/untrust` | Review or revoke executable trust. |
+| `gtok shim install/uninstall [--bin-dir DIR]` | Manage only the owned PATH shim. |
+| `gtok shell-init bash/zsh/fish` | Print an interactive-shell function. |
+| `gtok doctor [--json]` | Installation/config/executable checks, including real Git path/version/compatibility. |
+| `gtok actions [glob] [--json]` | Actions, effects, example scopes and Git routes. A literal prefix also works. |
+| `gtok docs [id]`, `docs --all`, `docs search "query"` | Embedded offline Markdown and top-five JSON search. |
+| `gtok schema <name>` | Print a Draft 2020-12 schema. |
+| `gtok version [--json]` | Release, commit, Go and platform metadata (text by default). |
 
 Schemas: `config`, `project`, `local`, `hook-input`, `hook-response`,
 `transform-response`, `normalize-result`, `explain`, `hooks-test`, `doctor`,
 `actions`, `docs`, `version`, `log`. The aliases `project-config` and
-`local-config` remain supported. `version` describes `gthok version --json`.
+`local-config` remain supported. `version` describes `gtok version --json`.
 Regenerate with `go generate ./internal/schema`.
 
 ## Exit codes
@@ -229,14 +229,14 @@ status. Details: [exit status](docs/exit-status.md).
 ## Agent skill and development
 
 ```sh
-npx skills add mkusaka/gthok
-gthok docs skill
+npx skills add mkusaka/gtok
+gtok docs skill
 make build
 make test
 make lint
 ```
 
-The [agent skill](skills/gthok/SKILL.md) ships in the binary. Docs links/search
+The [agent skill](skills/gtok/SKILL.md) ships in the binary. Docs links/search
 URLs use the matching release tag; development builds use `main`.
 Architecture, exhaustive action/parameter reference, local resolution and
 regeneration instructions are in [docs](docs/architecture.md),

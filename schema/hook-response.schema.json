@@ -1,5 +1,5 @@
 {
-  "$id": "https://raw.githubusercontent.com/mkusaka/gthok/main/schema/hook-response.schema.json",
+  "$id": "https://raw.githubusercontent.com/mkusaka/gtok/main/schema/hook-response.schema.json",
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "additionalProperties": false,
   "properties": {
@@ -30,6 +30,6 @@
   "required": [
     "decision"
   ],
-  "title": "gthok hook response",
+  "title": "gtok hook response",
   "type": "object"
 }

@@ -11,7 +11,7 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
+	"github.com/mkusaka/gtok/internal/config"
 )
 
 func envTransformFixture(s *sandbox, id string, env map[string]any) config.Transform {
@@ -60,7 +60,7 @@ func TestTransformEnvExecution(t *testing.T) {
 			args := []string{"version"}
 			s.management(nil, "exec", "--", "version").code(t, 0)
 			env := envMap(s.onlyRecord(args, nil).Env)
-			if env["GH_TOKEN"] != token || env["GTHOK_DEPTH"] != "1" || env["Z_CONTEXT"] != "selected" {
+			if env["GH_TOKEN"] != token || env["GTOK_DEPTH"] != "1" || env["Z_CONTEXT"] != "selected" {
 				t.Fatalf("child environment missing edits or depth: %v", env)
 			}
 			if _, exists := env["REMOVE_ME"]; exists {
@@ -110,7 +110,7 @@ func TestTransformEnvRollback(t *testing.T) {
 	s.env["CHAIN"] = "original"
 	s.configure(func(c *config.Config) {
 		first := envTransformFixture(s, "environment", map[string]any{"CHAIN": "changed", "GH_TOKEN": "ghs" + "_rollback_fixture"})
-		bad := envTransformFixture(s, "bad", map[string]any{"GTHOK_DEPTH": "99"})
+		bad := envTransformFixture(s, "bad", map[string]any{"GTOK_DEPTH": "99"})
 		bad.OnError = "allow"
 		c.Transforms = []config.Transform{first, bad, envTransformFixture(s, "never", map[string]any{"CHAIN": "wrong"})}
 		c.Hooks = []config.Hook{s.hook("inspect", "pre")}
@@ -119,7 +119,7 @@ func TestTransformEnvRollback(t *testing.T) {
 	s.git(nil, args...).code(t, 0)
 	env := envMap(s.onlyRecord(args, nil).Env)
 	in := s.hookInput("inspect")
-	if env["CHAIN"] != "original" || env["GH_TOKEN"] != "" || env["GTHOK_DEPTH"] != "1" || len(in.Invocation.EnvChanged) != 0 {
+	if env["CHAIN"] != "original" || env["GH_TOKEN"] != "" || env["GTOK_DEPTH"] != "1" || len(in.Invocation.EnvChanged) != 0 {
 		t.Fatalf("partial chain survived rollback: env=%v input=%+v", env, in)
 	}
 	if _, err := os.Stat(filepath.Join(s.root, "never.json")); !errors.Is(err, os.ErrNotExist) {
@@ -133,7 +133,7 @@ func TestTransformEnvForbiddenName(t *testing.T) {
 			s := newSandbox(t)
 			s.configure(func(c *config.Config) {
 				c.Policy.Mode = mode
-				c.Transforms = []config.Transform{envTransformFixture(s, "forbidden", map[string]any{"GTHOK_DEPTH": "99"})}
+				c.Transforms = []config.Transform{envTransformFixture(s, "forbidden", map[string]any{"GTOK_DEPTH": "99"})}
 			})
 			got := s.git(nil, "version")
 			got.code(t, 78)

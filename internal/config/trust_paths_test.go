@@ -14,9 +14,9 @@ func pathTrustFixture(t *testing.T) (repo, linked, home string, env map[string]s
 	home = filepath.Join(root, "home")
 	repo = filepath.Join(home, "src", "me", "repo")
 	linked = filepath.Join(root, "elsewhere", "wt")
-	env = map[string]string{"HOME": home, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env = map[string]string{"HOME": home, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	for _, dir := range []string{repo, linked} {
-		writeFixture(t, filepath.Join(dir, ".gthok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: gate, command: [./gate]}]}\ntransforms: {pre: [{id: edit, command: [./filter]}]}\n")
+		writeFixture(t, filepath.Join(dir, ".gtok.yaml"), "version: 1\npolicy: {mode: enforce}\nhooks: {pre: [{id: gate, command: [./gate]}]}\ntransforms: {pre: [{id: edit, command: [./filter]}]}\n")
 	}
 	gitdir := filepath.Join(repo, ".git", "worktrees", "wt")
 	writeFixture(t, filepath.Join(gitdir, "commondir"), "../..\n")
@@ -123,7 +123,7 @@ func TestTrustPathsProjectOverlayRejected(t *testing.T) {
 				repo, _, _, env := pathTrustFixture(t)
 				writeFixture(t, DefaultPath(env), "version: 1\n")
 				body = strings.ReplaceAll(body, "KEY", key)
-				writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\n"+body+"\nhooks: {pre: [{id: gate, command: [./gate]}]}\n")
+				writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\n"+body+"\nhooks: {pre: [{id: gate, command: [./gate]}]}\n")
 				c, notes, err := LoadEffective("", repo, env)
 				if err != nil || len(c.Hooks) != 0 || !strings.Contains(strings.Join(notes, "\n"), "cannot set trust."+key) {
 					t.Fatalf("project cannot waive its own trust: %+v %v %v", c, notes, err)

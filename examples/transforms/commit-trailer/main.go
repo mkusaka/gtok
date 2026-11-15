@@ -10,11 +10,11 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/protocol"
 )
 
-const trailer = "Origin: gthok-example"
+const trailer = "Origin: gtok-example"
 
 func main() {
 	if err := run(os.Stdin, os.Stdout); err != nil {

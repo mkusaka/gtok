@@ -131,7 +131,7 @@ func TestExecRefusesLivePumpAndRestoresStdin(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	if err = Exec(Options{Path: "/nonexistent-gthok-test/git", Args: []string{"git"}, Stdin: spool}); !errors.Is(err, syscall.ENOENT) {
+	if err = Exec(Options{Path: "/nonexistent-gtok-test/git", Args: []string{"git"}, Stdin: spool}); !errors.Is(err, syscall.ENOENT) {
 		t.Fatal(err)
 	}
 	if err = syscall.Fstat(0, &after); err != nil {

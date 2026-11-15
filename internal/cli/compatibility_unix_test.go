@@ -13,19 +13,19 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/mkusaka/gthok/internal/config"
-	"github.com/mkusaka/gthok/internal/install"
-	"github.com/mkusaka/gthok/internal/model"
-	"github.com/mkusaka/gthok/internal/policy"
-	"github.com/mkusaka/gthok/internal/protocol"
-	"github.com/mkusaka/gthok/internal/schema"
+	"github.com/mkusaka/gtok/internal/config"
+	"github.com/mkusaka/gtok/internal/install"
+	"github.com/mkusaka/gtok/internal/model"
+	"github.com/mkusaka/gtok/internal/policy"
+	"github.com/mkusaka/gtok/internal/protocol"
+	"github.com/mkusaka/gtok/internal/schema"
 )
 
 func compatibilityFixture(t *testing.T, version string) (real, calls string) {
 	t.Helper()
 	root := t.TempDir()
 	t.Chdir(root)
-	for key, value := range map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "PATH": "/usr/bin:/bin", "GTHOK_DEPTH": "0", "GTHOK_NESTED": "", "GTHOK_NESTED_TOKEN": ""} {
+	for key, value := range map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config"), "GIT_CONFIG_NOSYSTEM": "1", "GIT_CONFIG_GLOBAL": "/dev/null", "PATH": "/usr/bin:/bin", "GTOK_DEPTH": "0", "GTOK_NESTED": "", "GTOK_NESTED_TOKEN": ""} {
 		t.Setenv(key, value)
 	}
 	real, calls = filepath.Join(root, "real-git"), filepath.Join(root, "calls")
@@ -33,7 +33,7 @@ func compatibilityFixture(t *testing.T, version string) (real, calls string) {
 	if err := os.WriteFile(real, []byte(body), 0700); err != nil {
 		t.Fatal(err)
 	}
-	t.Setenv("GTHOK_REAL_GIT", real)
+	t.Setenv("GTOK_REAL_GIT", real)
 	return real, calls
 }
 
@@ -274,7 +274,7 @@ func TestCompatibilitySemanticTransform(t *testing.T) {
 }
 
 func TestCompatibilityWrapperHelper(t *testing.T) {
-	if os.Getenv("GTHOK_T12_WRAPPER_HELPER") == "1" {
+	if os.Getenv("GTOK_T12_WRAPPER_HELPER") == "1" {
 		os.Exit(wrapper([]string{"version"}, "git", "shim"))
 	}
 }
@@ -296,7 +296,7 @@ func TestCompatibilityWrapperPassthroughAndPolicy(t *testing.T) {
 				compatibilityConfig(t, tc.mode, tc.extra)
 			}
 			cmd := exec.Command(os.Args[0], "-test.run=^TestCompatibilityWrapperHelper$")
-			cmd.Env = append(os.Environ(), "GTHOK_T12_WRAPPER_HELPER=1")
+			cmd.Env = append(os.Environ(), "GTOK_T12_WRAPPER_HELPER=1")
 			out, err := cmd.CombinedOutput()
 			exit, ok := err.(*exec.ExitError)
 			if !ok || exit.ExitCode() != tc.want {
@@ -347,7 +347,7 @@ func TestVersionJSONAndText(t *testing.T) {
 				t.Fatal("empty commit should be omitted")
 			}
 			code, out, errOut := hooksExpectRun(t, "version")
-			if code != 0 || errOut != "" || !strings.HasPrefix(out, "gthok test\ncommit test\n") || !strings.Contains(out, runtime.GOOS+"/"+runtime.GOARCH) {
+			if code != 0 || errOut != "" || !strings.HasPrefix(out, "gtok test\ncommit test\n") || !strings.Contains(out, runtime.GOOS+"/"+runtime.GOARCH) {
 				t.Fatalf("text output changed: code=%d stdout=%s stderr=%s", code, out, errOut)
 			}
 		})
@@ -356,7 +356,7 @@ func TestVersionJSONAndText(t *testing.T) {
 
 func TestDocsSearchGitExample(t *testing.T) {
 	code, out, errOut := hooksExpectRun(t, "docs", "search", "--help")
-	if code != 0 || errOut != "" || !strings.Contains(out, `gthok docs search "force push lease"`) || strings.Contains(out, "GH_TOKEN") || strings.Contains(out, "gain") {
+	if code != 0 || errOut != "" || !strings.Contains(out, `gtok docs search "force push lease"`) || strings.Contains(out, "GH_TOKEN") || strings.Contains(out, "gain") {
 		t.Fatalf("help: code=%d stdout=%s stderr=%s", code, out, errOut)
 	}
 }

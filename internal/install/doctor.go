@@ -37,7 +37,7 @@ type DoctorOptions struct {
 	// BinDir is the fallback when state has no recorded shims.
 	BinDir   string
 	StateDir string
-	// Env is passed to diagnostics and inspected for GTHOK_DEPTH.
+	// Env is passed to diagnostics and inspected for GTOK_DEPTH.
 	// nil inherits the process environment. Non-nil (even empty) is exact.
 	Env []string
 	// Stdin defaults to os.Stdin and is inspected, never read.
@@ -50,11 +50,11 @@ func Checks(o DoctorOptions) []Check {
 	if env == nil {
 		env = os.Environ()
 	}
-	binary := Check{Name: "gthok", Status: StatusOK, Detail: o.Self + " (version " + o.Version + ")"}
+	binary := Check{Name: "gtok", Status: StatusOK, Detail: o.Self + " (version " + o.Version + ")"}
 	if info, err := os.Stat(o.Self); err != nil {
-		binary.Status, binary.Detail = StatusFail, fmt.Sprintf("cannot stat gthok %q: %v", o.Self, err)
+		binary.Status, binary.Detail = StatusFail, fmt.Sprintf("cannot stat gtok %q: %v", o.Self, err)
 	} else if !info.Mode().IsRegular() || info.Mode().Perm()&0111 == 0 {
-		binary.Status, binary.Detail = StatusFail, "gthok is not a regular executable file: "+o.Self
+		binary.Status, binary.Detail = StatusFail, "gtok is not a regular executable file: "+o.Self
 	} else if o.Version == "dev" {
 		binary.Status = StatusWarn
 		binary.Detail += "; development build: version unknown; features may differ from the docs"
@@ -62,7 +62,7 @@ func Checks(o DoctorOptions) []Check {
 	checks := []Check{binary}
 	real, candidates, err := FindRealGit(DiscoverOptions{PathEnv: o.PathEnv, Self: o.Self, Override: o.Override})
 	if err != nil {
-		checks = append(checks, Check{Name: "real-git", Status: StatusFail, Detail: err.Error(), Fix: "Install Git or set runtime.realGit / GTHOK_REAL_GIT to its absolute executable path."})
+		checks = append(checks, Check{Name: "real-git", Status: StatusFail, Detail: err.Error(), Fix: "Install Git or set runtime.realGit / GTOK_REAL_GIT to its absolute executable path."})
 	} else {
 		checks = append(checks, Check{Name: "real-git", Status: StatusOK, Detail: real})
 	}
@@ -94,8 +94,8 @@ func Checks(o DoctorOptions) []Check {
 			if err != nil {
 				ownership.Status, ownership.Detail = StatusFail, shim+": "+err.Error()
 			} else if !owned {
-				ownership.Status, ownership.Detail = StatusWarn, shim+" is absent or not managed by gthok"
-				ownership.Fix = "Run gthok shim install with --bin-dir set to " + strconv.Quote(filepath.Dir(shim)) + "; resolve any foreign path collision first."
+				ownership.Status, ownership.Detail = StatusWarn, shim+" is absent or not managed by gtok"
+				ownership.Fix = "Run gtok shim install with --bin-dir set to " + strconv.Quote(filepath.Dir(shim)) + "; resolve any foreign path collision first."
 			}
 			checks = append(checks, ownership)
 		}
@@ -103,22 +103,22 @@ func Checks(o DoctorOptions) []Check {
 	if entry := execEntryCheck(o.StateDir, checks, time.Now()); entry != nil {
 		checks = append(checks, *entry)
 	}
-	recursion := Check{Name: "recursion-risk", Status: StatusOK, Detail: "Discovery excludes self and gthok-named executables; nesting is bounded by GTHOK_DEPTH. GTHOK_NESTED=1 alone does not bypass analysis; helper bypass requires a live invocation token in GTHOK_NESTED_TOKEN."}
+	recursion := Check{Name: "recursion-risk", Status: StatusOK, Detail: "Discovery excludes self and gtok-named executables; nesting is bounded by GTOK_DEPTH. GTOK_NESTED=1 alone does not bypass analysis; helper bypass requires a live invocation token in GTOK_NESTED_TOKEN."}
 	var risks []string
 	if _, _, err := NextDepth(env); err != nil {
 		risks = append(risks, err.Error())
 	}
 	if o.Override != "" {
 		for _, c := range candidates {
-			if c.Skipped == "gthok shim" {
-				risks = append(risks, "real git override points at a gthok shim")
+			if c.Skipped == "gtok shim" {
+				risks = append(risks, "real git override points at a gtok shim")
 			}
 		}
 	}
 	if real != "" {
 		owned, ownErr := IsOwnedShim(real, o.Self, o.StateDir)
 		if owned {
-			risks = append(risks, "discovery selected a recorded shim for another renamed gthok installation")
+			risks = append(risks, "discovery selected a recorded shim for another renamed gtok installation")
 		} else if ownErr != nil {
 			risks = append(risks, "cannot verify discovered executable ownership: "+ownErr.Error())
 		}
@@ -166,7 +166,7 @@ func Checks(o DoctorOptions) []Check {
 
 const execEntryFile = "exec-entry"
 
-// RecordExecEntry marks a recent `gthok exec` (shell function or script) for
+// RecordExecEntry marks a recent `gtok exec` (shell function or script) for
 // doctor. Best-effort: the wrapper must not fail or slow down over it.
 func RecordExecEntry(stateDir string, now time.Time) {
 	path := filepath.Join(stateDir, execEntryFile)
@@ -178,7 +178,7 @@ func RecordExecEntry(stateDir string, now time.Time) {
 	}
 }
 
-// execEntryCheck reports `gthok exec` use within a week. Without an owned shim,
+// execEntryCheck reports `gtok exec` use within a week. Without an owned shim,
 // it downgrades the shim's PATH/ownership warnings to info: the user chose the
 // shell entry, whose gap (child-process git) the check itself names.
 func execEntryCheck(stateDir string, checks []Check, now time.Time) *Check {
@@ -186,7 +186,7 @@ func execEntryCheck(stateDir string, checks []Check, now time.Time) *Check {
 	if err != nil || now.Sub(info.ModTime()) > 7*24*time.Hour {
 		return nil
 	}
-	used := "gthok exec last used " + info.ModTime().Format("2006-01-02 15:04:05 -07:00")
+	used := "gtok exec last used " + info.ModTime().Format("2006-01-02 15:04:05 -07:00")
 	shimOK := false
 	for _, c := range checks {
 		if c.Name == "shim-ownership" && c.Status == StatusOK {
@@ -201,7 +201,7 @@ func execEntryCheck(stateDir string, checks []Check, now time.Time) *Check {
 			checks[i].Status = StatusInfo
 		}
 	}
-	return &Check{Name: "shell-entry", Status: StatusInfo, Detail: used + " (shell function or scripts); without the shim, git started by scripts, programs or agents that skip shell rc files bypasses gthok", Fix: "Run gthok shim install to cover them."}
+	return &Check{Name: "shell-entry", Status: StatusInfo, Detail: used + " (shell function or scripts); without the shim, git started by scripts, programs or agents that skip shell rc files bypasses gtok", Fix: "Run gtok shim install to cover them."}
 }
 
 var gitVersionRE = regexp.MustCompile(`^git version ([0-9]+\.[0-9]+\.[0-9]+(?:[-+.][^[:space:]]+)?)(?:[[:space:]]|$)`)
@@ -216,7 +216,7 @@ func GitVersion(path string, env []string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	childEnv = append(childEnv, "GTHOK_VERSION_QUERY=1")
+	childEnv = append(childEnv, "GTOK_VERSION_QUERY=1")
 	out, err := runDiagnostic(path, childEnv, "--version")
 	if err != nil {
 		return "", err

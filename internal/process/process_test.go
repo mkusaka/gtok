@@ -23,7 +23,7 @@ import (
 	"github.com/creack/pty"
 )
 
-const helperKey = "GTHOK_PROCESS_HELPER"
+const helperKey = "GTOK_PROCESS_HELPER"
 
 type wrapperConfig struct {
 	Mode       string
@@ -58,7 +58,7 @@ func TestMain(m *testing.M) {
 		childMain()
 		os.Exit(0)
 	case "ignore":
-		sig, _ := strconv.Atoi(os.Getenv("GTHOK_IGNORE_SIGNAL"))
+		sig, _ := strconv.Atoi(os.Getenv("GTOK_IGNORE_SIGNAL"))
 		signal.Ignore(syscall.Signal(sig))
 		env := os.Environ()
 		for i, value := range env {
@@ -75,7 +75,7 @@ func TestMain(m *testing.M) {
 
 func wrapperMain() {
 	var cfg wrapperConfig
-	if err := json.Unmarshal([]byte(os.Getenv("GTHOK_WRAPPER_CONFIG")), &cfg); err != nil {
+	if err := json.Unmarshal([]byte(os.Getenv("GTOK_WRAPPER_CONFIG")), &cfg); err != nil {
 		panic(err)
 	}
 	opts := Options{Path: cfg.Path, Args: cfg.Args, Env: cfg.Env, Capture: cfg.Capture, CaptureLimit: cfg.Limit}
@@ -117,8 +117,8 @@ func wrapperMain() {
 func childMain() {
 	watchdog := time.AfterFunc(commandTimeout, func() { os.Exit(124) })
 	defer watchdog.Stop()
-	mode := os.Getenv("GTHOK_CHILD_MODE")
-	n, _ := strconv.Atoi(os.Getenv("GTHOK_CHILD_N"))
+	mode := os.Getenv("GTOK_CHILD_MODE")
+	n, _ := strconv.Atoi(os.Getenv("GTOK_CHILD_N"))
 	switch mode {
 	case "metadata":
 		cwd, _ := os.Getwd()
@@ -244,7 +244,7 @@ func childMain() {
 		defer cancel()
 		cmd := exec.CommandContext(ctx, path)
 		cmd.WaitDelay = commandReapTimeout
-		cmd.Env = []string{helperKey + "=child", "GTHOK_CHILD_MODE=block"}
+		cmd.Env = []string{helperKey + "=child", "GTOK_CHILD_MODE=block"}
 		r, w, _ := os.Pipe()
 		cmd.Stdin = r
 		if err := cmd.Start(); err != nil {
@@ -277,7 +277,7 @@ func childConfig(t testing.TB, mode string, n int) wrapperConfig {
 	if err != nil {
 		t.Fatal(err)
 	}
-	return wrapperConfig{Mode: "run", Path: path, Args: []string{"git", "space arg", "", "日本語", "--dash"}, Env: []string{helperKey + "=child", "GTHOK_CHILD_MODE=" + mode, "GTHOK_CHILD_N=" + strconv.Itoa(n), "EXACT=one two"}, Limit: 7, SpoolLimit: 1024, Timeout: 5 * time.Second}
+	return wrapperConfig{Mode: "run", Path: path, Args: []string{"git", "space arg", "", "日本語", "--dash"}, Env: []string{helperKey + "=child", "GTOK_CHILD_MODE=" + mode, "GTOK_CHILD_N=" + strconv.Itoa(n), "EXACT=one two"}, Limit: 7, SpoolLimit: 1024, Timeout: 5 * time.Second}
 }
 
 func wrapperCommand(t testing.TB, cfg wrapperConfig) *exec.Cmd {
@@ -291,7 +291,7 @@ func wrapperCommand(t testing.TB, cfg wrapperConfig) *exec.Cmd {
 		t.Fatal(err)
 	}
 	cmd := testCommand(t, path)
-	cmd.Env = []string{helperKey + "=wrapper", "GTHOK_WRAPPER_CONFIG=" + string(b), "HOME=" + t.TempDir(), "PATH=/usr/bin:/bin", "TMPDIR=" + t.TempDir()}
+	cmd.Env = []string{helperKey + "=wrapper", "GTOK_WRAPPER_CONFIG=" + string(b), "HOME=" + t.TempDir(), "PATH=/usr/bin:/bin", "TMPDIR=" + t.TempDir()}
 	return cmd
 }
 
@@ -628,7 +628,7 @@ func TestInheritedIgnoredSignals(t *testing.T) {
 				cfg := childConfig(t, "metadata", 0)
 				cfg.Mode = mode
 				cmd := wrapperCommand(t, cfg)
-				cmd.Env = append(cmd.Env, helperKey+"=ignore", "GTHOK_IGNORE_SIGNAL="+strconv.Itoa(int(sig)))
+				cmd.Env = append(cmd.Env, helperKey+"=ignore", "GTOK_IGNORE_SIGNAL="+strconv.Itoa(int(sig)))
 				b, err := cmd.Output()
 				if err != nil {
 					t.Fatal(err)

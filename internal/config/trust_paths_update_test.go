@@ -43,7 +43,7 @@ func TestTrustRepositoryRoot(t *testing.T) {
 	if got, err := TrustRepositoryRoot(checkout, checkout); err != nil || got != canonicalPath(checkout) {
 		t.Fatalf("checkout fallback: %s, %v", got, err)
 	}
-	for _, path := range []string{filepath.Join(repo, "missing"), filepath.Join(repo, ".gthok.yaml"), t.TempDir()} {
+	for _, path := range []string{filepath.Join(repo, "missing"), filepath.Join(repo, ".gtok.yaml"), t.TempDir()} {
 		if _, err := TrustRepositoryRoot(path, repo); err == nil {
 			t.Fatalf("must reject non-directory or non-repository %s", path)
 		}
@@ -75,12 +75,12 @@ func TestUpdatePathTrustRefusals(t *testing.T) {
 		})
 	}
 	repo, _, _, env := pathTrustFixture(t)
-	if _, _, _, err := UpdatePathTrust("repo", ".", repo, env, false, false); err == nil || !strings.Contains(err.Error(), "run `gthok config init --scope user` first") {
+	if _, _, _, err := UpdatePathTrust("repo", ".", repo, env, false, false); err == nil || !strings.Contains(err.Error(), "run `gtok config init --scope user` first") {
 		t.Fatalf("missing config: %v", err)
 	}
 	writeFixture(t, DefaultPath(env), "version: 1\n")
 	for _, kind := range []string{"repo", "dir"} {
-		for _, path := range []string{filepath.Join(repo, "missing"), filepath.Join(repo, ".gthok.yaml")} {
+		for _, path := range []string{filepath.Join(repo, "missing"), filepath.Join(repo, ".gtok.yaml")} {
 			if _, _, _, err := UpdatePathTrust(kind, path, repo, env, false, false); err == nil {
 				t.Fatalf("%s must reject %s", kind, path)
 			}

@@ -9,7 +9,7 @@ import (
 	"reflect"
 	"strings"
 
-	"github.com/mkusaka/gthok/internal/textdiff"
+	"github.com/mkusaka/gtok/internal/textdiff"
 	"go.yaml.in/yaml/v3"
 )
 
@@ -73,7 +73,7 @@ func UpdatePathTrust(kind, path, cwd string, env map[string]string, remove, dryR
 	configPath := DefaultPath(env)
 	target, err := filepath.EvalSymlinks(configPath)
 	if errors.Is(err, os.ErrNotExist) {
-		return "", false, nil, errors.New("user config does not exist; run `gthok config init --scope user` first")
+		return "", false, nil, errors.New("user config does not exist; run `gtok config init --scope user` first")
 	}
 	if err != nil {
 		return "", false, nil, err

@@ -22,7 +22,7 @@ func TestNestedTokenLifecycle(t *testing.T) {
 	if first == second || len(first) != 64 || len(second) != 64 {
 		t.Fatal("expected distinct 32-byte hex tokens")
 	}
-	env := map[string]string{"GTHOK_NESTED": "1", "GTHOK_NESTED_TOKEN": first}
+	env := map[string]string{"GTOK_NESTED": "1", "GTOK_NESTED_TOKEN": first}
 	if !ValidNestedToken(dir, env) {
 		t.Fatal("live token rejected")
 	}
@@ -50,7 +50,7 @@ func TestNestedTokenLifecycle(t *testing.T) {
 	if _, err := os.Lstat(nestedTokenPath(dir, first)); !os.IsNotExist(err) {
 		t.Fatalf("cleaned token still exists: %v", err)
 	}
-	env["GTHOK_NESTED_TOKEN"] = second
+	env["GTOK_NESTED_TOKEN"] = second
 	if !ValidNestedToken(dir, env) {
 		t.Fatal("cleanup removed another invocation's token")
 	}
@@ -65,10 +65,10 @@ func TestNestedTokenRejectsForgedEnvironment(t *testing.T) {
 	defer cleanup()
 	for _, env := range []map[string]string{
 		nil,
-		{"GTHOK_NESTED": "1"},
-		{"GTHOK_NESTED_TOKEN": token},
-		{"GTHOK_NESTED": "0", "GTHOK_NESTED_TOKEN": token},
-		{"GTHOK_NESTED": "1", "GTHOK_NESTED_TOKEN": strings.Repeat("a", 64)},
+		{"GTOK_NESTED": "1"},
+		{"GTOK_NESTED_TOKEN": token},
+		{"GTOK_NESTED": "0", "GTOK_NESTED_TOKEN": token},
+		{"GTOK_NESTED": "1", "GTOK_NESTED_TOKEN": strings.Repeat("a", 64)},
 	} {
 		if ValidNestedToken(dir, env) {
 			t.Fatal("forged or incomplete environment accepted")
@@ -79,7 +79,7 @@ func TestNestedTokenRejectsForgedEnvironment(t *testing.T) {
 		if err := os.WriteFile(nestedTokenPath(dir, invalid), nil, 0600); err != nil {
 			t.Fatal(err)
 		}
-		if ValidNestedToken(dir, map[string]string{"GTHOK_NESTED": "1", "GTHOK_NESTED_TOKEN": invalid}) {
+		if ValidNestedToken(dir, map[string]string{"GTOK_NESTED": "1", "GTOK_NESTED_TOKEN": invalid}) {
 			t.Fatal("invalid token shape accepted")
 		}
 	}
@@ -115,7 +115,7 @@ func TestNestedTokenRejectsUnsafeFiles(t *testing.T) {
 			if err != nil {
 				t.Fatal(err)
 			}
-			if ValidNestedToken(dir, map[string]string{"GTHOK_NESTED": "1", "GTHOK_NESTED_TOKEN": token}) {
+			if ValidNestedToken(dir, map[string]string{"GTOK_NESTED": "1", "GTOK_NESTED_TOKEN": token}) {
 				t.Fatal("unsafe token file accepted")
 			}
 		})
@@ -153,7 +153,7 @@ func TestNestedTokenRejectsUnsafeDirectories(t *testing.T) {
 					cleanup()
 					t.Fatal("unsafe directory accepted")
 				}
-				if ValidNestedToken(dir, map[string]string{"GTHOK_NESTED": "1", "GTHOK_NESTED_TOKEN": strings.Repeat("a", 64)}) {
+				if ValidNestedToken(dir, map[string]string{"GTOK_NESTED": "1", "GTOK_NESTED_TOKEN": strings.Repeat("a", 64)}) {
 					t.Fatal("unsafe directory validated")
 				}
 			})

@@ -24,7 +24,7 @@ class PackagingTest < Minitest::Test
       "RUNNER_TEMP" => @dir, "GITHUB_OUTPUT" => File.join(@dir, "output"),
       "GITHUB_PATH" => File.join(@dir, "path"), "GITHUB_ENV" => File.join(@dir, "env"),
       "FAKE_RELEASE" => @assets, "TOOL_LOG" => File.join(@dir, "tools.log"),
-      "REPO" => "mkusaka/gthok", "TAG" => "v0.0.1"
+      "REPO" => "mkusaka/gtok", "TAG" => "v0.0.1"
     }
     tool("gh", <<~'SH')
       printf '%s\n' "$*" >> "$TOOL_LOG"
@@ -74,21 +74,21 @@ class PackagingTest < Minitest::Test
   end
 
   def assets
-    binary = File.join(@dir, "gthok")
+    binary = File.join(@dir, "gtok")
     File.write(binary, <<~'SH')
       #!/usr/bin/env bash
       set -euo pipefail
       case "$1" in
-        version) echo 'gthok version 0.0.1' ;;
+        version) echo 'gtok version 0.0.1' ;;
         shim) mkdir -p "$4"; ln -s "$0" "$4/git" ;;
         *) exit 1 ;;
       esac
     SH
     FileUtils.chmod(0755, binary)
     checksums = %w[linux darwin].product(%w[amd64 arm64]).map do |os, arch|
-      name = "gthok_0.0.1_#{os}_#{arch}.tar.gz"
+      name = "gtok_0.0.1_#{os}_#{arch}.tar.gz"
       path = File.join(@assets, name)
-      assert_ok(run_script('tar -czf "$ASSET" -C "$RUNNER_TEMP" gthok', "ASSET" => path))
+      assert_ok(run_script('tar -czf "$ASSET" -C "$RUNNER_TEMP" gtok', "ASSET" => path))
       "#{Digest::SHA256.file(path).hexdigest}  #{name}\n"
     end
     File.write(File.join(@assets, "checksums.txt"), checksums.join)
@@ -99,7 +99,7 @@ class PackagingTest < Minitest::Test
     ["latest", "", "v0.0.1"].each do |version|
       FileUtils.rm_f(@env.fetch("GITHUB_OUTPUT"))
       assert_ok(run_script(step("resolve"), "INPUT_VERSION" => version))
-      assert_equal "repo=mkusaka/gthok\ntag=v0.0.1\n", File.read(@env.fetch("GITHUB_OUTPUT"))
+      assert_equal "repo=mkusaka/gtok\ntag=v0.0.1\n", File.read(@env.fetch("GITHUB_OUTPUT"))
     end
     ["../bad", "v0.0.1\nother=value"].each do |version|
       refute run_script(step("resolve"), "INPUT_VERSION" => version).last.success?
@@ -110,18 +110,18 @@ class PackagingTest < Minitest::Test
     assets
     %w[Linux macOS].product(%w[X64 ARM64]).each do |os, arch|
       assert_ok(run_script(step("install"), "RUNNER_OS_VALUE" => os, "RUNNER_ARCH_VALUE" => arch))
-      path = File.join(@dir, "gthok/bin/gthok")
+      path = File.join(@dir, "gtok/bin/gtok")
       assert File.executable?(path)
       assert_includes File.read(@env.fetch("GITHUB_OUTPUT")), "path=#{path}\n"
       assert_includes File.read(@env.fetch("GITHUB_PATH")), "#{File.dirname(path)}\n"
       asset_os = os == "Linux" ? "linux" : "darwin"
       asset_arch = arch == "X64" ? "amd64" : "arm64"
-      assert_includes File.read(@env.fetch("TOOL_LOG")), "--pattern gthok_0.0.1_#{asset_os}_#{asset_arch}.tar.gz"
+      assert_includes File.read(@env.fetch("TOOL_LOG")), "--pattern gtok_0.0.1_#{asset_os}_#{asset_arch}.tar.gz"
     end
     shim = ACTION.fetch("runs").fetch("steps").last
     assert_equal "inputs.shim == 'true'", shim.fetch("if")
-    assert_ok(run_script(shim.fetch("run"), "GTHOK" => File.join(@dir, "gthok/bin/gthok")))
-    assert File.symlink?(File.join(@dir, "gthok/shim/git"))
+    assert_ok(run_script(shim.fetch("run"), "GTOK" => File.join(@dir, "gtok/bin/gtok")))
+    assert File.symlink?(File.join(@dir, "gtok/shim/git"))
   end
 
   def test_bad_or_missing_checksum_prevents_installation
@@ -131,7 +131,7 @@ class PackagingTest < Minitest::Test
     ["", original.gsub(/^[0-9a-f]{64}/, "0" * 64)].each do |contents|
       File.write(sums, contents)
       refute run_script(step("install"), "RUNNER_OS_VALUE" => "Linux", "RUNNER_ARCH_VALUE" => "X64").last.success?
-      refute File.exist?(File.join(@dir, "gthok/bin/gthok"))
+      refute File.exist?(File.join(@dir, "gtok/bin/gtok"))
       refute File.exist?(@env.fetch("GITHUB_PATH"))
     end
   end
@@ -145,9 +145,9 @@ class PackagingTest < Minitest::Test
 
   def test_release_artifact_contract
     config = YAML.load_file(File.join(ROOT, ".goreleaser.yaml"))
-    assert_equal "gthok", config.fetch("project_name")
+    assert_equal "gtok", config.fetch("project_name")
     build = config.fetch("builds").first
-    assert_equal "./cmd/gthok", build.fetch("main")
+    assert_equal "./cmd/gtok", build.fetch("main")
     assert_equal ["CGO_ENABLED=0"], build.fetch("env")
     assert_equal %w[darwin linux], build.fetch("goos")
     assert_equal %w[amd64 arm64], build.fetch("goarch")
@@ -165,11 +165,11 @@ class PackagingTest < Minitest::Test
   def test_homebrew_renderer_matches_versioned_release_assets
     assets
     render = RELEASE.fetch("jobs").fetch("homebrew").fetch("steps").find { |s| s["name"] == "Render Homebrew formula" }
-    assert_ok(run_script(render.fetch("run"), "VERSION" => "0.0.1", "GITHUB_REF_NAME" => "v0.0.1", "GITHUB_REPOSITORY" => "mkusaka/gthok"))
-    formula = File.read(File.join(@dir, "gthok.rb"))
+    assert_ok(run_script(render.fetch("run"), "VERSION" => "0.0.1", "GITHUB_REF_NAME" => "v0.0.1", "GITHUB_REPOSITORY" => "mkusaka/gtok"))
+    formula = File.read(File.join(@dir, "gtok.rb"))
     refute_match(/__[A-Z0-9_]+__/, formula)
     %w[linux darwin].product(%w[amd64 arm64]).each do |os, arch|
-      assert_includes formula, "gthok_0.0.1_#{os}_#{arch}.tar.gz"
+      assert_includes formula, "gtok_0.0.1_#{os}_#{arch}.tar.gz"
     end
     assert_includes formula, 'depends_on "git"'
   end
@@ -216,10 +216,10 @@ class PackagingTest < Minitest::Test
       text = assert_ok(result)
       assert_includes text, "## [Unreleased]\n\n## [v0.0.2] - 2026-11-08"
       url = previous.empty? ? "releases/tag/v0.0.2" : "compare/v0.0.1...v0.0.2"
-      assert_includes text, "[v0.0.2]: https://github.com/mkusaka/gthok/#{url}"
+      assert_includes text, "[v0.0.2]: https://github.com/mkusaka/gtok/#{url}"
     end
     notes = assert_ok(run_script("scripts/changelog-section.sh Unreleased"))
-    assert_includes notes, "Initial gthok 0.0.1"
+    assert_includes notes, "Initial gtok 0.0.1"
     refute_includes notes, "[Unreleased]:"
   end
 end

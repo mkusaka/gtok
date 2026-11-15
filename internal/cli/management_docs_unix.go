@@ -7,15 +7,15 @@ import (
 	"os"
 	"strings"
 
-	"github.com/mkusaka/gthok"
-	"github.com/mkusaka/gthok/internal/docsearch"
+	"github.com/mkusaka/gtok"
+	"github.com/mkusaka/gtok/internal/docsearch"
 	"github.com/spf13/cobra"
 )
 
 func managementDocsCommand(code *int, version string) *cobra.Command {
 	var asJSON, all bool
 	docs := managementCommand("docs [id]", "Browse the embedded, offline documentation", code, func(_ *cobra.Command, args []string) int {
-		index, err := docsearch.Load(gthok.Docs)
+		index, err := docsearch.Load(gtok.Docs)
 		if err != nil {
 			return managementFailure(err)
 		}
@@ -34,7 +34,7 @@ func managementDocsCommand(code *int, version string) *cobra.Command {
 			markdown := section.Markdown
 			if section.File == skillFile {
 				// Say where the installable skill for this exact version lives.
-				markdown = fmt.Sprintf("<!-- Agent skill source for this gthok version: %s (install it with your agent's skill tool, e.g. npx skills add mkusaka/gthok) -->\n", docsearch.SourceURL(version, skillFile)) + markdown
+				markdown = fmt.Sprintf("<!-- Agent skill source for this gtok version: %s (install it with your agent's skill tool, e.g. npx skills add mkusaka/gtok) -->\n", docsearch.SourceURL(version, skillFile)) + markdown
 			}
 			return managementDocsWrite(markdown)
 		}
@@ -60,21 +60,21 @@ func managementDocsCommand(code *int, version string) *cobra.Command {
 	docs.Flags().BoolVar(&asJSON, "json", false, "print the section tree as JSON")
 	docs.Flags().BoolVar(&all, "all", false, "print every embedded file as Markdown")
 	docs.MarkFlagsMutuallyExclusive("all", "json")
-	docs.Example = "  gthok docs\n  gthok docs security/project-configuration-trust\n  gthok docs search \"parallel hooks\"\n  gthok docs --all"
+	docs.Example = "  gtok docs\n  gtok docs security/project-configuration-trust\n  gtok docs search \"parallel hooks\"\n  gtok docs --all"
 	search := managementCommand("search <query>", "Search embedded documentation using an English query (JSON)", code, func(_ *cobra.Command, args []string) int {
-		index, err := docsearch.Load(gthok.Docs)
+		index, err := docsearch.Load(gtok.Docs)
 		if err != nil {
 			return managementFailure(err)
 		}
 		return managementJSON(index.Search(args[0], version, 5), nil)
 	})
 	search.Args = cobra.ExactArgs(1)
-	search.Example = "  gthok docs search \"force push lease\""
+	search.Example = "  gtok docs search \"force push lease\""
 	docs.AddCommand(search)
 	return docs
 }
 
-const skillFile = "skills/gthok/SKILL.md"
+const skillFile = "skills/gtok/SKILL.md"
 
 func managementDocsWrite(markdown string) int {
 	if _, err := fmt.Fprint(os.Stdout, markdown); err != nil {

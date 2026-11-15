@@ -91,9 +91,9 @@ func TestHookListPhaseKeyUnknown(t *testing.T) {
 func TestHookListProjectParallelUnknownKey(t *testing.T) {
 	root := t.TempDir()
 	repo := filepath.Join(root, "repo")
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), `version: 1
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), `version: 1
 hooks:
   pre:
     - parallel:
@@ -146,10 +146,10 @@ hooks:
 func TestProjectParallelSiblingsDoNotWait(t *testing.T) {
 	root := t.TempDir()
 	repo := filepath.Join(root, "repo")
-	env := map[string]string{"HOME": root, "GTHOK_CONFIG_DIR": filepath.Join(root, "config")}
+	env := map[string]string{"HOME": root, "GTOK_CONFIG_DIR": filepath.Join(root, "config")}
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
-	writeFixture(t, filepath.Join(env["GTHOK_CONFIG_DIR"], "config.yaml"), "version: 1\nhooks: {pre: [{id: u, command: [u], background: true}]}\n")
-	writeFixture(t, filepath.Join(repo, ".gthok.yaml"), "version: 1\nhooks:\n  pre:\n    - parallel:\n        - {id: a, command: [./a]}\n        - {id: b, command: [./b]}\n")
+	writeFixture(t, filepath.Join(env["GTOK_CONFIG_DIR"], "config.yaml"), "version: 1\nhooks: {pre: [{id: u, command: [u], background: true}]}\n")
+	writeFixture(t, filepath.Join(repo, ".gtok.yaml"), "version: 1\nhooks:\n  pre:\n    - parallel:\n        - {id: a, command: [./a]}\n        - {id: b, command: [./b]}\n")
 	if _, _, _, _, err := TrustProject("", repo, env, false, true); err != nil {
 		t.Fatal(err)
 	}

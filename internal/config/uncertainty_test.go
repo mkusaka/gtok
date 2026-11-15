@@ -31,8 +31,8 @@ func TestProjectUnknownInputOnlyTightens(t *testing.T) {
 	home := filepath.Join(root, "home")
 	repo := filepath.Join(home, "repo")
 	global := filepath.Join(root, "config", "config.yaml")
-	project := filepath.Join(repo, ".gthok.yaml")
-	env := map[string]string{"HOME": home, "GTHOK_CONFIG_DIR": filepath.Dir(global)}
+	project := filepath.Join(repo, ".gtok.yaml")
+	env := map[string]string{"HOME": home, "GTOK_CONFIG_DIR": filepath.Dir(global)}
 	writeFixture(t, filepath.Join(repo, ".git"), "gitdir: elsewhere\n")
 	for _, tc := range []struct {
 		global, project, want string

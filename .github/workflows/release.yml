@@ -104,16 +104,16 @@ jobs:
           base="https://github.com/${GITHUB_REPOSITORY}/releases/download/${GITHUB_REF_NAME}"
           sha() {
             local sum
-            sum="$(awk -v f="gthok_${VERSION}_$1.tar.gz" '$2 == f { print $1 }' "$RUNNER_TEMP/checksums.txt")"
+            sum="$(awk -v f="gtok_${VERSION}_$1.tar.gz" '$2 == f { print $1 }' "$RUNNER_TEMP/checksums.txt")"
             [[ "$sum" =~ ^[0-9a-f]{64}$ ]] || { echo "::error::missing checksum for $1" >&2; exit 1; }
             echo "$sum"
           }
-          export FORMULA_PATH="$RUNNER_TEMP/gthok.rb"
-          cp packaging/homebrew/gthok.rb "$FORMULA_PATH"
-          DARWIN_ARM64_URL="$base/gthok_${VERSION}_darwin_arm64.tar.gz"
-          DARWIN_X64_URL="$base/gthok_${VERSION}_darwin_amd64.tar.gz"
-          LINUX_ARM64_URL="$base/gthok_${VERSION}_linux_arm64.tar.gz"
-          LINUX_X64_URL="$base/gthok_${VERSION}_linux_amd64.tar.gz"
+          export FORMULA_PATH="$RUNNER_TEMP/gtok.rb"
+          cp packaging/homebrew/gtok.rb "$FORMULA_PATH"
+          DARWIN_ARM64_URL="$base/gtok_${VERSION}_darwin_arm64.tar.gz"
+          DARWIN_X64_URL="$base/gtok_${VERSION}_darwin_amd64.tar.gz"
+          LINUX_ARM64_URL="$base/gtok_${VERSION}_linux_arm64.tar.gz"
+          LINUX_X64_URL="$base/gtok_${VERSION}_linux_amd64.tar.gz"
           DARWIN_ARM64_SHA256="$(sha darwin_arm64)"
           DARWIN_X64_SHA256="$(sha darwin_amd64)"
           LINUX_ARM64_SHA256="$(sha linux_arm64)"
@@ -151,7 +151,7 @@ jobs:
           fi
           gh api repos/mkusaka/homebrew-tap/dispatches \
             -f event_type=update-formula \
-            -f "client_payload[formula]=gthok" \
+            -f "client_payload[formula]=gtok" \
             -f "client_payload[repository]=${GITHUB_REPOSITORY}" \
             -f "client_payload[version]=${VERSION}" \
             -f "client_payload[formula_contents_b64]=${FORMULA_CONTENTS_B64}" \
